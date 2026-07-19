@@ -1,0 +1,141 @@
+# Forge recipes (code host)
+
+Path after install: `~/.agents/skills/system_assets/forge.md` (catalog skill: `system_assets`).
+Skills under `~/.agents/skills/*/SKILL.md` point here for host-specific commands.
+
+{% if features.github | default('false') == 'true' %}
+## Host: GitHub (`gh`)
+
+Requires `gh` CLI + repo access. Prefer `gh` over raw curl for API work.
+
+### Discover context
+```bash
+git remote -v
+git rev-parse --abbrev-ref HEAD
+git rev-parse --abbrev-ref --symbolic-full-name @{u}
+```
+
+### Fetch PR / MR context
+```bash
+gh pr view URL --json number,title,headRefName,baseRefName,commits,files,reviews,url
+gh pr diff PR_NUMBER
+gh api repos/OWNER/REPO/pulls/PR_NUMBER --jq '.title'
+```
+
+### Fetch review / issue comments
+```bash
+# review comment (#discussion_rID)
+gh api repos/OWNER/REPO/pulls/comments/ID
+# issue/PR timeline (#issuecomment-ID)
+gh api repos/OWNER/REPO/issues/comments/ID
+# all PR review comments
+gh api repos/OWNER/REPO/pulls/PR_NUMBER/comments --paginate \
+  --jq '[.[] | {id, body, path, line, original_line, diff_hunk, user: .user.login, created_at, in_reply_to_id, pull_request_review_id, html_url}]'
+```
+
+### Unresolved review threads
+```bash
+gh api graphql -f query='
+{
+  repository(owner: "OWNER", name: "REPO") {
+    pullRequest(number: PR_NUMBER) {
+      reviewThreads(first: 100) {
+        nodes {
+          id
+          isResolved
+          isOutdated
+          comments(first: 1) {
+            nodes { databaseId }
+          }
+        }
+      }
+    }
+  }
+}'
+```
+
+Keep only root comments (`in_reply_to_id` null) whose thread is not resolved and not outdated, with a valid line.
+
+### Post / edit PR body / comments
+```bash
+# top-level PR comment
+gh pr comment PR_NUMBER --body "..."
+# edit PR description (additive only — callers rebuild full body)
+gh pr view PR --json body -q .body
+gh pr edit PR --body "$(cat <<'EOF'
+...full body...
+EOF
+)"
+# approve
+gh pr review PR_NUMBER --approve --body "..."
+```
+
+For nested review-thread replies and resolve/minimize, use GraphQL after user confirms (see `/comment-reply` workflow). Capture `html_url` from create responses.
+
+### Resolve thread
+```bash
+gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "THREAD_NODE_ID"}) { thread { isResolved } } }'
+```
+
+### Commit / PR links
+```text
+https://github.com/OWNER/REPO/commit/SHA
+https://github.com/OWNER/REPO/pull/N
+```
+
+### CI — list / trigger / watch
+```bash
+branch="$(git rev-parse --abbrev-ref --symbolic-full-name @{u} | sed 's#^[^/]*/##')"
+gh workflow list
+gh workflow run WORKFLOW --ref "$branch"
+gh workflow view WORKFLOW --yaml
+gh workflow run WORKFLOW --ref "$branch" -f key=value
+gh run list --branch "$branch" --workflow WORKFLOW --limit 5
+gh run list --branch "$branch" --limit 10
+gh run view RUN_ID --log-failed
+gh run view --web
+gh run watch RUN_ID
+# optional local aliases
+ciopen
+ciwatch
+```
+
+### Activity search (progress report)
+```bash
+gh search commits --author @me --committer-date ">=YYYY-MM-DD"
+gh search prs --author @me --updated ">=YYYY-MM-DD"
+gh search issues --commenter @me --updated ">=YYYY-MM-DD"
+```
+
+{% else %}
+## Host: adaptive (discover)
+
+No forge feature pinned at generate time. Discover what this machine and repo can do — do not assume any specific vendor tool.
+
+### Discover
+- Inspect the repo itself for remotes and branches:
+  ```bash
+  git remote -v
+  git rev-parse --abbrev-ref HEAD
+  git rev-parse --abbrev-ref --symbolic-full-name @{u}
+  ```
+- Look for a forge / source-control tool available in the environment: a CLI on
+  PATH, an MCP server, or a service the host exposes. An *appropriate* tool is
+  anything that can read PRs/MRs, their review comments, and CI runs for this repo,
+  and (when the user confirms) post comments or trigger CI.
+
+### Operate without assuming a tool
+- Prefer read-only local inspection (`git log`, `git diff`, `stg show`) when no
+  forge tool is available.
+- Name the action you need (fetch PR context, post a comment, trigger CI) and let
+  the environment supply the matching tool. Do not invent host-specific commands
+  that are not present on PATH or reachable from here.
+- If an action needs write access you cannot perform, state what is missing and ask
+  the user for the URL, credentials, or the tool to use.
+
+### Rules
+- Never hard-require a specific vendor tool.
+- Never post or mutate remote state without explicit user confirmation.
+- Fall back to read-only git + local files when nothing else is available.
+
+{% endif %}

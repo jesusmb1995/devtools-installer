@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Aliases and shell functions, split into modules under ~/aliases/.
+# This file just sources every *.sh in that directory (sorted), so the
+# definitions are identical to the old single-file setup.
+# Add a new file under ~/aliases/ to add a new group; run `aliases-reload`
+# (or open a new shell) to pick up changes.
+
+_aliases_dir="$HOME/aliases"
+
+if [ -d "$_aliases_dir" ]; then
+  for _aliases_file in "$_aliases_dir"/*.sh; do
+    [ -r "$_aliases_file" ] && source "$_aliases_file"
+  done
+  unset _aliases_file
+fi
+
+unset _aliases_dir

@@ -1,0 +1,92 @@
+{
+   "Description": "Regolith and ulauncher, more heavy config",
+   "ai_tools": {
+      "agy": true,
+      "claude": false,
+      "codex": false,
+      "cursor": false,
+      "gemini": false,
+      "kilocode": true,
+      "opencode": false
+   },
+   "base_image": "docker.io/library/debian:testing",
+   "browsers": {
+      "brave": false,
+      "chrome": true,
+      "firefox": false
+   },
+   "disabled": { },
+   "features": {
+      "asana_mcp": "false",
+      "brew": "false",
+      "clion": "false",
+      "cursor_ide": "false",
+      "disable_ufw_webrtc": "false",
+      "gh": "false",
+      "github_binaries": "true",
+      "jj": "true",
+      "launcher": "rofi",
+      "mode": "i3",
+      "quicksheet": "true",
+      "skills_ai": "false",
+      "sqlite3_brew_fallback": "false",
+      "stg": "true",
+      "terminal": "st"
+   },
+   "languages": {
+      "amber": true,
+      "bash": true,
+      "c": true,
+      "cmake": true,
+      "cpp": true,
+      "css": true,
+      "docker": true,
+      "html": true,
+      "javascript": true,
+      "jinja": true,
+      "json": true,
+      "jsonnet": true,
+      "lua": true,
+      "markdown": true,
+      "python": true,
+      "rust": false,
+      "toml": true,
+      "typescript": false,
+      "yaml": true,
+      "zsh": true
+   },
+   "publish": {
+      "branch": "copals-gpersonal",
+      "remote": "https://github.com/jesusmb1995/devtools-installer.git"
+   },
+   "repo_ids": [
+      "apt_essential_tools",
+      "apt_essential_ui",
+      "dotfiles_essential",
+      "dotfiles_personalization",
+      "st",
+      "nerd_fonts",
+      "rofi",
+      "omz_config",
+      "zshmarks",
+      "system_tools",
+      "browsers",
+      "ai_tools",
+      "quicksheet",
+      "nvim",
+      "tmux_warm_daemon",
+      "cmd_bookmarks",
+      "agent_global_config",
+      "agent_skills",
+      "skill_caveman",
+      "skill_humanizer",
+      "skill_ponytail",
+      "bazelisk"
+   ],
+   "system_tools": {
+      "jj": true,
+      "ncdu": true,
+      "papirus_icon_theme": false,
+      "stgit": false
+   }
+}

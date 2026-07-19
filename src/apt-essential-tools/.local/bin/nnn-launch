@@ -1,0 +1,9 @@
+#!/bin/sh
+. "${HOME}/.config/nnn/profile"
+tmux kill-session -t nnn 2>/dev/null
+exec tmux new-session -s nnn \
+    -e "NNN_PLUG=$NNN_PLUG" \
+    -e "NNN_OPTS=$NNN_OPTS" \
+    -e "NNN_BMS=$NNN_BMS" \
+    -e "NNN_USE_EDITOR=$NNN_USE_EDITOR" \
+    nnn

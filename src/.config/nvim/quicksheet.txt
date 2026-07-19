@@ -1,0 +1,203 @@
+## Terminal 
+back search | <C-r>
+select entry and continue editing | <C-g>
+vim mode | <C-]>
+tmux visual mode | <C-b>[
+tmux search up (in visual mode) | ?
+tmux search down (in visual mode) | /
+tmux select mode (in visual mode) | space 
+tmux copy (in visual mode and select mode) | enter 
+tmux split vertical | <C-b>%
+tmux jump split | <C-b>o
+tmux close splitted | <C-b>&
+rerun last command | r<enter>
+## Debugging
+coredumpctl list | list available core dumps
+coredumpctl debug <PID> | attach to specific core dump
+## Regolith/i3
+Convert to floating window | <Win-shift-f>
+Convert to scratchpad | <Win-C-m>
+Move/show scratchpad | <Win-C-a>
+Hide bar | <Win-i>
+Force quit window  | <Win-Alt-a>
+Close window | <Win-Q>
+Open terminal | <Win-Enter>
+Open browser | <Win-shift-Enter>
+Open file-tree explorer | <Win-shift-n>
+Toggle between foreground (floating) and background | <Win-space>
+## Vim 
+Start recording macro | q[letter] 
+Stop recording macro | q
+Use macro | @[letter]
+Go previous cursor | <C-o>
+Record current file path to clipboard | :let @+ = expand('%:p')
+Write all changed buffers | :wa
+Delete all.within.same.block | dW
+Insert into next group (e.g. () {} []) | ci<group>
+Buffer undo history | :UndoTreeToggle
+standalone vim temporary bookmark set | m<letter>
+jump to vim bookmark | '<letter>
+jump to vim bookrmak (with telescpe) | <leader>ma
+## Nv-chad
+Open floating terminal | <A-i>
+Collapse all (Tree, symbols, etc.) | W
+Expand all (Tree, symbols, etc.) | E  
+All errors and notifications messages | :NoiceAll
+Go into file when hovering on file path | gf
+Go into folder when hovering on file path | gF
+Auto reload (all) buffers on changes | :set autoread
+## Custom
+Jump to bookmark | :J [location]
+Open current buffer window in new tab | <leader>B" 
+Open new tab" | <leader>T"
+Next file in terminal | ]f
+Pref file in terminal | [f
+## Nvim-directory-tree
+CD into folder | <C-]>
+Expand directory | <C-E>
+Toggle Show Hidden | <H>
+Toggle Show Ignored | <I>
+Toggle modified files filter (git clean) | <leader>tm
+Toggle modified files filter (since msater) | <leader>tM
+Toggle string filter | <leader>fM
+Open with system (e.g. image or folder explorer) | s
+Increase window width | <C-A-S-Right>
+Decrease window width | <C-A-S-Left>
+Copy path to command line (e.g to easy cd) at current cursor | .
+CD to current cursor dir tree | .cd<enter>
+## No-neck-pain
+Center (with no neck pain) | <leader>np
+## Profiler
+Toggle profiler | :SnacksProfilerToggle
+Show profiler results | :SnacksProfilerShow
+## Plugin-managers 
+Lazy plugin manager | :Lazy
+Mason LSP plugin manager | :Mason
+## Telescope
+Find files | <leader>ff
+Live grep | <leader>fg
+Search/Find buffers | <leader>fb
+Help tags | <leader>fh
+Telescope builtin | :Telescope builtin 
+Telescope symbols (dynamic) | :Telescope lsp_dynamic_workspace_symbols 
+Telescope symbols (dynamic) | <leader>ts 
+Quick fix on results (e.g. live grep) | <C-q>
+Replace in quick fix | :cfdo %s/replace/by
+Find marks | <leader>ma
+## Remote nvim
+Connect to a remote Neovim over SSH (idempotent tunnel, local --clean UI) | remote-nvim <user@host>[:port]  (alias: rnv)
+
+## LSP
+Go to definition | gd
+References | gr
+Diagnostic list (errors and warnings) | <leader>ds
+Diagnostic next | ]d 
+Hover | K
+Rename | <leader>rn
+Code actions | <leader>ca
+Format code | <leader>F
+Cycle formatter / Switch to different formatter | :CycleFormatter 
+Cycle linter / Switch to different linter | :CycleLinter
+Toggle diagnostic list | <leader>xx
+Toggle diagnostic (linter) | <leader>l
+Toggle symbols outline | <leader>s
+## DAP
+Toggle breakpoint | <leader>db
+Start/Continue | <leader>dc
+Run to cursor | <leader>dC
+Step over | <leader>do
+restart | <leader>dr
+Step into | <leader>di
+Step out | <leader>du
+Toggle UI | <leader>dd
+Stop debugging | <leadaer><sd>
+Step over | <F8>
+Step out | <F9>
+Step into | <F7>
+Start DAP debug environment python | <leader>Vs
+Start DAP debug environment C/C++ | <leader>Vc
+## Venv
+Select python venv | <leader>Vs
+Select python venv cached from directory | <leader>Vc
+## Git
+Open diffview against previous commit | <leader>gd
+Open diffview against main branch | <leader>gD
+Open diffview against previous commit | :DiffviewOpen HEAD^
+Activate git conflict plugin | :GitConflictRefresh
+Show git conflict list | :GitConflictListQf
+Activate git conflict plugin | <leader>gcr
+Show git conflict list | <leader>gcl
+Show git conflict list for ALL files (incl. unopened) | <leader>gcL
+Resolve conflict choosing current/ours | <leader>gco
+Resolve conflict choosing  incoming/theirs | <leader>gct
+Next git conflict | <leader>]x
+Previous  git conflict | <leader>[x
+Move commit to staging area | git reset --soft HEAD^
+Delete patch into staging area | stg delete --spill [patch]
+Move patch to staging area | stg pop [patch] --spill
+Stash staged changes (unstaged remains) | git stash --staged
+Stage all conflicts as resolved | git status --short | grep '^UU' | awk '{print $1}' | xargs git add
+Empty current patch but keep changes locally (spill) | <leader>gku
+Create new patch with staged changes after current (return) | <leader>gkN
+Select and cd to git worktree | <leader>gwg
+Create worktree for branch and cd to it | <leader>gwc
+Remove all clean git worktrees | <leader>gwx
+Workspace from git PR | <leader>gwp", function()
+## jj
+jj git init | initiaze repo
+git tag | add tag
+q | quit jujutsu window
+interactive regase | gl + r (on line or multiple visual ones ones)
+## Aliases (.aliases)
+Stage all conflicts as resolved (alias) | git-resolve 
+Stage all conflicts as resolved and refresh (alias) | stg-resolve 
+## gitsigns
+Stage hunk (custom mmap)| <leader>Hs
+## Target runner
+run via .local_cmd_bookmarks (horizontal terminal) | <leader><A-h>
+run via .local_cmd_bookmarks (vertical terminal) | <leader><A-v>
+run via .local_cmd_bookmarks with dependencies [written as dep+name on the file] (horizontal terminal) | <leader><A-h> + <C-d>
+run via .local_cmd_bookmarks with dependencies [written as dep+name on the file] (vertical terminal) | <leader><A-v> + <C-d>
+CTest/GTest/Script picker (save & run via .local_cmd_bookmarks) | <leader><A-H>
+CTest/GTest picker (vertical terminal) | <leader><A-V>
+CTest picker: run prompt text as glob (--gtest_filter=*text*, spans all matching tests) | type text + <C-f>
+CTest picker: glob runs on HIGHLIGHTED entry's binary only (highlight right [CTEST] first) | <C-f>
+CTest picker: multiple glob groups at once (Foo:Bar -> *Foo*:Bar*) | type Foo:Bar + <C-f>
+## Cursor AI editor
+Next review | <Alt-l>
+Accept review | <Ctrl-y>
+Chat window | <Ctrl-l> (or simply ctrl -> with vim bindings extension)
+Accept perm command | cursor-agent 
+Cursor terminal cli | cursor-cli
+Open cursor | <leader><Ctrl-S-l> 
+## Cursor agent terminal inside neovim 
+Next hunk | <A-l>
+Open/focus agent terminal | <leader><C-l>
+Attach file lines (visual mode) | <C-l>
+Attach file to chat | <C-S-l>
+Close agent terminal (from inside) | <C-l>
+Send visual selection as @file:lines ref | <C-l> (visual mode)
+Clear agent terminal output | <C-n><carriage return>
+## Claude agent terminal inside neovim 
+Enter transcript mode to move with jk | <C-o>
+Change terminal (tmux compatible) | <C-b>o
+Change terminal (tmux compatible) | <C-b><arrows>
+## Vimium (browser)
+Yank/copy link | yf
+Click | f
+Open new tab | <S-f>
+## nnn (terminal file browser)
+Go into shell/cmd prompt (type `zsh` to open a shell); <C-D> quits that terminal | ]
+Filter entries by name (incremental type-to-filter) | /
+Show nnn help (lists all keys) | ?
+Select / deselect all entries | a
+Toggle selection (mark multiple entries) | space
+Open entry in $EDITOR | e
+Delete selected file | x
+Delete selected file/dir recursively (rm -rf) | X
+Show details of entry | d
+Move selected/copied entry here | v
+Paste selected/copied entry here | p
+Spawn a shell in current directory | !
+Select/run a plugin | ;
+Run dragdrop plugin (open floating file picker) | ;d

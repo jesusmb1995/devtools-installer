@@ -1,0 +1,5 @@
+# nnn profile — sourced by nnn on startup
+export NNN_OPTS="deH"
+export NNN_PLUG='d:dragdrop;j:zmarks;g:win-open;m:bm-create;n:nvim-cd'
+export NNN_BMS=""
+export NNN_USE_EDITOR=1
