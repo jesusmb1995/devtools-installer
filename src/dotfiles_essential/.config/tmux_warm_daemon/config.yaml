@@ -1,0 +1,9 @@
+pid_file: /tmp/tmux_warm_daemon.pid
+log_file: /tmp/tmux_warm_daemon.log
+
+pools:
+  warm:
+    max_detached: 2
+  agent:
+    max_detached: 2
+    command: claude

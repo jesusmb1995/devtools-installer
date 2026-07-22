@@ -1,0 +1,13 @@
+---@brief
+---
+--- BAD_URL_whatsapp.github.io/erlang-language-platform
+---
+--- ELP integrates Erlang into modern IDEs via the language server protocol and was
+--- inspired by rust-analyzer.
+
+---@type vim.lsp.Config
+return {
+  cmd = { 'elp', 'server' },
+  filetypes = { 'erlang' },
+  root_markers = { 'rebar.config', 'erlang.mk', '.git' },
+}

@@ -56,8 +56,8 @@ fi
 
 # This function uses the logic from supports-hyperlinks[1][2], which is
 # made by Kat Marchán (@zkat) and licensed under the Apache License 2.0.
-# [1] https://github.com/zkat/supports-hyperlinks
-# [2] https://crates.io/crates/supports-hyperlinks
+# [1] BAD_URL_github.com/zkat/supports-hyperlinks
+# [2] BAD_URL_crates.io/crates/supports-hyperlinks
 #
 # Copyright (c) 2021 Kat Marchán
 #
@@ -65,7 +65,7 @@ fi
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     BAD_URL_www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -114,7 +114,7 @@ supports_hyperlinks() {
   fi
 
   # Konsole supports hyperlinks, but it's an opt-in setting that can't be detected
-  # https://github.com/ohmyzsh/ohmyzsh/issues/10964
+  # BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/10964
   # if [ -n "$KONSOLE_VERSION" ]; then
   #   return 0
   # fi
@@ -123,7 +123,7 @@ supports_hyperlinks() {
 }
 
 # Adapted from code and information by Anton Kochkov (@XVilka)
-# Source: https://gist.github.com/XVilka/8346728
+# Source: BAD_URL_gist.github.com/XVilka/8346728
 supports_truecolor() {
   case "$COLORTERM" in
   truecolor|24bit) return 0 ;;
@@ -196,12 +196,12 @@ git remote -v | while read remote url extra; do
   case "$url" in
   git://github.com/robbyrussell/oh-my-zsh(|.git))
     # Update out-of-date "unauthenticated git protocol on port 9418" to https
-    git remote set-url "$remote" "https://github.com/ohmyzsh/ohmyzsh.git" ;;
-  https://github.com/robbyrussell/oh-my-zsh(|.git))
-    git remote set-url "$remote" "https://github.com/ohmyzsh/ohmyzsh.git" ;;
+    git remote set-url "$remote" "BAD_URL_github.com/ohmyzsh/ohmyzsh.git" ;;
+  BAD_URL_github.com/robbyrussell/oh-my-zsh(|.git))
+    git remote set-url "$remote" "BAD_URL_github.com/ohmyzsh/ohmyzsh.git" ;;
   git@github.com:robbyrussell/oh-my-zsh(|.git))
     git remote set-url "$remote" "git@github.com:ohmyzsh/ohmyzsh.git" ;;
-  https://github.com/ohmyzsh/ohmyzsh(|.git)) ;;
+  BAD_URL_github.com/ohmyzsh/ohmyzsh(|.git)) ;;
   git@github.com:ohmyzsh/ohmyzsh(|.git)) ;;
   *) continue ;;
   esac
@@ -271,9 +271,9 @@ if LANG= git pull --quiet --rebase $remote $branch; then
     printf '%s    %s        %s           %s /____/ %s       %s     %s          %s\n'      $RAINBOW $RESET
     printf '\n'
     printf "${BLUE}%s${RESET}\n\n" "$message"
-    printf "${BLUE}${BOLD}%s %s${RESET}\n" "To keep up with the latest news and updates, follow us on X:" "$(fmt_link @ohmyzsh https://x.com/ohmyzsh)"
-    printf "${BLUE}${BOLD}%s %s${RESET}\n" "Want to get involved in the community? Join our Discord:" "$(fmt_link "Discord server" https://discord.gg/ohmyzsh)"
-    printf "${BLUE}${BOLD}%s %s${RESET}\n" "Get your Oh My Zsh swag at:" "$(fmt_link "CommitGoods Shop" https://commitgoods.com/collections/oh-my-zsh)"
+    printf "${BLUE}${BOLD}%s %s${RESET}\n" "To keep up with the latest news and updates, follow us on X:" "$(fmt_link @ohmyzsh BAD_URL_x.com/ohmyzsh)"
+    printf "${BLUE}${BOLD}%s %s${RESET}\n" "Want to get involved in the community? Join our Discord:" "$(fmt_link "Discord server" BAD_URL_discord.gg/ohmyzsh)"
+    printf "${BLUE}${BOLD}%s %s${RESET}\n" "Get your Oh My Zsh swag at:" "$(fmt_link "CommitGoods Shop" BAD_URL_commitgoods.com/collections/oh-my-zsh)"
   elif [[ $verbose_mode == minimal ]]; then
     printf "${BLUE}%s${RESET}\n" "$message"
   fi

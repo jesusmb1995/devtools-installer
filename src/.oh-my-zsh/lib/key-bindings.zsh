@@ -1,6 +1,6 @@
-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Builtins
-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
+# BAD_URL_zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
+# BAD_URL_zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Zle-Builtins
+# BAD_URL_zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#Standard-Widgets
 
 # Make sure that the terminal is in application mode when zle is active, since
 # only then values from $terminfo are valid

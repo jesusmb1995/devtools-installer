@@ -29,7 +29,7 @@ export LSCOLORS="Gxfxcxdxbxegedabagacad"
 # Default coloring for GNU-based ls
 if [[ -z "$LS_COLORS" ]]; then
   # Define LS_COLORS via dircolors if available. Otherwise, set a default
-  # equivalent to LSCOLORS (generated via https://geoff.greer.fm/lscolors)
+  # equivalent to LSCOLORS (generated via BAD_URL_geoff.greer.fm/lscolors)
   if (( $+commands[dircolors] )); then
     [[ -f "$HOME/.dircolors" ]] \
       && source <(dircolors -b "$HOME/.dircolors") \

@@ -1,6 +1,6 @@
 # The async code is taken from
-# https://github.com/zsh-users/zsh-autosuggestions/blob/master/src/async.zsh
-# https://github.com/woefe/git-prompt.zsh/blob/master/git-prompt.zsh
+# BAD_URL_github.com/zsh-users/zsh-autosuggestions/blob/master/src/async.zsh
+# BAD_URL_github.com/woefe/git-prompt.zsh/blob/master/git-prompt.zsh
 
 zmodload zsh/system
 autoload -Uz is-at-least
@@ -94,8 +94,8 @@ function _omz_async_request {
     _OMZ_ASYNC_FDS[$handler]=$fd
 
     # There's a weird bug here where ^C stops working unless we force a fork
-    # See https://github.com/zsh-users/zsh-autosuggestions/issues/364
-    # and https://github.com/zsh-users/zsh-autosuggestions/pull/612
+    # See BAD_URL_github.com/zsh-users/zsh-autosuggestions/issues/364
+    # and BAD_URL_github.com/zsh-users/zsh-autosuggestions/pull/612
     is-at-least 5.8 || command true
 
     # Save the PID from the handler child process

@@ -91,7 +91,7 @@ function omz_diagnostic_dump() {
   builtin echo Diagnostic dump file created at: "$outfile"
   builtin echo
   builtin echo To share this with OMZ developers, post it as a gist on GitHub
-  builtin echo at "https://gist.github.com" and share the link to the gist.
+  builtin echo at "BAD_URL_gist.github.com" and share the link to the gist.
   builtin echo
   builtin echo "WARNING: This dump file contains all your zsh and omz configuration files,"
   builtin echo "so don't share it publicly if there's sensitive information in them."

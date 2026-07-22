@@ -1,0 +1,71 @@
+#!/bin/bash
+
+function _kv_database {
+  local db_dir="$HOME/.cache"
+  mkdir -p "$db_dir" || return 1
+  echo "$db_dir/.kvdatabase"
+}
+
+function _kv_sql_quote {
+  printf "'%s'" "${1//\'/\'\'}"
+}
+
+# Resolve a usable sqlite3 binary: prefer PATH, then fall back to the
+# linuxbrew install (which is only on PATH in interactive shells, not in
+# the bare `bash -c` env some tools — e.g. nvim — spawn). Prints the path.
+function _kv_sqlite3 {
+  if command -v sqlite3 >/dev/null 2>&1; then
+    echo sqlite3
+  
+  else
+    return 1
+  fi
+}
+
+function _kv_init {
+  local db="$1" sqlite3
+  sqlite3="$(_kv_sqlite3)" || return 1
+  "$sqlite3" "$db" 'CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);'
+}
+
+function kv {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: kv <key>" >&2
+    return 1
+  fi
+  local db key sqlite3
+  sqlite3="$(_kv_sqlite3)" || { echo "sqlite3 not found in PATH or /home/linuxbrew/.linuxbrew/bin" >&2; return 1; }
+  db="$(_kv_database)" || return 1
+  _kv_init "$db" || return 1
+  key="$(_kv_sql_quote "$1")"
+  "$sqlite3" -noheader "$db" "SELECT value FROM kv WHERE key = $key;"
+}
+
+function kv-glob {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: kv-glob <pattern>" >&2
+    return 1
+  fi
+  local db pattern sqlite3
+  sqlite3="$(_kv_sqlite3)" || { echo "sqlite3 not found in PATH or /home/linuxbrew/.linuxbrew/bin" >&2; return 1; }
+  db="$(_kv_database)" || return 1
+  _kv_init "$db" || return 1
+  pattern="$(_kv_sql_quote "$1")"
+  "$sqlite3" "$db" "SELECT key, value FROM kv WHERE key GLOB $pattern;"
+}
+
+function kv-put {
+  if [[ $# -lt 2 ]]; then
+    echo "Usage: kv-put <key> <value>" >&2
+    return 1
+  fi
+  local key="$1" value db sql_key sql_value sqlite3
+  sqlite3="$(_kv_sqlite3)" || { echo "sqlite3 not found in PATH or /home/linuxbrew/.linuxbrew/bin" >&2; return 1; }
+  shift
+  value="$*"
+  db="$(_kv_database)" || return 1
+  _kv_init "$db" || return 1
+  sql_key="$(_kv_sql_quote "$key")"
+  sql_value="$(_kv_sql_quote "$value")"
+  "$sqlite3" "$db" "INSERT INTO kv(key, value) VALUES ($sql_key, $sql_value) ON CONFLICT(key) DO UPDATE SET value = excluded.value;"
+}

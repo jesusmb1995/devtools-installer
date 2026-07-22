@@ -1,6 +1,6 @@
 return {
   {
-    url = "https://github.com/jesusmb1995/cmd_bookmarks",
+    url = "BAD_URL_github.com/jesusmb1995/cmd_bookmarks",
     -- dir = "/luksmap/Code/savecmd",
     lazy = true,
     cmd = { "LaunchVert", "LaunchHoriz", "LaunchFloat" },

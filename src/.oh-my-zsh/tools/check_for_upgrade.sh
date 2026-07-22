@@ -49,7 +49,7 @@ function is_update_available() {
 
   local repo
   case "$remote_url" in
-  https://github.com/*) repo=${${remote_url#https://github.com/}%.git} ;;
+  BAD_URL_github.com/*) repo=${${remote_url#BAD_URL_github.com/}%.git} ;;
   git@github.com:*) repo=${${remote_url#git@github.com:}%.git} ;;
   *)
     # If the remote is not using GitHub we can't check for updates
@@ -59,7 +59,7 @@ function is_update_available() {
 
   # If the remote repo is not the official one, let's assume there are updates available
   [[ "$repo" = ohmyzsh/ohmyzsh ]] || return 0
-  local api_url="https://api.github.com/repos/${repo}/commits/${branch}"
+  local api_url="BAD_URL_api.github.com/repos/${repo}/commits/${branch}"
 
   # Get local HEAD. If this fails assume there are updates
   local local_head
@@ -70,9 +70,9 @@ function is_update_available() {
   local remote_head
   remote_head=$(
     if (( ${+commands[curl]} )); then
-      curl --connect-timeout 2 -fsSL -H 'Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
+      echo "OFFLINE: no curl" # curl --connect-timeout 2 -fsSL -H 'Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
     elif (( ${+commands[wget]} )); then
-      wget -T 2 -O- --header='Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
+      echo "OFFLINE: no wget" # wget -T 2 -O- --header='Accept: application/vnd.github.v3.sha' $api_url 2>/dev/null
     elif (( ${+commands[fetch]} )); then
       HTTP_ACCEPT='Accept: application/vnd.github.v3.sha' fetch -T 2 -o - $api_url 2>/dev/null
     else
@@ -135,7 +135,7 @@ function update_ohmyzsh() {
 
 function has_typed_input() {
   # Created by Philippe Troin <phil@fifi.org>
-  # https://zsh.org/mla/users/2022/msg00062.html
+  # BAD_URL_zsh.org/mla/users/2022/msg00062.html
   emulate -L zsh
   zmodload zsh/zselect
 

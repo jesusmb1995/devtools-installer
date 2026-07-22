@@ -1,0 +1,14 @@
+NoNeckPain.bufferOptions	no-neck-pain.txt	/*NoNeckPain.bufferOptions*
+NoNeckPain.bufferOptionsBo	no-neck-pain.txt	/*NoNeckPain.bufferOptionsBo*
+NoNeckPain.bufferOptionsColors	no-neck-pain.txt	/*NoNeckPain.bufferOptionsColors*
+NoNeckPain.bufferOptionsScratchPad	no-neck-pain.txt	/*NoNeckPain.bufferOptionsScratchPad*
+NoNeckPain.bufferOptionsWo	no-neck-pain.txt	/*NoNeckPain.bufferOptionsWo*
+NoNeckPain.disable()	no-neck-pain.txt	/*NoNeckPain.disable()*
+NoNeckPain.enable()	no-neck-pain.txt	/*NoNeckPain.enable()*
+NoNeckPain.options	no-neck-pain.txt	/*NoNeckPain.options*
+NoNeckPain.resize()	no-neck-pain.txt	/*NoNeckPain.resize()*
+NoNeckPain.setup()	no-neck-pain.txt	/*NoNeckPain.setup()*
+NoNeckPain.toggle()	no-neck-pain.txt	/*NoNeckPain.toggle()*
+NoNeckPain.toggle_debug()	no-neck-pain.txt	/*NoNeckPain.toggle_debug()*
+NoNeckPain.toggle_scratch_pad()	no-neck-pain.txt	/*NoNeckPain.toggle_scratch_pad()*
+NoNeckPain.toggle_side()	no-neck-pain.txt	/*NoNeckPain.toggle_side()*

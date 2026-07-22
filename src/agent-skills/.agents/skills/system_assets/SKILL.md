@@ -16,7 +16,7 @@ tells the agent to discover what the current machine/repo actually supports.
 ## Sub-assets in this folder
 
 - `forge.md` — code-host / PR-MR CLI recipes.
-  Rendered with `features.github`:
+  Rendered with `features.gh`:
   - `true` → GitHub `gh` recipes (view/diff PRs, fetch comments, post, resolve, CI).
   - `false` → adaptive "discover what's available" block (map host from remote, pick
     the tool that exists on PATH, fall back to read-only git when nothing is present).

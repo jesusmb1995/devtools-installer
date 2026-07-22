@@ -1,0 +1,45 @@
+
+-- jj.nvim: neogit/stg-class UI for jujutsu. Uses diffview (already installed) as
+-- the diff backend and snacks.nvim for pickers. Lazy-loads on the :JJ command
+-- (alias for :J to avoid conflict with cmd_bookmarks' :J). Leader mappings live
+-- in lua/mappings/jj.lua.
+return {
+  "nicolasgb/jj.nvim",
+  lazy = true,
+  cmd = { "JJ", "JJdiff", "JJhdiff", "JJbrowse" },
+  dependencies = {
+    "folke/snacks.nvim",       -- picker (optional but present)
+    "sindrets/diffview.nvim",  -- diff backend
+  },
+  config = function()
+    require("jj").setup({
+      diff = { backend = "diffview" },
+      cmd = {
+        describe = {
+          editor = {
+            type = "buffer",
+            keymaps = { close = { "q", "<Esc>", "<C-c>" } },
+          },
+        },
+      },
+    })
+
+    -- Register JJ alias for J to avoid conflict with cmd_bookmarks' :J command
+    vim.api.nvim_create_user_command("JJ", function(opts)
+      vim.cmd("J " .. opts.args)
+    end, { nargs = "*" })
+
+    -- Register sub-command aliases used in mappings
+    local aliases = {
+      JJdiff = "Jdiff",
+      JJhdiff = "Jhdiff",
+      JJbrowse = "Jbrowse",
+    }
+    for alias, target in pairs(aliases) do
+      vim.api.nvim_create_user_command(alias, function(opts)
+        vim.cmd(target .. " " .. opts.args)
+      end, { nargs = "*" })
+    end
+  end,
+}
+

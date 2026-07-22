@@ -1,6 +1,6 @@
 # A script to make using 256 colors in zsh less painful.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
-# Copied from https://github.com/sykora/etc/blob/master/zsh/functions/spectrum/
+# Copied from BAD_URL_github.com/sykora/etc/blob/master/zsh/functions/spectrum/
 
 typeset -AHg FX FG BG
 

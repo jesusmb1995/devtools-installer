@@ -135,7 +135,7 @@ function gbda() {
 }
 
 # Copied and modified from James Roeder (jmaroeder) under MIT License
-# https://github.com/jmaroeder/plugin-git/blob/216723ef4f9e8dde399661c39c80bdf73f4076c4/functions/gbda.fish
+# BAD_URL_github.com/jmaroeder/plugin-git/blob/216723ef4f9e8dde399661c39c80bdf73f4076c4/functions/gbda.fish
 function gbds() {
   local default_branch=$(git_main_branch)
   (( ! $? )) || default_branch=$(git_develop_branch)
@@ -166,17 +166,17 @@ alias gcp='git cherry-pick'
 alias gcpa='git cherry-pick --abort'
 alias gcpc='git cherry-pick --continue'
 alias gclean='git clean --interactive -d'
-alias gcl='git clone --recurse-submodules'
-alias gclf='git clone --recursive --shallow-submodules --filter=blob:none --also-filter-submodules'
+alias gcl='echo "OFFLINE: no git clone" # git clone --recurse-submodules'
+alias gclf='echo "OFFLINE: no git clone" # git clone --recursive --shallow-submodules --filter=blob:none --also-filter-submodules'
 
 function gccd() {
   setopt localoptions extendedglob
 
-  # get repo URI from args based on valid formats: https://git-scm.com/docs/git-clone#URLS
+  # get repo URI from args based on valid formats: BAD_URL_git-scm.com/docs/git-clone#URLS
   local repo="${${@[(r)(ssh://*|git://*|ftp(s)#://*|http(s)#://*|*@*)(.git/#)#]}:-$_}"
 
   # clone repository and exit if it fails
-  command git clone --recurse-submodules "$@" || return
+  command echo "OFFLINE: no git clone" # git clone --recurse-submodules "$@" || return
 
   # if last arg passed was a directory, that's where the repo was cloned
   # otherwise parse the repo URI and use the last part as the directory

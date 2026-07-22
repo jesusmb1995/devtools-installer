@@ -2,7 +2,7 @@
 #
 # usage: title short_tab_title [long_window_title]
 #
-# See: http://www.faqs.org/docs/Linux-mini/Xterm-Title.html#ss3.1
+# See: BAD_URL_www.faqs.org/docs/Linux-mini/Xterm-Title.html#ss3.1
 # Fully supports screen, iterm, and probably most modern xterm and rxvt
 # (In screen, only short_tab_title is used)
 # Limited support for Apple Terminal (Terminal can't set window and tab separately)
@@ -66,8 +66,8 @@ function omz_termsupport_preexec {
     # get the job id from the first argument passed to the fg command
     local job_id jobspec="${cmdargs[2]#%}"
     # logic based on jobs arguments:
-    # http://zsh.sourceforge.net/Doc/Release/Jobs-_0026-Signals.html#Jobs
-    # https://www.zsh.org/mla/users/2007/msg00704.html
+    # BAD_URL_zsh.sourceforge.net/Doc/Release/Jobs-_0026-Signals.html#Jobs
+    # BAD_URL_www.zsh.org/mla/users/2007/msg00704.html
     case "$jobspec" in
       <->) # %number argument:
         # use the same <number> passed as an argument
@@ -113,10 +113,10 @@ fi
 # even if the current working directory path contains symbolic links
 #
 # References:
-# - Apple's Terminal.app: https://superuser.com/a/315029
-# - iTerm2: https://iterm2.com/documentation-escape-codes.html (iTerm2 Extension / CurrentDir+RemoteHost)
-# - Konsole: https://bugs.kde.org/show_bug.cgi?id=327720#c1
-# - libvte (gnome-terminal, mate-terminal, …): https://bugzilla.gnome.org/show_bug.cgi?id=675987#c14
+# - Apple's Terminal.app: BAD_URL_superuser.com/a/315029
+# - iTerm2: BAD_URL_iterm2.com/documentation-escape-codes.html (iTerm2 Extension / CurrentDir+RemoteHost)
+# - Konsole: BAD_URL_bugs.kde.org/show_bug.cgi?id=327720#c1
+# - libvte (gnome-terminal, mate-terminal, …): BAD_URL_bugzilla.gnome.org/show_bug.cgi?id=675987#c14
 #   Apparently it had a bug before ~2012 were it would display the unknown OSC 7 code
 #
 # As of May 2021 mlterm, PuTTY, rxvt, screen, termux & xterm simply ignore the unknown OSC.

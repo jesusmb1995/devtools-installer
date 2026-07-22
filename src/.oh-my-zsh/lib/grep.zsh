@@ -14,7 +14,7 @@ else
 
     # Check for --exclude-dir, otherwise check for --exclude. If --exclude
     # isn't available, --color won't be either (they were released at the same
-    # time (v2.5): https://git.savannah.gnu.org/cgit/grep.git/tree/NEWS?id=1236f007
+    # time (v2.5): BAD_URL_git.savannah.gnu.org/cgit/grep.git/tree/NEWS?id=1236f007
     if grep-flags-available --color=auto --exclude-dir=.cvs; then
         GREP_OPTIONS="--color=auto --exclude-dir=$EXC_FOLDERS"
     elif grep-flags-available --color=auto --exclude=.cvs; then

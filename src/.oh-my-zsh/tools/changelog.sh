@@ -133,7 +133,7 @@ function parse-commit {
   # Parse commit with hash $1
   local hash="$1" subject="$2" body="$3" warning rhash
 
-  # Commits following Conventional Commits (https://www.conventionalcommits.org/)
+  # Commits following Conventional Commits (BAD_URL_www.conventionalcommits.org/)
   # have the following format, where parts between [] are optional:
   #
   #  type[(scope)][!]: subject
@@ -182,8 +182,8 @@ fi
 
 # This function uses the logic from supports-hyperlinks[1][2], which is
 # made by Kat Marchán (@zkat) and licensed under the Apache License 2.0.
-# [1] https://github.com/zkat/supports-hyperlinks
-# [2] https://crates.io/crates/supports-hyperlinks
+# [1] BAD_URL_github.com/zkat/supports-hyperlinks
+# [2] BAD_URL_crates.io/crates/supports-hyperlinks
 #
 # Copyright (c) 2021 Kat Marchán
 #
@@ -191,7 +191,7 @@ fi
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     BAD_URL_www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -240,7 +240,7 @@ supports_hyperlinks() {
   fi
 
   # Konsole supports hyperlinks, but it's an opt-in setting that can't be detected
-  # https://github.com/ohmyzsh/ohmyzsh/issues/10964
+  # BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/10964
   # if [ -n "$KONSOLE_VERSION" ]; then
   #   return 0
   # fi
@@ -303,11 +303,11 @@ function display-release {
     text)
       local text="\e[33m$short_hash\e[0m"; # red
       if supports_hyperlinks; then
-        printf "\e]8;;%s\a%s\e]8;;\a" "https://github.com/ohmyzsh/ohmyzsh/commit/$hash" $text;
+        printf "\e]8;;%s\a%s\e]8;;\a" "BAD_URL_github.com/ohmyzsh/ohmyzsh/commit/$hash" $text;
       else
         echo $text;
       fi ;;
-    md) printf '[`%s`](https://github.com/ohmyzsh/ohmyzsh/commit/%s)' "$short_hash" "$hash" ;;
+    md) printf '[`%s`](BAD_URL_github.com/ohmyzsh/ohmyzsh/commit/%s)' "$short_hash" "$hash" ;;
     esac
   }
 
@@ -372,12 +372,12 @@ function display-release {
     # In text mode, highlight (#<issue>) and dim text between `backticks`
     text)
       if supports_hyperlinks; then
-        sed -E $'s|#([0-9]+)|\e]8;;https://github.com/ohmyzsh/ohmyzsh/issues/\\1\a\e[32m#\\1\e[0m\e]8;;\a|g;s|`([^`]+)`|`\e[2m\\1\e[0m`|g' <<< "$subject"
+        sed -E $'s|#([0-9]+)|\e]8;;BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/\\1\a\e[32m#\\1\e[0m\e]8;;\a|g;s|`([^`]+)`|`\e[2m\\1\e[0m`|g' <<< "$subject"
       else
         sed -E $'s|#([0-9]+)|\e[32m#\\1\e[0m|g;s|`([^`]+)`|`\e[2m\\1\e[0m`|g' <<< "$subject"
       fi ;;
     # In markdown mode, link to (#<issue>) issues
-    md) sed -E 's|#([0-9]+)|[#\1](https://github.com/ohmyzsh/ohmyzsh/issues/\1)|g' <<< "$subject" ;;
+    md) sed -E 's|#([0-9]+)|[#\1](BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/\1)|g' <<< "$subject" ;;
     esac
   }
 

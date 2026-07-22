@@ -1,14 +1,14 @@
 #!/bin/sh
 #
 # This script should be run via curl:
-#   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+#   sh -c "$(curl -fsSL BAD_URL_raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # or via wget:
-#   sh -c "$(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+#   sh -c "$(wget -qO- BAD_URL_raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # or via fetch:
-#   sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+#   sh -c "$(fetch -o - BAD_URL_raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 #
 # As an alternative, you can first download the install script and run it afterwards:
-#   wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+#   wget BAD_URL_raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
 #   sh install.sh
 #
 # You can tweak the install behavior by setting variables when running the script. For
@@ -17,8 +17,8 @@
 #
 # Respects the following environment variables:
 #   ZDOTDIR - path to Zsh dotfiles directory (default: unset). See [1][2]
-#             [1] https://zsh.sourceforge.io/Doc/Release/Parameters.html#index-ZDOTDIR
-#             [2] https://zsh.sourceforge.io/Doc/Release/Files.html#index-ZDOTDIR_002c-use-of
+#             [1] BAD_URL_zsh.sourceforge.io/Doc/Release/Parameters.html#index-ZDOTDIR
+#             [2] BAD_URL_zsh.sourceforge.io/Doc/Release/Files.html#index-ZDOTDIR_002c-use-of
 #   ZSH     - path to the Oh My Zsh repository folder (default: $HOME/.oh-my-zsh)
 #   REPO    - name of the GitHub repo to install from (default: ohmyzsh/ohmyzsh)
 #   REMOTE  - full remote URL of the git repo to install (default: GitHub via HTTPS)
@@ -37,18 +37,18 @@
 # For example:
 #   sh install.sh --unattended
 # or:
-#   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+#   sh -c "$(curl -fsSL BAD_URL_raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 #
 set -e
 
 # Make sure important variables exist if not already defined
 #
 # $USER is defined by login(1) which is not always executed (e.g. containers)
-# POSIX: https://pubs.opengroup.org/onlinepubs/009695299/utilities/id.html
+# POSIX: BAD_URL_pubs.opengroup.org/onlinepubs/009695299/utilities/id.html
 USER=${USER:-$(id -u -n)}
 # $HOME is defined at the time of login, but it could be unset. If it is unset,
 # a tilde by itself (~) will not be expanded to the current user's home directory.
-# POSIX: https://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap08.html#tag_08_03
+# POSIX: BAD_URL_pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap08.html#tag_08_03
 HOME="${HOME:-$(getent passwd $USER 2>/dev/null | cut -d: -f6)}"
 # macOS does not have getent, but this works even if $HOME is unset
 HOME="${HOME:-$(eval echo ~$USER)}"
@@ -71,7 +71,7 @@ ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 
 # Default settings
 REPO=${REPO:-ohmyzsh/ohmyzsh}
-REMOTE=${REMOTE:-https://github.com/${REPO}.git}
+REMOTE=${REMOTE:-BAD_URL_github.com/${REPO}.git}
 BRANCH=${BRANCH:-master}
 
 # Other options
@@ -129,8 +129,8 @@ fi
 
 # This function uses the logic from supports-hyperlinks[1][2], which is
 # made by Kat Marchán (@zkat) and licensed under the Apache License 2.0.
-# [1] https://github.com/zkat/supports-hyperlinks
-# [2] https://crates.io/crates/supports-hyperlinks
+# [1] BAD_URL_github.com/zkat/supports-hyperlinks
+# [2] BAD_URL_crates.io/crates/supports-hyperlinks
 #
 # Copyright (c) 2021 Kat Marchán
 #
@@ -138,7 +138,7 @@ fi
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     BAD_URL_www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -187,7 +187,7 @@ supports_hyperlinks() {
   fi
 
   # Konsole supports hyperlinks, but it's an opt-in setting that can't be detected
-  # https://github.com/ohmyzsh/ohmyzsh/issues/10964
+  # BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/10964
   # if [ -n "$KONSOLE_VERSION" ]; then
   #   return 0
   # fi
@@ -196,7 +196,7 @@ supports_hyperlinks() {
 }
 
 # Adapted from code and information by Anton Kochkov (@XVilka)
-# Source: https://gist.github.com/XVilka/8346728
+# Source: BAD_URL_gist.github.com/XVilka/8346728
 supports_truecolor() {
   case "$COLORTERM" in
   truecolor|24bit) return 0 ;;
@@ -320,7 +320,7 @@ setup_ohmyzsh() {
       cd -
       rm -rf "$ZSH" 2>/dev/null
     }
-    fmt_error "git clone of oh-my-zsh repo failed"
+    fmt_error "echo "OFFLINE: no git clone" # git clone of oh-my-zsh repo failed"
     exit 1
   }
   # Exit installation directory
@@ -503,9 +503,9 @@ print_success() {
     "$(fmt_code "$(fmt_link ".zshrc" "file://$zdot/.zshrc" --text)")" \
     "file to select plugins, themes, and options."
   printf '\n'
-  printf '%s\n' "• Follow us on X: $(fmt_link @ohmyzsh https://x.com/ohmyzsh)"
-  printf '%s\n' "• Join our Discord community: $(fmt_link "Discord server" https://discord.gg/ohmyzsh)"
-  printf '%s\n' "• Get stickers, t-shirts, coffee mugs and more: $(fmt_link "CommitGoods Shop" https://commitgoods.com/collections/oh-my-zsh)"
+  printf '%s\n' "• Follow us on X: $(fmt_link @ohmyzsh BAD_URL_x.com/ohmyzsh)"
+  printf '%s\n' "• Join our Discord community: $(fmt_link "Discord server" BAD_URL_discord.gg/ohmyzsh)"
+  printf '%s\n' "• Get stickers, t-shirts, coffee mugs and more: $(fmt_link "CommitGoods Shop" BAD_URL_commitgoods.com/collections/oh-my-zsh)"
   printf '%s\n' $FMT_RESET
 }
 

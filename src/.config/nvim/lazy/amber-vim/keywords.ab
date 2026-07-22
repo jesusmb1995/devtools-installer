@@ -1,0 +1,133 @@
+// THIS IS NOT A FUNCTIONAL AMBER SCRIPT
+// USE TO TEST VIM SYNTAX HIGHLIGHTING
+
+// Shebang line.
+#!/usr/bin/env amber
+
+// Compiler flags.
+#[allow_generic_return]
+
+// Keywords.
+and
+as
+await
+break
+cd
+clear
+const
+continue
+cp
+disown
+echo
+else
+exit
+exited
+fail
+failed
+for
+from
+fun
+if
+import
+in
+is
+len
+let
+lines
+lock
+loop
+ls
+main
+mv
+nameof
+not
+or
+pid
+pub
+pwd
+ref
+return
+rm
+silent
+sleep
+status
+succeeded
+sudo
+suppress
+test
+then
+touch
+trust
+unsafe
+while
+failing()? // (highlights `?` only)
+__reserved // (highlights `__` and following word)
+
+// Functions; use positive lookahead to match `glob` in `glob(`.
+glob() // (highlights `glob` only)
+glob   // (highlights nothing)
+
+// Data types.
+Bool
+Int
+Null
+Num
+Text
+Bool?
+Int?
+Null?
+Num?
+Text?
+[Bool]
+[Int]
+[Null]
+[Num]
+[Text]
+[Bool]?
+[Int]?
+[Null]?
+[Num]?
+[Text]?
+
+// Operators.
+1 + 2
+1 - 2
+1 * 2
+1 / 2
+1 % 2
+foo = 3
+foo += 3
+foo -= 3
+foo *= 3
+foo /= 3
+foo %= 3
+foo++
+foo--
+1 == 2
+1 != 2
+1 < 2
+1 > 2
+1 <= 2
+1 >= 2
+5..10
+5..=10
+foo and bar
+foo or bar
+not foo
+
+// Integers, decimals and booleans (must be defined after the operators,
+// so the syntax match for negative number `-42` takes precedence over
+// the one for subtraction operator `-`).
+42
+-42
+123.45
+-123.45
+true
+false
+null
+
+// Strings and commands, with interpolation.
+"Simple string"
+"With quoted \"word\""
+"With interpolated {value}"
+$ test -f {file} && cat {file} $

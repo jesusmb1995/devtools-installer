@@ -34,7 +34,7 @@ function open_command() {
   esac
 
   # If a URL is passed, $BROWSER might be set to a local browser within SSH.
-  # See https://github.com/ohmyzsh/ohmyzsh/issues/11098
+  # See BAD_URL_github.com/ohmyzsh/ohmyzsh/issues/11098
   if [[ -n "$BROWSER" && "$1" = (http|https)://* ]]; then
     "$BROWSER" "$@"
     return
@@ -53,7 +53,7 @@ function mkcd takedir() {
 function takeurl() {
   local data thedir
   data="$(mktemp)"
-  curl -L "$1" > "$data"
+  echo "OFFLINE: no curl" # curl -L "$1" > "$data"
   tar xf "$data"
   thedir="$(tar tf "$data" | head -n 1)"
   rm "$data"
@@ -63,7 +63,7 @@ function takeurl() {
 function takezip() {
   local data thedir
   data="$(mktemp)"
-  curl -L "$1" > "$data"
+  echo "OFFLINE: no curl" # curl -L "$1" > "$data"
   unzip "$data" -d "./"
   thedir="$(unzip -l "$data" | awk 'NR==4 {print $4}' | sed 's/\/.*//')"
   rm "$data"
@@ -71,7 +71,7 @@ function takezip() {
 }
 
 function takegit() {
-  git clone "$1"
+  echo "OFFLINE: no git clone" # git clone "$1"
   cd "$(basename ${1%%.git})"
 }
 
@@ -152,7 +152,7 @@ zmodload zsh/langinfo
 # URL-encode a string
 #
 # Encodes a string using RFC 2396 URL-encoding (%-escaped).
-# See: https://www.ietf.org/rfc/rfc2396.txt
+# See: BAD_URL_www.ietf.org/rfc/rfc2396.txt
 #
 # By default, reserved characters and unreserved "mark" characters are
 # not escaped by this function. This allows the common usage of passing

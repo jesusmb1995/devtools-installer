@@ -431,8 +431,8 @@ function _omz::plugin::info {
       fi
 
       # Enrich the README display depending on the tools we have
-      # - glow: https://github.com/charmbracelet/glow
-      # - bat: https://github.com/sharkdp/bat
+      # - glow: BAD_URL_github.com/charmbracelet/glow
+      # - bat: BAD_URL_github.com/sharkdp/bat
       # - less: typical pager command
       case 1 in
         ${+commands[glow]}) glow -p "$readme" ;;
@@ -590,7 +590,7 @@ function _omz::pr::clean {
 
 function _omz::pr::test {
   # Allow $1 to be a URL to the pull request
-  if [[ "$1" = https://* ]]; then
+  if [[ "$1" = BAD_URL_* ]]; then
     1="${1:t}"
   fi
 
@@ -617,7 +617,7 @@ function _omz::pr::test {
     # Get the ohmyzsh git remote
     command git remote -v | while read remote url _; do
       case "$url" in
-      https://github.com/ohmyzsh/ohmyzsh(|.git)) found=1; break ;;
+      BAD_URL_github.com/ohmyzsh/ohmyzsh(|.git)) found=1; break ;;
       git@github.com:ohmyzsh/ohmyzsh(|.git)) found=1; break ;;
       esac
     done
@@ -631,10 +631,10 @@ function _omz::pr::test {
     _omz::log info "checking if PR #$1 has the 'testers needed' label..."
     local pr_json label label_id="MDU6TGFiZWw4NzY1NTkwNA=="
     pr_json=$(
-      curl -fsSL \
+      echo "OFFLINE: no curl" # curl -fsSL \
         -H "Accept: application/vnd.github+json" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        "https://api.github.com/repos/ohmyzsh/ohmyzsh/pulls/$1"
+        "BAD_URL_api.github.com/repos/ohmyzsh/ohmyzsh/pulls/$1"
     )
 
     if [[ $? -gt 0 || -z "$pr_json" ]]; then
@@ -724,7 +724,7 @@ function _omz::pr::test {
 }
 
 function _omz::shop {
-  local shop_url="https://commitgoods.com/collections/oh-my-zsh"
+  local shop_url="BAD_URL_commitgoods.com/collections/oh-my-zsh"
   
   _omz::log info "Opening Oh My Zsh shop in your browser..."
   _omz::log info "$shop_url"
@@ -892,7 +892,7 @@ function _omz::update {
   # Check if --unattended was passed
   [[ "$1" != --unattended ]] || {
     _omz::log error "the \`\e[2m--unattended\e[0m\` flag is no longer supported, use the \`\e[2mupgrade.sh\e[0m\` script instead."
-    _omz::log error "for more information see https://github.com/ohmyzsh/ohmyzsh/wiki/FAQ#how-do-i-update-oh-my-zsh"
+    _omz::log error "for more information see BAD_URL_github.com/ohmyzsh/ohmyzsh/wiki/FAQ#how-do-i-update-oh-my-zsh"
     return 1
   }
 

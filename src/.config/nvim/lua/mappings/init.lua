@@ -12,8 +12,9 @@ if vim.env.NVIM_MINIMAL == nil then
   require "mappings.telescope"
   require "mappings.nvim-tree"
   require "mappings.cmp"
-  opt "mappings.neogit"
+
   opt "mappings.jj"
+
   opt "mappings.gitsigns"
   opt "mappings.git-worktrees"
   require "mappings.testing"
@@ -22,7 +23,6 @@ if vim.env.NVIM_MINIMAL == nil then
   opt "mappings.external-editors"
   require "mappings.agent-term"
   require "mappings.diffview"
-  opt "mappings.git-conflict"
   require "mappings.terminal"
   require "mappings.windows"
 end
