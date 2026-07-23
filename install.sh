@@ -1907,7 +1907,7 @@ install_chrome_extension__363_v0() {
             ret_install_chrome_extension363_v0=''
             return "${__status}"
         fi
-        sudo sh -c "printf '\x7b\"ExtensionInstallForcelist\":[\"%s;https://clients2.google.com/service/update2/crx\"]\x7d
+        sudo sh -c "printf '{\"ExtensionInstallForcelist\":[\"%s;https://clients2.google.com/service/update2/crx\"]}
 ' ${id_1073} > ${dir_1076}/vimium.json"
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -1927,7 +1927,7 @@ install_chrome_extension__363_v0() {
             ret_install_chrome_extension363_v0=''
             return "${__status}"
         fi
-        printf '\x7b"ExtensionInstallForcelist":["%s;https://clients2.google.com/service/update2/crx"]\x7d
+        printf '{"ExtensionInstallForcelist":["%s;https://clients2.google.com/service/update2/crx"]}
 ' ${id_1073} > ${dir_1076}/vimium.json
         __status=$?
         if [ "${__status}" != 0 ]; then
@@ -2801,8 +2801,8 @@ cmd_update__522_v0() {
             local parts_1374=("${ret_split4_v0[@]}")
             local __length_81=("${parts_1374[@]}")
             if [ "$(( ${#__length_81[@]} >= 2 ))" != 0 ]; then
-                old_keys_1366+=("${parts_1374[0]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:485:36)"}")
-                old_vals_1367+=("${parts_1374[1]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:486:36)"}")
+                old_keys_1366+=("${parts_1374[0]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:485:36)"}")
+                old_vals_1367+=("${parts_1374[1]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:486:36)"}")
             fi
         done
     fi
@@ -2819,16 +2819,16 @@ cmd_update__522_v0() {
         if [ "$(( ${#__length_87[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_1379="${parts_1378[0]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:497:27)"}"
-        local val_1380="${parts_1378[1]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:498:27)"}"
+        local key_1379="${parts_1378[0]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:497:27)"}"
+        local val_1380="${parts_1378[1]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:498:27)"}"
         local matched_1381=0
         local __range_start_1382=0
         local __length_88=("${old_keys_1366[@]}")
         local __range_end_1382="${#__length_88[@]}"
         local __dir_1382=$(( ${__range_start_1382} <= ${__range_end_1382} ? 1 : -1 ))
         for (( i_1382=${__range_start_1382}; i_1382 * ${__dir_1382} < ${__range_end_1382} * ${__dir_1382}; i_1382+=${__dir_1382} )); do
-            if [ "$([ "_${old_keys_1366[${i_1382}]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:501:25)"}" != "_${key_1379}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_1367[${i_1382}]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:502:29)"}" == "_${val_1380}" ]; echo $?)" != 0 ]; then
+            if [ "$([ "_${old_keys_1366[${i_1382}]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:501:25)"}" != "_${key_1379}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_1367[${i_1382}]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:502:29)"}" == "_${val_1380}" ]; echo $?)" != 0 ]; then
                     local array_89=("${key_1379}")
                     changed_1375+=("${array_89[@]}")
                 fi
@@ -2849,7 +2849,7 @@ done
             split__4_v0 "	" "${row_1385}"
             local parts_1386=("${ret_split4_v0[@]}")
             local __length_95=("${parts_1386[@]}")
-            if [ "$(( $(( ${#__length_95[@]} >= 2 )) && $([ "_${parts_1386[0]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:519:42)"}" != "_${ok_1383}" ]; echo $?) ))" != 0 ]; then
+            if [ "$(( $(( ${#__length_95[@]} >= 2 )) && $([ "_${parts_1386[0]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:519:42)"}" != "_${ok_1383}" ]; echo $?) ))" != 0 ]; then
                 found_1384=1
                 break
             fi
@@ -2946,7 +2946,7 @@ if [ "$(( ${#__length_113[@]} == 0 ))" != 0 ]; then
 fi
 __length_114=("${step_args_60[@]}")
 if [ "$(( ${#__length_114[@]} >= 1 ))" != 0 ]; then
-    if [ "$([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-3z6a8F/install.ab:662:22)"}" != "_update" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-4F0dKG/install.ab:662:22)"}" != "_update" ]; echo $?)" != 0 ]; then
         __length_115=("${step_args_60[@]}")
         if [ "$(( ${#__length_115[@]} == 1 ))" != 0 ]; then
             cmd_update__522_v0 
