@@ -440,8 +440,7 @@ prompt_user__171_v0() {
     printf "Proceed? [Y/n] " >&2
     __status=$?
     local command_13
-    command_13="$(dd bs=1 count=100 status=none < /dev/tty 2>/dev/null | tr -d '
-')"
+    command_13="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
         printf "
@@ -451,7 +450,10 @@ prompt_user__171_v0() {
         return 0
     fi
     local ans_284="${command_13}"
-    printf '%s\n' ""
+    if [ "$([ "_${ans_284}" != "_" ]; echo $?)" != 0 ]; then
+        ret_prompt_user171_v0=1
+        return 0
+    fi
     if [ "$(( $(( $(( $(( $([ "_${ans_284}" != "_n" ]; echo $?) || $([ "_${ans_284}" != "_N" ]; echo $?) )) || $([ "_${ans_284}" != "_no" ]; echo $?) )) || $([ "_${ans_284}" != "_NO" ]; echo $?) )) || $([ "_${ans_284}" != "_No" ]; echo $?) ))" != 0 ]; then
         echo "skipping"
         ret_prompt_user171_v0=0
@@ -2740,8 +2742,8 @@ cmd_update__511_v0() {
             local parts_1318=("${ret_split4_v0[@]}")
             local __length_77=("${parts_1318[@]}")
             if [ "$(( ${#__length_77[@]} >= 2 ))" != 0 ]; then
-                old_keys_1310+=("${parts_1318[0]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:485:36)"}")
-                old_vals_1311+=("${parts_1318[1]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:486:36)"}")
+                old_keys_1310+=("${parts_1318[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:485:36)"}")
+                old_vals_1311+=("${parts_1318[1]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:486:36)"}")
             fi
         done
     fi
@@ -2758,16 +2760,16 @@ cmd_update__511_v0() {
         if [ "$(( ${#__length_83[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_1323="${parts_1322[0]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:497:27)"}"
-        local val_1324="${parts_1322[1]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:498:27)"}"
+        local key_1323="${parts_1322[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:497:27)"}"
+        local val_1324="${parts_1322[1]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:498:27)"}"
         local matched_1325=0
         local __range_start_1326=0
         local __length_84=("${old_keys_1310[@]}")
         local __range_end_1326="${#__length_84[@]}"
         local __dir_1326=$(( ${__range_start_1326} <= ${__range_end_1326} ? 1 : -1 ))
         for (( i_1326=${__range_start_1326}; i_1326 * ${__dir_1326} < ${__range_end_1326} * ${__dir_1326}; i_1326+=${__dir_1326} )); do
-            if [ "$([ "_${old_keys_1310[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:501:25)"}" != "_${key_1323}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_1311[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:502:29)"}" == "_${val_1324}" ]; echo $?)" != 0 ]; then
+            if [ "$([ "_${old_keys_1310[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:501:25)"}" != "_${key_1323}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_1311[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:502:29)"}" == "_${val_1324}" ]; echo $?)" != 0 ]; then
                     local array_85=("${key_1323}")
                     changed_1319+=("${array_85[@]}")
                 fi
@@ -2788,7 +2790,7 @@ done
             split__4_v0 "	" "${row_1329}"
             local parts_1330=("${ret_split4_v0[@]}")
             local __length_91=("${parts_1330[@]}")
-            if [ "$(( $(( ${#__length_91[@]} >= 2 )) && $([ "_${parts_1330[0]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:519:42)"}" != "_${ok_1327}" ]; echo $?) ))" != 0 ]; then
+            if [ "$(( $(( ${#__length_91[@]} >= 2 )) && $([ "_${parts_1330[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:519:42)"}" != "_${ok_1327}" ]; echo $?) ))" != 0 ]; then
                 found_1328=1
                 break
             fi
@@ -2810,8 +2812,7 @@ done
     done
     echo "Apply updates? [Y/n]"
     local command_97
-    command_97="$(dd bs=1 count=100 status=none < /dev/tty 2>/dev/null | tr -d '
-')"
+    command_97="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_cmd_update511_v0=''
@@ -2883,7 +2884,7 @@ if [ "$(( ${#__length_109[@]} == 0 ))" != 0 ]; then
     install_bazelisk__507_v0 
 fi
 __length_110=("${step_args_60[@]}")
-if [ "$(( $(( ${#__length_110[@]} == 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-IHWX8r/install.ab:658:44)"}" != "_update" ]; echo $?) ))" != 0 ]; then
+if [ "$(( $(( ${#__length_110[@]} == 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:658:44)"}" != "_update" ]; echo $?) ))" != 0 ]; then
     cmd_update__511_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
@@ -2891,7 +2892,7 @@ if [ "$(( $(( ${#__length_110[@]} == 1 )) && $([ "_${step_args_60[0]?"Index out 
     fi
 fi
 __length_111=("${step_args_60[@]}")
-if [ "$(( ${#__length_111[@]} > 1 ))" != 0 ]; then
+if [ "$(( $(( ${#__length_111[@]} >= 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:660:44)"}" == "_update" ]; echo $?) ))" != 0 ]; then
     for step_1336 in "${step_args_60[@]}"; do
         run_step__510_v0 "${step_1336}"
     done
