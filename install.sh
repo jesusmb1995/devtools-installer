@@ -1534,13 +1534,13 @@ installed_vendor_23="/usr/lib/copals/vendor"
 # project vendor dir also "exists" but its tools are only populated inside the
 # image. Prefer the installed tree whenever it actually holds the binaries.
 # resolve_vendor_dir()
-resolve_vendor_dir__322_v0() {
+resolve_vendor_dir__324_v0() {
     dir_exists__38_v0 "${installed_vendor_23}"
     local ret_dir_exists38_v0__12_8="${ret_dir_exists38_v0}"
     file_exists__39_v0 "${installed_vendor_23}/jsonnet"
     local ret_file_exists39_v0__12_41="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__12_8 && ret_file_exists39_v0__12_41 ))" != 0 ]; then
-        ret_resolve_vendor_dir322_v0="${installed_vendor_23}"
+        ret_resolve_vendor_dir324_v0="${installed_vendor_23}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_22}"
@@ -1548,92 +1548,92 @@ resolve_vendor_dir__322_v0() {
     file_exists__39_v0 "${project_vendor_22}/jsonnet"
     local ret_file_exists39_v0__15_39="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__15_8 && ret_file_exists39_v0__15_39 ))" != 0 ]; then
-        ret_resolve_vendor_dir322_v0="${project_vendor_22}"
+        ret_resolve_vendor_dir324_v0="${project_vendor_22}"
         return 0
     fi
     dir_exists__38_v0 "${installed_vendor_23}"
     local ret_dir_exists38_v0__18_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__18_8}" != 0 ]; then
-        ret_resolve_vendor_dir322_v0="${installed_vendor_23}"
+        ret_resolve_vendor_dir324_v0="${installed_vendor_23}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_22}"
     local ret_dir_exists38_v0__21_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__21_8}" != 0 ]; then
-        ret_resolve_vendor_dir322_v0="${project_vendor_22}"
+        ret_resolve_vendor_dir324_v0="${project_vendor_22}"
         return 0
     fi
-    ret_resolve_vendor_dir322_v0=""
+    ret_resolve_vendor_dir324_v0=""
     return 0
 }
 
-resolve_vendor_dir__322_v0 
-__VENDOR_DIR_34="${ret_resolve_vendor_dir322_v0}"
+resolve_vendor_dir__324_v0 
+__VENDOR_DIR_34="${ret_resolve_vendor_dir324_v0}"
 # jq_resolve()
-jq_resolve__323_v0() {
+jq_resolve__325_v0() {
     if [ "$([ "_${__VENDOR_DIR_34}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jq_resolve323_v0="jq"
+        ret_jq_resolve325_v0="jq"
         return 0
     fi
-    ret_jq_resolve323_v0="${__VENDOR_DIR_34}/jq"
+    ret_jq_resolve325_v0="${__VENDOR_DIR_34}/jq"
     return 0
 }
 
 # j2_resolve()
-j2_resolve__324_v0() {
+j2_resolve__326_v0() {
     if [ "$([ "_${__VENDOR_DIR_34}" != "_" ]; echo $?)" != 0 ]; then
-        ret_j2_resolve324_v0="j2"
+        ret_j2_resolve326_v0="j2"
         return 0
     fi
-    ret_j2_resolve324_v0="${__VENDOR_DIR_34}/j2"
+    ret_j2_resolve326_v0="${__VENDOR_DIR_34}/j2"
     return 0
 }
 
 # jsonnet_resolve()
-jsonnet_resolve__325_v0() {
+jsonnet_resolve__327_v0() {
     if [ "$([ "_${__VENDOR_DIR_34}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonnet_resolve325_v0="jsonnet"
+        ret_jsonnet_resolve327_v0="jsonnet"
         return 0
     fi
-    ret_jsonnet_resolve325_v0="${__VENDOR_DIR_34}/jsonnet"
+    ret_jsonnet_resolve327_v0="${__VENDOR_DIR_34}/jsonnet"
     return 0
 }
 
 # jsonschema_resolve()
-jsonschema_resolve__326_v0() {
+jsonschema_resolve__328_v0() {
     if [ "$([ "_${__VENDOR_DIR_34}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonschema_resolve326_v0="jsonschema"
+        ret_jsonschema_resolve328_v0="jsonschema"
         return 0
     fi
-    ret_jsonschema_resolve326_v0="${__VENDOR_DIR_34}/jsonschema"
+    ret_jsonschema_resolve328_v0="${__VENDOR_DIR_34}/jsonschema"
     return 0
 }
 
 # lua_resolve()
-lua_resolve__327_v0() {
+lua_resolve__329_v0() {
     if [ "$([ "_${__VENDOR_DIR_34}" != "_" ]; echo $?)" != 0 ]; then
-        ret_lua_resolve327_v0="lua"
+        ret_lua_resolve329_v0="lua"
         return 0
     fi
-    ret_lua_resolve327_v0="${__VENDOR_DIR_34}/lua"
+    ret_lua_resolve329_v0="${__VENDOR_DIR_34}/lua"
     return 0
 }
 
-jq_resolve__323_v0 
-__JQ_35="${ret_jq_resolve323_v0}"
-j2_resolve__324_v0 
-jsonnet_resolve__325_v0 
-jsonschema_resolve__326_v0 
-lua_resolve__327_v0 
+jq_resolve__325_v0 
+__JQ_35="${ret_jq_resolve325_v0}"
+j2_resolve__326_v0 
+jsonnet_resolve__327_v0 
+jsonschema_resolve__328_v0 
+lua_resolve__329_v0 
 # tag_verified(repo: Text, tag: Text)
-tag_verified__328_v0() {
+tag_verified__330_v0() {
     local repo_758="${1}"
     local tag_759="${2}"
     local ref_url_760="https://api.github.com/repos/${repo_758}/git/ref/tags/${tag_759}"
     download_tmp__308_v0 "${ref_url_760}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_tag_verified328_v0=''
+        ret_tag_verified330_v0=''
         return "${__status}"
     fi
     local ref_data_761="${ret_download_tmp308_v0}"
@@ -1641,19 +1641,19 @@ tag_verified__328_v0() {
     command_41="$(${__JQ_35} -r .object.type ${ref_data_761})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_tag_verified328_v0=''
+        ret_tag_verified330_v0=''
         return "${__status}"
     fi
     local obj_type_762="${command_41}"
     if [ "$([ "_${obj_type_762}" == "_tag" ]; echo $?)" != 0 ]; then
-        ret_tag_verified328_v0=1
+        ret_tag_verified330_v0=1
         return 0
     fi
     local command_42
     command_42="$(${__JQ_35} -r .object.sha ${ref_data_761})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_tag_verified328_v0=''
+        ret_tag_verified330_v0=''
         return "${__status}"
     fi
     local sha_763="${command_42}"
@@ -1662,16 +1662,16 @@ tag_verified__328_v0() {
     command_43="$(curl -fsSL ${tag_url_764} | ${__JQ_35} -r .verification.verified)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_tag_verified328_v0=''
+        ret_tag_verified330_v0=''
         return "${__status}"
     fi
     local verified_765="${command_43}"
-    ret_tag_verified328_v0="$([ "_${verified_765}" != "_true" ]; echo $?)"
+    ret_tag_verified330_v0="$([ "_${verified_765}" != "_true" ]; echo $?)"
     return 0
 }
 
 # install_github_binary(repo: Text, asset_suffix: Text, binary_name: Text, install_dir: Text)
-install_github_binary__331_v0() {
+install_github_binary__333_v0() {
     local repo_744="${1}"
     local asset_suffix_745="${2}"
     local binary_name_746="${3}"
@@ -1680,7 +1680,7 @@ install_github_binary__331_v0() {
     download_tmp__308_v0 "${api_748}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
     local rel_755="${ret_download_tmp308_v0}"
@@ -1688,7 +1688,7 @@ install_github_binary__331_v0() {
     command_44="$(${__JQ_35} -r '.assets[] | select(.name | endswith("'"${asset_suffix_745}"'")) | .browser_download_url' ${rel_755})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
     local url_756="${command_44}"
@@ -1696,118 +1696,124 @@ install_github_binary__331_v0() {
     command_45="$(${__JQ_35} -r .tag_name ${rel_755})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
     local tag_757="${command_45}"
-    tag_verified__328_v0 "${repo_744}" "${tag_757}"
+    tag_verified__330_v0 "${repo_744}" "${tag_757}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
-    local ret_tag_verified328_v0__44_12="${ret_tag_verified328_v0}"
-    if [ "$(( ! ret_tag_verified328_v0__44_12 ))" != 0 ]; then
-        ret_install_github_binary331_v0=''
+    local ret_tag_verified330_v0__46_12="${ret_tag_verified330_v0}"
+    if [ "$(( ! ret_tag_verified330_v0__46_12 ))" != 0 ]; then
+        ret_install_github_binary333_v0=''
         return 1
     fi
     download_tmp__308_v0 "${url_756}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
     local tarball_766="${ret_download_tmp308_v0}"
     temp_dir_create__46_v0 "gh-bin-XXXXXX" 0 0
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
     local tmp_767="${ret_temp_dir_create46_v0}"
     tar -xzf ${tarball_766} -C ${tmp_767}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_github_binary331_v0=''
+        ret_install_github_binary333_v0=''
         return "${__status}"
     fi
-    install -m755 ${tmp_767}/${binary_name_746} ${install_dir_747}
+    local array_46=()
+    sudo_cmd__168_v0 "install -m755 ${tmp_767}/${binary_name_746} ${install_dir_747}" array_46[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        install -m755 ${tmp_767}/*/${binary_name_746} ${install_dir_747}
+        local array_47=()
+        sudo_cmd__168_v0 "install -m755 ${tmp_767}/*/${binary_name_746} ${install_dir_747}" array_47[@]
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_github_binary331_v0=''
+            ret_install_github_binary333_v0=''
             return "${__status}"
         fi
     fi
 }
 
 # install_github_binary_or_die(repo: Text, asset_suffix: Text, binary_name: Text, install_dir: Text)
-install_github_binary_or_die__332_v0() {
+install_github_binary_or_die__334_v0() {
     local repo_740="${1}"
     local asset_suffix_741="${2}"
     local binary_name_742="${3}"
     local install_dir_743="${4}"
-    install_github_binary__331_v0 "${repo_740}" "${asset_suffix_741}" "${binary_name_742}" "${install_dir_743}"
-    __status=$?
-    if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "failed to install ${binary_name_742} from ${repo_740}" 1
+    prompt_user__171_v0 "install ${binary_name_742} from ${repo_740} -> ${install_dir_743}"
+    local ret_prompt_user171_v0__58_8="${ret_prompt_user171_v0}"
+    if [ "${ret_prompt_user171_v0__58_8}" != 0 ]; then
+        install_github_binary__333_v0 "${repo_740}" "${asset_suffix_741}" "${binary_name_742}" "${install_dir_743}"
+        __status=$?
+        if [ "${__status}" != 0 ]; then
+            echo_error__142_v0 "failed to install ${binary_name_742} from ${repo_740}" 1
+        fi
     fi
 }
 
 # install_system_tools()
-install_system_tools__334_v0() {
-    local array_46=("ncdu")
-    apt_install_or_die__176_v0 array_46[@]
+install_system_tools__336_v0() {
+    local array_48=("ncdu")
+    apt_install_or_die__176_v0 array_48[@]
     has_cmd__243_v0 "jj"
     local ret_has_cmd243_v0__12_12="${ret_has_cmd243_v0}"
     if [ "$(( ! ret_has_cmd243_v0__12_12 ))" != 0 ]; then
-        install_github_binary_or_die__332_v0 "jj-vcs/jj" "x86_64-unknown-linux-musl.tar.gz" "jj" "/usr/local/bin"
+        install_github_binary_or_die__334_v0 "jj-vcs/jj" "x86_64-unknown-linux-musl.tar.gz" "jj" "/usr/local/bin"
     fi
 }
 
 # install_deb(deb_path: Text)
-install_deb__342_v0() {
+install_deb__344_v0() {
     local deb_path_994="${1}"
-    local array_47=()
-    sudo_cmd__168_v0 "dpkg -i ${deb_path_994}" array_47[@]
+    local array_49=()
+    sudo_cmd__168_v0 "dpkg -i ${deb_path_994}" array_49[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         # dpkg may fail due to missing deps; fix them below
         :
     fi
-    local array_48=()
-    sudo_cmd__168_v0 "apt-get install -f -y" array_48[@]
+    local array_50=()
+    sudo_cmd__168_v0 "apt-get install -f -y" array_50[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_deb342_v0=''
+        ret_install_deb344_v0=''
         return "${__status}"
     fi
 }
 
 # install_deb_url(url: Text)
-install_deb_url__344_v0() {
+install_deb_url__346_v0() {
     local url_993="${1}"
     download_tmp__308_v0 "${url_993}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_deb_url344_v0=''
+        ret_install_deb_url346_v0=''
         return "${__status}"
     fi
     local ret_download_tmp308_v0__19_17="${ret_download_tmp308_v0}"
-    install_deb__342_v0 "${ret_download_tmp308_v0__19_17}"
+    install_deb__344_v0 "${ret_download_tmp308_v0__19_17}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_deb_url344_v0=''
+        ret_install_deb_url346_v0=''
         return "${__status}"
     fi
 }
 
 # install_deb_url_or_die(url: Text)
-install_deb_url_or_die__345_v0() {
+install_deb_url_or_die__347_v0() {
     local url_992="${1}"
-    install_deb_url__344_v0 "${url_992}"
+    install_deb_url__346_v0 "${url_992}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to install .deb from ${url_992}" 1
@@ -1815,7 +1821,7 @@ install_deb_url_or_die__345_v0() {
 }
 
 # extract_extension_id(url: Text)
-extract_extension_id__350_v0() {
+extract_extension_id__352_v0() {
     local url_997="${1}"
     replace_regex__3_v0 "${url_997}" "^https?://[^/]+/.+/([^/]+)\$" "" 1
     local ret_replace_regex3_v0__6_8="${ret_replace_regex3_v0}"
@@ -1823,19 +1829,19 @@ extract_extension_id__350_v0() {
         echo_error__142_v0 "malformed extension url: ${url_997}" 1
     fi
     replace_regex__3_v0 "${url_997}" "^.*/([^/]+)\$" "\\1" 1
-    ret_extract_extension_id350_v0="${ret_replace_regex3_v0}"
+    ret_extract_extension_id352_v0="${ret_replace_regex3_v0}"
     return 0
 }
 
 # install_chrome_extension(url: Text)
-install_chrome_extension__351_v0() {
+install_chrome_extension__353_v0() {
     local url_996="${1}"
-    extract_extension_id__350_v0 "${url_996}"
-    local id_1007="${ret_extract_extension_id350_v0}"
+    extract_extension_id__352_v0 "${url_996}"
+    local id_1007="${ret_extract_extension_id352_v0}"
     url_status__309_v0 "${url_996}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_chrome_extension351_v0=''
+        ret_install_chrome_extension353_v0=''
         return "${__status}"
     fi
     local http_code_1009="${ret_url_status309_v0}"
@@ -1846,28 +1852,28 @@ install_chrome_extension__351_v0() {
     mkdir -p ${dir_1010}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_chrome_extension351_v0=''
+        ret_install_chrome_extension353_v0=''
         return "${__status}"
     fi
     chmod 755 /etc/opt/chrome
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_chrome_extension351_v0=''
+        ret_install_chrome_extension353_v0=''
         return "${__status}"
     fi
     printf '{"ExtensionInstallForcelist":["%s;https://clients2.google.com/service/update2/crx"]}
 ' ${id_1007} > ${dir_1010}/vimium.json
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_chrome_extension351_v0=''
+        ret_install_chrome_extension353_v0=''
         return "${__status}"
     fi
 }
 
 # install_chrome_extension_or_die(url: Text)
-install_chrome_extension_or_die__352_v0() {
+install_chrome_extension_or_die__354_v0() {
     local url_995="${1}"
-    install_chrome_extension__351_v0 "${url_995}"
+    install_chrome_extension__353_v0 "${url_995}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to install chrome extension ${url_995}" 1
@@ -1876,17 +1882,17 @@ install_chrome_extension_or_die__352_v0() {
 
 __VIMIUM_URL_41="https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb"
 # install_browsers()
-install_browsers__354_v0() {
+install_browsers__356_v0() {
     has_cmd__243_v0 "google-chrome-stable"
     local ret_has_cmd243_v0__14_12="${ret_has_cmd243_v0}"
     if [ "$(( ! ret_has_cmd243_v0__14_12 ))" != 0 ]; then
-        install_deb_url_or_die__345_v0 "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        install_deb_url_or_die__347_v0 "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
     fi
-    install_chrome_extension_or_die__352_v0 "${__VIMIUM_URL_41}"
+    install_chrome_extension_or_die__354_v0 "${__VIMIUM_URL_41}"
 }
 
 # has_cmd(cmd: Text)
-has_cmd__364_v0() {
+has_cmd__366_v0() {
     local cmd_1037="${1}"
     local found_1038=0
     command -v ${cmd_1037} >/dev/null 2>&1
@@ -1894,7 +1900,7 @@ has_cmd__364_v0() {
     if [ "${__status}" = 0 ]; then
         found_1038=1
     fi
-    ret_has_cmd364_v0="${found_1038}"
+    ret_has_cmd366_v0="${found_1038}"
     return 0
 }
 
@@ -1904,35 +1910,35 @@ has_cmd__364_v0() {
 # On container overlay filesystems brew lock filenames can exceed NAME_MAX;
 # symlink the locks dir to /tmp to keep them short.
 # install_via_curl(url: Text)
-install_via_curl__380_v0() {
+install_via_curl__382_v0() {
     local url_1034="${1}"
     NONINTERACTIVE=1 curl -fsSL ${url_1034} | bash
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_via_curl380_v0=''
+        ret_install_via_curl382_v0=''
         return "${__status}"
     fi
 }
 
 was_updated_42=0
 # update()
-update__389_v0() {
-    local array_49=()
-    sudo_cmd__168_v0 "apt-get update" array_49[@]
+update__391_v0() {
+    local array_51=()
+    sudo_cmd__168_v0 "apt-get update" array_51[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_update389_v0=''
+        ret_update391_v0=''
         return "${__status}"
     fi
 }
 
 # ensure_updated()
-ensure_updated__390_v0() {
+ensure_updated__392_v0() {
     if [ "$(( ! was_updated_42 ))" != 0 ]; then
-        update__389_v0 
+        update__391_v0 
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_ensure_updated390_v0=''
+            ret_ensure_updated392_v0=''
             return "${__status}"
         fi
         was_updated_42=1
@@ -1940,58 +1946,58 @@ ensure_updated__390_v0() {
 }
 
 # apt_install(packages: [Text])
-apt_install__391_v0() {
+apt_install__393_v0() {
     local packages_1039=("${!1}")
     prompt_user__171_v0 "apt install: ${packages_1039[@]}"
     local ret_prompt_user171_v0__18_12="${ret_prompt_user171_v0}"
     if [ "$(( ! ret_prompt_user171_v0__18_12 ))" != 0 ]; then
-        ret_apt_install391_v0=''
+        ret_apt_install393_v0=''
         return 0
     fi
-    ensure_updated__390_v0 
+    ensure_updated__392_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_apt_install391_v0=''
+        ret_apt_install393_v0=''
         return "${__status}"
     fi
     join__7_v0 packages_1039[@] " "
     local pkgs_1040="${ret_join7_v0}"
-    local array_50=("DEBIAN_FRONTEND=noninteractive")
-    sudo_cmd__168_v1 "apt-get install -y --no-install-recommends ${pkgs_1040}" array_50[@]
+    local array_52=("DEBIAN_FRONTEND=noninteractive")
+    sudo_cmd__168_v1 "apt-get install -y --no-install-recommends ${pkgs_1040}" array_52[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_apt_install391_v0=''
+        ret_apt_install393_v0=''
         return "${__status}"
     fi
 }
 
 # install_via_npm(packages: [Text])
-install_via_npm__395_v0() {
+install_via_npm__397_v0() {
     local packages_1036=("${!1}")
-    has_cmd__364_v0 "npm"
-    local ret_has_cmd364_v0__7_12="${ret_has_cmd364_v0}"
-    if [ "$(( ! ret_has_cmd364_v0__7_12 ))" != 0 ]; then
-        local array_51=("npm")
-        apt_install__391_v0 array_51[@]
+    has_cmd__366_v0 "npm"
+    local ret_has_cmd366_v0__7_12="${ret_has_cmd366_v0}"
+    if [ "$(( ! ret_has_cmd366_v0__7_12 ))" != 0 ]; then
+        local array_53=("npm")
+        apt_install__393_v0 array_53[@]
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_via_npm395_v0=''
+            ret_install_via_npm397_v0=''
             return "${__status}"
         fi
     fi
-    local array_52=()
-    sudo_cmd__168_v0 "npm install -g ${packages_1036[@]}" array_52[@]
+    local array_54=()
+    sudo_cmd__168_v0 "npm install -g ${packages_1036[@]}" array_54[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_via_npm395_v0=''
+        ret_install_via_npm397_v0=''
         return "${__status}"
     fi
 }
 
 # install_via_npm_or_die(packages: [Text])
-install_via_npm_or_die__396_v0() {
+install_via_npm_or_die__398_v0() {
     local packages_1035=("${!1}")
-    install_via_npm__395_v0 packages_1035[@]
+    install_via_npm__397_v0 packages_1035[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to npm install ${packages_1035[@]}" 1
@@ -1999,14 +2005,14 @@ install_via_npm_or_die__396_v0() {
 }
 
 # install_ai_tools()
-install_ai_tools__398_v0() {
-    install_via_curl__380_v0 "https://antigravity.google/cli/install.sh"
+install_ai_tools__400_v0() {
+    install_via_curl__382_v0 "https://antigravity.google/cli/install.sh"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "skipping agy" 1
     fi
-    local array_53=("@kilocode/cli")
-    install_via_npm_or_die__396_v0 array_53[@]
+    local array_55=("@kilocode/cli")
+    install_via_npm_or_die__398_v0 array_55[@]
 }
 
 # No-op install hook.
@@ -2024,14 +2030,14 @@ install_ai_tools__398_v0() {
 # This hook exists only because install.ab.j2 imports install_{repo.id}() for
 # every enabled repo.
 # install_quicksheet()
-install_quicksheet__400_v0() {
+install_quicksheet__402_v0() {
     :
 }
 
 # install_nvim()
-install_nvim__405_v0() {
-    local array_54=("fd-find" "clang" "g++")
-    apt_install_or_die__176_v0 array_54[@]
+install_nvim__407_v0() {
+    local array_56=("fd-find" "clang" "g++")
+    apt_install_or_die__176_v0 array_56[@]
     local subpath_1067=".config/nvim"
     symlink_into_home_or_die__265_v0 "src/${subpath_1067}" "${subpath_1067}"
     local lazy_dir_1068="${subpath_1067}/lazy"
@@ -2061,72 +2067,72 @@ install_nvim__405_v0() {
 }
 
 # download_verified_url_to_home(url: Text, rel_path: Text, expected_hash: Text)
-download_verified_url_to_home__424_v0() {
+download_verified_url_to_home__426_v0() {
     local url_1154="${1}"
     local rel_path_1155="${2}"
     local expected_hash_1156="${3}"
     home__179_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to_home424_v0=''
+        ret_download_verified_url_to_home426_v0=''
         return "${__status}"
     fi
     local h_1157="${ret_home179_v0}"
     local full_1158="${h_1157}/${rel_path_1155}"
-    local command_55
-    command_55="$(dirname ${full_1158})"
+    local command_57
+    command_57="$(dirname ${full_1158})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to_home424_v0=''
+        ret_download_verified_url_to_home426_v0=''
         return "${__status}"
     fi
-    local parent_1159="${command_55}"
+    local parent_1159="${command_57}"
     dir_create__44_v0 "${parent_1159}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to_home424_v0=''
+        ret_download_verified_url_to_home426_v0=''
         return "${__status}"
     fi
     download_verified_url_to__310_v0 "${url_1154}" "${full_1158}" "${expected_hash_1156}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to_home424_v0=''
+        ret_download_verified_url_to_home426_v0=''
         return "${__status}"
     fi
 }
 
 # download_verified_executable_to_home(url: Text, rel_path: Text, expected_hash: Text)
-download_verified_executable_to_home__426_v0() {
+download_verified_executable_to_home__428_v0() {
     local url_1151="${1}"
     local rel_path_1152="${2}"
     local expected_hash_1153="${3}"
-    download_verified_url_to_home__424_v0 "${url_1151}" "${rel_path_1152}" "${expected_hash_1153}"
+    download_verified_url_to_home__426_v0 "${url_1151}" "${rel_path_1152}" "${expected_hash_1153}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_executable_to_home426_v0=''
+        ret_download_verified_executable_to_home428_v0=''
         return "${__status}"
     fi
     home__179_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_executable_to_home426_v0=''
+        ret_download_verified_executable_to_home428_v0=''
         return "${__status}"
     fi
     local h_1164="${ret_home179_v0}"
     make_executable__280_v0 "${h_1164}/${rel_path_1152}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_executable_to_home426_v0=''
+        ret_download_verified_executable_to_home428_v0=''
         return "${__status}"
     fi
 }
 
 # download_verified_executable_to_home_or_die(url: Text, rel_path: Text, expected_hash: Text)
-download_verified_executable_to_home_or_die__427_v0() {
+download_verified_executable_to_home_or_die__429_v0() {
     local url_1148="${1}"
     local rel_path_1149="${2}"
     local expected_hash_1150="${3}"
-    download_verified_executable_to_home__426_v0 "${url_1148}" "${rel_path_1149}" "${expected_hash_1150}"
+    download_verified_executable_to_home__428_v0 "${url_1148}" "${rel_path_1149}" "${expected_hash_1150}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to download, verify, or make executable ${url_1148} to ~/${rel_path_1149}" 1
@@ -2134,7 +2140,7 @@ download_verified_executable_to_home_or_die__427_v0() {
 }
 
 # install_tmux_warm_daemon()
-install_tmux_warm_daemon__429_v0() {
+install_tmux_warm_daemon__431_v0() {
     copy_into_home_or_die__187_v0 "src/.tmux_warm_daemon/attach_warm.sh" ".local/bin/"
     copy_into_home_or_die__187_v0 "src/.tmux_warm_daemon/restart_daemon.sh" ".local/bin/"
     copy_into_home_or_die__187_v0 "src/.tmux_warm_daemon/agent-warm.sh" ".local/bin/"
@@ -2148,13 +2154,13 @@ install_tmux_warm_daemon__429_v0() {
     # Only fetch Rust binary when the bash backend was stripped during generation
     # (i.e. user chose impl: 'rust' or didn't set impl). When bash is present,
     # the backend-agnostic launcher will fall through to it.
-    local command_56
-    command_56="$(test -f ~/.tmux_warm_daemon/bash/tmux_warm_daemon && echo "yes" || echo "")"
+    local command_58
+    command_58="$(test -f ~/.tmux_warm_daemon/bash/tmux_warm_daemon && echo "yes" || echo "")"
     __status=$?
-    local bash_present_1146="${command_56}"
+    local bash_present_1146="${command_58}"
     if [ "$([ "_${bash_present_1146}" != "_" ]; echo $?)" != 0 ]; then
         local rel_bin_1147=".tmux_warm_daemon/rust/target/release/tmux_warm_daemon"
-        download_verified_executable_to_home_or_die__427_v0 "https://github.com/jesusmb1995/tmux-warm-daemon/releases/download/v0.1.0-prealpha/tmux_warm_daemon" "${rel_bin_1147}" "95a6727f495b4e3970084e20efe12e93427bb90b7dc7e8dac3605c7a5e48b902"
+        download_verified_executable_to_home_or_die__429_v0 "https://github.com/jesusmb1995/tmux-warm-daemon/releases/download/v0.1.0-prealpha/tmux_warm_daemon" "${rel_bin_1147}" "95a6727f495b4e3970084e20efe12e93427bb90b7dc7e8dac3605c7a5e48b902"
     fi
     # Seed `agentclitool` from the nvim config default (if unset) and (re)start
     # the daemon so it loads config.yaml + registers the `agent` pool. Without
@@ -2166,35 +2172,35 @@ install_tmux_warm_daemon__429_v0() {
 }
 
 # install_cmd_bookmarks()
-install_cmd_bookmarks__432_v0() {
+install_cmd_bookmarks__434_v0() {
     symlink_into_home_or_die__265_v0 "src/cmd_bookmarks" ".local/share/cmd_bookmarks"
 }
 
 # execute_sh_at_home(rel_sh_path: Text)
-execute_sh_at_home__439_v0() {
+execute_sh_at_home__441_v0() {
     local rel_sh_path_1185="${1}"
     home__179_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home439_v0=''
+        ret_execute_sh_at_home441_v0=''
         return "${__status}"
     fi
     local h_1186="${ret_home179_v0}"
     execute_sh__287_v0 "${h_1186}/${rel_sh_path_1185}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home439_v0=''
+        ret_execute_sh_at_home441_v0=''
         return "${__status}"
     fi
 }
 
 # execute_sh_at_home_or_die(rel_sh_path: Text)
-execute_sh_at_home_or_die__440_v0() {
+execute_sh_at_home_or_die__442_v0() {
     local rel_sh_path_1184="${1}"
     prompt_user__171_v0 "execute ~/${rel_sh_path_1184}"
     local ret_prompt_user171_v0__12_8="${ret_prompt_user171_v0}"
     if [ "${ret_prompt_user171_v0__12_8}" != 0 ]; then
-        execute_sh_at_home__439_v0 "${rel_sh_path_1184}"
+        execute_sh_at_home__441_v0 "${rel_sh_path_1184}"
         __status=$?
         if [ "${__status}" != 0 ]; then
             echo_error__142_v0 "failed to run ${rel_sh_path_1184}" 1
@@ -2203,7 +2209,7 @@ execute_sh_at_home_or_die__440_v0() {
 }
 
 # install_agent_global_config()
-install_agent_global_config__445_v0() {
+install_agent_global_config__447_v0() {
     rsync_or_die_into_home__218_v0 "src/.agent/" ".agent" 1
     home__198_v0 
     __status=$?
@@ -2217,7 +2223,7 @@ install_agent_global_config__445_v0() {
         file_exists__39_v0 "${h_1181}/.agent/${script_1183}"
         local ret_file_exists39_v0__20_12="${ret_file_exists39_v0}"
         if [ "${ret_file_exists39_v0__20_12}" != 0 ]; then
-            execute_sh_at_home_or_die__440_v0 ".agent/${script_1183}"
+            execute_sh_at_home_or_die__442_v0 ".agent/${script_1183}"
         fi
     done
 }
@@ -2230,13 +2236,13 @@ installed_vendor_45="/usr/lib/copals/vendor"
 # project vendor dir also "exists" but its tools are only populated inside the
 # image. Prefer the installed tree whenever it actually holds the binaries.
 # resolve_vendor_dir()
-resolve_vendor_dir__453_v0() {
+resolve_vendor_dir__455_v0() {
     dir_exists__38_v0 "${installed_vendor_45}"
     local ret_dir_exists38_v0__12_8="${ret_dir_exists38_v0}"
     file_exists__39_v0 "${installed_vendor_45}/jsonnet"
     local ret_file_exists39_v0__12_41="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__12_8 && ret_file_exists39_v0__12_41 ))" != 0 ]; then
-        ret_resolve_vendor_dir453_v0="${installed_vendor_45}"
+        ret_resolve_vendor_dir455_v0="${installed_vendor_45}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_44}"
@@ -2244,99 +2250,99 @@ resolve_vendor_dir__453_v0() {
     file_exists__39_v0 "${project_vendor_44}/jsonnet"
     local ret_file_exists39_v0__15_39="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__15_8 && ret_file_exists39_v0__15_39 ))" != 0 ]; then
-        ret_resolve_vendor_dir453_v0="${project_vendor_44}"
+        ret_resolve_vendor_dir455_v0="${project_vendor_44}"
         return 0
     fi
     dir_exists__38_v0 "${installed_vendor_45}"
     local ret_dir_exists38_v0__18_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__18_8}" != 0 ]; then
-        ret_resolve_vendor_dir453_v0="${installed_vendor_45}"
+        ret_resolve_vendor_dir455_v0="${installed_vendor_45}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_44}"
     local ret_dir_exists38_v0__21_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__21_8}" != 0 ]; then
-        ret_resolve_vendor_dir453_v0="${project_vendor_44}"
+        ret_resolve_vendor_dir455_v0="${project_vendor_44}"
         return 0
     fi
-    ret_resolve_vendor_dir453_v0=""
+    ret_resolve_vendor_dir455_v0=""
     return 0
 }
 
-resolve_vendor_dir__453_v0 
-__VENDOR_DIR_46="${ret_resolve_vendor_dir453_v0}"
+resolve_vendor_dir__455_v0 
+__VENDOR_DIR_46="${ret_resolve_vendor_dir455_v0}"
 # jq_resolve()
-jq_resolve__454_v0() {
+jq_resolve__456_v0() {
     if [ "$([ "_${__VENDOR_DIR_46}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jq_resolve454_v0="jq"
+        ret_jq_resolve456_v0="jq"
         return 0
     fi
-    ret_jq_resolve454_v0="${__VENDOR_DIR_46}/jq"
+    ret_jq_resolve456_v0="${__VENDOR_DIR_46}/jq"
     return 0
 }
 
 # j2_resolve()
-j2_resolve__455_v0() {
+j2_resolve__457_v0() {
     if [ "$([ "_${__VENDOR_DIR_46}" != "_" ]; echo $?)" != 0 ]; then
-        ret_j2_resolve455_v0="j2"
+        ret_j2_resolve457_v0="j2"
         return 0
     fi
-    ret_j2_resolve455_v0="${__VENDOR_DIR_46}/j2"
+    ret_j2_resolve457_v0="${__VENDOR_DIR_46}/j2"
     return 0
 }
 
 # jsonnet_resolve()
-jsonnet_resolve__456_v0() {
+jsonnet_resolve__458_v0() {
     if [ "$([ "_${__VENDOR_DIR_46}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonnet_resolve456_v0="jsonnet"
+        ret_jsonnet_resolve458_v0="jsonnet"
         return 0
     fi
-    ret_jsonnet_resolve456_v0="${__VENDOR_DIR_46}/jsonnet"
+    ret_jsonnet_resolve458_v0="${__VENDOR_DIR_46}/jsonnet"
     return 0
 }
 
 # jsonschema_resolve()
-jsonschema_resolve__457_v0() {
+jsonschema_resolve__459_v0() {
     if [ "$([ "_${__VENDOR_DIR_46}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonschema_resolve457_v0="jsonschema"
+        ret_jsonschema_resolve459_v0="jsonschema"
         return 0
     fi
-    ret_jsonschema_resolve457_v0="${__VENDOR_DIR_46}/jsonschema"
+    ret_jsonschema_resolve459_v0="${__VENDOR_DIR_46}/jsonschema"
     return 0
 }
 
 # lua_resolve()
-lua_resolve__458_v0() {
+lua_resolve__460_v0() {
     if [ "$([ "_${__VENDOR_DIR_46}" != "_" ]; echo $?)" != 0 ]; then
-        ret_lua_resolve458_v0="lua"
+        ret_lua_resolve460_v0="lua"
         return 0
     fi
-    ret_lua_resolve458_v0="${__VENDOR_DIR_46}/lua"
+    ret_lua_resolve460_v0="${__VENDOR_DIR_46}/lua"
     return 0
 }
 
-jq_resolve__454_v0 
-j2_resolve__455_v0 
-jsonnet_resolve__456_v0 
-jsonschema_resolve__457_v0 
-lua_resolve__458_v0 
+jq_resolve__456_v0 
+j2_resolve__457_v0 
+jsonnet_resolve__458_v0 
+jsonschema_resolve__459_v0 
+lua_resolve__460_v0 
 # link_store(link: Text, canon: Text)
-link_store__477_v0() {
+link_store__479_v0() {
     local link_1218="${1}"
     local canon_1219="${2}"
     local target_1220="../.agents/skills"
-    local command_61
-    command_61="$(dirname ${link_1218})"
+    local command_63
+    command_63="$(dirname ${link_1218})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_link_store477_v0=''
+        ret_link_store479_v0=''
         return "${__status}"
     fi
-    local dir_1221="${command_61}"
+    local dir_1221="${command_63}"
     dir_create__44_v0 "${dir_1221}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_link_store477_v0=''
+        ret_link_store479_v0=''
         return "${__status}"
     fi
     local is_real_dir_1222=0
@@ -2346,22 +2352,22 @@ link_store__477_v0() {
         is_real_dir_1222=1
     fi
     if [ "${is_real_dir_1222}" != 0 ]; then
-        local __cp_62=
-        (( 1 )) && __cp_62="-f" || __cp_62=""
-        cp -r ${__cp_62} "${link_1218}" "${canon_1219}"
+        local __cp_64=
+        (( 1 )) && __cp_64="-f" || __cp_64=""
+        cp -r ${__cp_64} "${link_1218}" "${canon_1219}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_link_store477_v0=''
+            ret_link_store479_v0=''
             return "${__status}"
         fi
-        local __rm_63=
-        (( 1 )) && __rm_63="-r" || __rm_63=""
-        local __rm_64=
-        rm ${__rm_64} ${__rm_63} "${link_1218}"
+        local __rm_65=
+        (( 1 )) && __rm_65="-r" || __rm_65=""
+        local __rm_66=
+        rm ${__rm_66} ${__rm_65} "${link_1218}"
         ln -sfn ${target_1220} ${link_1218}
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_link_store477_v0=''
+            ret_link_store479_v0=''
             return "${__status}"
         fi
     else
@@ -2375,7 +2381,7 @@ link_store__477_v0() {
             ln -sfn ${target_1220} ${link_1218}
             __status=$?
             if [ "${__status}" != 0 ]; then
-                ret_link_store477_v0=''
+                ret_link_store479_v0=''
                 return "${__status}"
             fi
         fi
@@ -2383,11 +2389,11 @@ link_store__477_v0() {
 }
 
 # install_agent_skills_impl()
-install_agent_skills_impl__479_v0() {
+install_agent_skills_impl__481_v0() {
     home__198_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_agent_skills_impl479_v0=''
+        ret_install_agent_skills_impl481_v0=''
         return "${__status}"
     fi
     local h_1214="${ret_home198_v0}"
@@ -2401,24 +2407,24 @@ install_agent_skills_impl__479_v0() {
         dir_exists__38_v0 "${legacy_dir_1217}"
         local ret_dir_exists38_v0__51_12="${ret_dir_exists38_v0}"
         if [ "${ret_dir_exists38_v0__51_12}" != 0 ]; then
-            local __rm_65=
-            (( 1 )) && __rm_65="-r" || __rm_65=""
-            local __rm_66=
-            rm ${__rm_66} ${__rm_65} "${legacy_dir_1217}"
+            local __rm_67=
+            (( 1 )) && __rm_67="-r" || __rm_67=""
+            local __rm_68=
+            rm ${__rm_68} ${__rm_67} "${legacy_dir_1217}"
         fi
         # 2. Wire the store into each ENABLED tool. Antigravity reads ~/.agents/skills natively, so it needs no link.
-        link_store__477_v0 "${h_1214}/.kilo/skills" "${canon_1215}"
+        link_store__479_v0 "${h_1214}/.kilo/skills" "${canon_1215}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_install_agent_skills_impl479_v0=''
+            ret_install_agent_skills_impl481_v0=''
             return "${__status}"
         fi
     fi
 }
 
 # install_agent_skills()
-install_agent_skills__480_v0() {
-    install_agent_skills_impl__479_v0 
+install_agent_skills__482_v0() {
+    install_agent_skills_impl__481_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to install agent skills" 1
@@ -2426,17 +2432,17 @@ install_agent_skills__480_v0() {
 }
 
 # install_skill_caveman()
-install_skill_caveman__483_v0() {
+install_skill_caveman__485_v0() {
     symlink_into_home_or_die__265_v0 "src/.agents/skills/caveman" ".agents/skills/caveman"
 }
 
 # install_skill_humanizer()
-install_skill_humanizer__486_v0() {
+install_skill_humanizer__488_v0() {
     symlink_into_home_or_die__265_v0 "src/.agents/skills/humanizer" ".agents/skills/humanizer"
 }
 
 # install_skill_ponytail()
-install_skill_ponytail__489_v0() {
+install_skill_ponytail__491_v0() {
     symlink_into_home_or_die__265_v0 "src/.agents/skills/ponytail" ".agents/skills/ponytail"
 }
 
@@ -2448,17 +2454,17 @@ fi
 __TMP_DIR_53="${ret_temp_dir_create46_v0}"
 token_54=1
 # temp_file_create(suffix: Text)
-temp_file_create__496_v0() {
+temp_file_create__498_v0() {
     local suffix_1243="${1}"
     token_54="$(( token_54 + 1 ))"
     local tmp_1244="${__TMP_DIR_53}/${token_54}${suffix_1243}"
     touch "${tmp_1244}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_temp_file_create496_v0=''
+        ret_temp_file_create498_v0=''
         return "${__status}"
     fi
-    ret_temp_file_create496_v0="${tmp_1244}"
+    ret_temp_file_create498_v0="${tmp_1244}"
     return 0
 }
 
@@ -2482,41 +2488,41 @@ temp_file_create__496_v0() {
 # return lines(file_read(tmp)?)?
 # }
 # download_to(url: Text, target: Text)
-download_to__499_v0() {
+download_to__501_v0() {
     local url_1249="${1}"
     local target_1250="${2}"
     curl -fsSL ${url_1249} -o ${target_1250}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_to499_v0=''
+        ret_download_to501_v0=''
         return "${__status}"
     fi
 }
 
 # download_verified_url_to(url: Text, target: Text, expected_hash: Text)
-download_verified_url_to__502_v0() {
+download_verified_url_to__504_v0() {
     local url_1246="${1}"
     local target_1247="${2}"
     local expected_hash_1248="${3}"
-    download_to__499_v0 "${url_1246}" "${target_1247}"
+    download_to__501_v0 "${url_1246}" "${target_1247}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to502_v0=''
+        ret_download_verified_url_to504_v0=''
         return 0
     fi
-    local command_67
-    command_67="$(sha256sum ${target_1247} | cut -d' ' -f1)"
+    local command_69
+    command_69="$(sha256sum ${target_1247} | cut -d' ' -f1)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_download_verified_url_to502_v0=''
+        ret_download_verified_url_to504_v0=''
         return "${__status}"
     fi
-    local actual_1251="${command_67}"
+    local actual_1251="${command_69}"
     if [ "$([ "_${actual_1251}" == "_${expected_hash_1248}" ]; echo $?)" != 0 ]; then
         echo_error__142_v0 "sha256 mismatch for ${target_1247}: expected ${expected_hash_1248}, got ${actual_1251}" 1
         rm -f ${target_1247}
         __status=$?
-        ret_download_verified_url_to502_v0=''
+        ret_download_verified_url_to504_v0=''
         return 0
     fi
 }
@@ -2524,23 +2530,23 @@ download_verified_url_to__502_v0() {
 __BAZELISK_URL_55="https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64"
 __BAZELISK_HASH_56="5a408715e932c0250d28bd84555f12edbf70117de42f9181691c736eacc4a992"
 # install_bazelisk()
-install_bazelisk__507_v0() {
+install_bazelisk__509_v0() {
     has_cmd__243_v0 "bazelisk"
     local ret_has_cmd243_v0__11_12="${ret_has_cmd243_v0}"
     if [ "$(( ! ret_has_cmd243_v0__11_12 ))" != 0 ]; then
-        temp_file_create__496_v0 ""
+        temp_file_create__498_v0 ""
         __status=$?
         if [ "${__status}" != 0 ]; then
             echo_error__142_v0 "bazelisk: failed to create temp file" 1
         fi
-        local tmp_1245="${ret_temp_file_create496_v0}"
-        download_verified_url_to__502_v0 "${__BAZELISK_URL_55}" "${tmp_1245}" "${__BAZELISK_HASH_56}"
+        local tmp_1245="${ret_temp_file_create498_v0}"
+        download_verified_url_to__504_v0 "${__BAZELISK_URL_55}" "${tmp_1245}" "${__BAZELISK_HASH_56}"
         __status=$?
         if [ "${__status}" != 0 ]; then
             echo_error__142_v0 "bazelisk: sha256 mismatch, expected ${__BAZELISK_HASH_56}" 1
         fi
-        local array_68=()
-        sudo_cmd__240_v0 "install -m755 ${tmp_1245} /usr/local/bin/bazelisk" array_68[@]
+        local array_70=()
+        sudo_cmd__240_v0 "install -m755 ${tmp_1245} /usr/local/bin/bazelisk" array_70[@]
         __status=$?
         if [ "${__status}" != 0 ]; then
             echo_error__142_v0 "bazelisk: failed to install binary to /usr/local/bin" 1
@@ -2553,7 +2559,7 @@ install_bazelisk__507_v0() {
 # wrap it once at the installer level:  install_x() { x_impl() failed { exit(1) } }
 # So every install_*() is infallible and main() stays a plain sequence of calls.
 # print_help()
-print_help__509_v0() {
+print_help__511_v0() {
     echo "Usage: ./install.sh [--ask] [--trace] [step ...]"
     printf '%s\n' ""
     echo "Install all steps by default. Pass one or more step names to run"
@@ -2589,11 +2595,11 @@ print_help__509_v0() {
 }
 
 # run_step(step: Text)
-run_step__510_v0() {
+run_step__512_v0() {
     local step_1334="${1}"
     local matched_1335=0
     if [ "$([ "_${step_1334}" != "_help" ]; echo $?)" != 0 ]; then
-        print_help__509_v0 
+        print_help__511_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_apt_essential_tools" ]; echo $?)" != 0 ]; then
@@ -2633,55 +2639,55 @@ run_step__510_v0() {
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_system_tools" ]; echo $?)" != 0 ]; then
-        install_system_tools__334_v0 
+        install_system_tools__336_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_browsers" ]; echo $?)" != 0 ]; then
-        install_browsers__354_v0 
+        install_browsers__356_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_ai_tools" ]; echo $?)" != 0 ]; then
-        install_ai_tools__398_v0 
+        install_ai_tools__400_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_quicksheet" ]; echo $?)" != 0 ]; then
-        install_quicksheet__400_v0 
+        install_quicksheet__402_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_nvim" ]; echo $?)" != 0 ]; then
-        install_nvim__405_v0 
+        install_nvim__407_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_tmux_warm_daemon" ]; echo $?)" != 0 ]; then
-        install_tmux_warm_daemon__429_v0 
+        install_tmux_warm_daemon__431_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_cmd_bookmarks" ]; echo $?)" != 0 ]; then
-        install_cmd_bookmarks__432_v0 
+        install_cmd_bookmarks__434_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_agent_global_config" ]; echo $?)" != 0 ]; then
-        install_agent_global_config__445_v0 
+        install_agent_global_config__447_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_agent_skills" ]; echo $?)" != 0 ]; then
-        install_agent_skills__480_v0 
+        install_agent_skills__482_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_skill_caveman" ]; echo $?)" != 0 ]; then
-        install_skill_caveman__483_v0 
+        install_skill_caveman__485_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_skill_humanizer" ]; echo $?)" != 0 ]; then
-        install_skill_humanizer__486_v0 
+        install_skill_humanizer__488_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_skill_ponytail" ]; echo $?)" != 0 ]; then
-        install_skill_ponytail__489_v0 
+        install_skill_ponytail__491_v0 
         matched_1335=1
     fi
     if [ "$([ "_${step_1334}" != "_bazelisk" ]; echo $?)" != 0 ]; then
-        install_bazelisk__507_v0 
+        install_bazelisk__509_v0 
         matched_1335=1
     fi
     if [ "$(( ! matched_1335 ))" != 0 ]; then
@@ -2697,37 +2703,37 @@ run_step__510_v0() {
 # the last-installed state, lists changes, asks Y/n, and re-runs installer
 # steps only for the changed repos.
 # cmd_update()
-cmd_update__511_v0() {
-    local command_70
-    command_70="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+cmd_update__513_v0() {
+    local command_72
+    command_72="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return "${__status}"
     fi
-    local script_dir_1305="${command_70}"
+    local script_dir_1305="${command_72}"
     local meta_path_1306="${script_dir_1305}/meta.json"
     local state_path_1307="${script_dir_1305}/.last_installed.json"
-    local command_71
-    command_71="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_1306}")"
+    local command_73
+    command_73="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_1306}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return "${__status}"
     fi
-    local new_lines_1308="${command_71}"
+    local new_lines_1308="${command_73}"
     local old_lines_1309=""
     file_exists__39_v0 "${state_path_1307}"
     local ret_file_exists39_v0__473_8="${ret_file_exists39_v0}"
     if [ "${ret_file_exists39_v0__473_8}" != 0 ]; then
-        local command_72
-        command_72="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_1307}")"
+        local command_74
+        command_74="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_1307}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_cmd_update511_v0=''
+            ret_cmd_update513_v0=''
             return "${__status}"
         fi
-        old_lines_1309="${command_72}"
+        old_lines_1309="${command_74}"
     fi
     local old_keys_1310=()
     local old_vals_1311=()
@@ -2740,10 +2746,10 @@ cmd_update__511_v0() {
             fi
             split__4_v0 "	" "${row_1317}"
             local parts_1318=("${ret_split4_v0[@]}")
-            local __length_77=("${parts_1318[@]}")
-            if [ "$(( ${#__length_77[@]} >= 2 ))" != 0 ]; then
-                old_keys_1310+=("${parts_1318[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:485:36)"}")
-                old_vals_1311+=("${parts_1318[1]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:486:36)"}")
+            local __length_79=("${parts_1318[@]}")
+            if [ "$(( ${#__length_79[@]} >= 2 ))" != 0 ]; then
+                old_keys_1310+=("${parts_1318[0]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:485:36)"}")
+                old_vals_1311+=("${parts_1318[1]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:486:36)"}")
             fi
         done
     fi
@@ -2756,22 +2762,22 @@ cmd_update__511_v0() {
         fi
         split__4_v0 "	" "${row_1321}"
         local parts_1322=("${ret_split4_v0[@]}")
-        local __length_83=("${parts_1322[@]}")
-        if [ "$(( ${#__length_83[@]} < 2 ))" != 0 ]; then
+        local __length_85=("${parts_1322[@]}")
+        if [ "$(( ${#__length_85[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_1323="${parts_1322[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:497:27)"}"
-        local val_1324="${parts_1322[1]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:498:27)"}"
+        local key_1323="${parts_1322[0]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:497:27)"}"
+        local val_1324="${parts_1322[1]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:498:27)"}"
         local matched_1325=0
         local __range_start_1326=0
-        local __length_84=("${old_keys_1310[@]}")
-        local __range_end_1326="${#__length_84[@]}"
+        local __length_86=("${old_keys_1310[@]}")
+        local __range_end_1326="${#__length_86[@]}"
         local __dir_1326=$(( ${__range_start_1326} <= ${__range_end_1326} ? 1 : -1 ))
         for (( i_1326=${__range_start_1326}; i_1326 * ${__dir_1326} < ${__range_end_1326} * ${__dir_1326}; i_1326+=${__dir_1326} )); do
-            if [ "$([ "_${old_keys_1310[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:501:25)"}" != "_${key_1323}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_1311[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:502:29)"}" == "_${val_1324}" ]; echo $?)" != 0 ]; then
-                    local array_85=("${key_1323}")
-                    changed_1319+=("${array_85[@]}")
+            if [ "$([ "_${old_keys_1310[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:501:25)"}" != "_${key_1323}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_1311[${i_1326}]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:502:29)"}" == "_${val_1324}" ]; echo $?)" != 0 ]; then
+                    local array_87=("${key_1323}")
+                    changed_1319+=("${array_87[@]}")
                 fi
                 matched_1325=1
                 break
@@ -2789,8 +2795,8 @@ done
             fi
             split__4_v0 "	" "${row_1329}"
             local parts_1330=("${ret_split4_v0[@]}")
-            local __length_91=("${parts_1330[@]}")
-            if [ "$(( $(( ${#__length_91[@]} >= 2 )) && $([ "_${parts_1330[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:519:42)"}" != "_${ok_1327}" ]; echo $?) ))" != 0 ]; then
+            local __length_93=("${parts_1330[@]}")
+            if [ "$(( $(( ${#__length_93[@]} >= 2 )) && $([ "_${parts_1330[0]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:519:42)"}" != "_${ok_1327}" ]; echo $?) ))" != 0 ]; then
                 found_1328=1
                 break
             fi
@@ -2799,51 +2805,51 @@ done
             changed_1319+=("${ok_1327}")
         fi
     done
-    local __length_93=("${changed_1319[@]}")
-    if [ "$(( ${#__length_93[@]} == 0 ))" != 0 ]; then
+    local __length_95=("${changed_1319[@]}")
+    if [ "$(( ${#__length_95[@]} == 0 ))" != 0 ]; then
         echo "update: all repos up to date"
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return 0
     fi
-    local __length_94=("${changed_1319[@]}")
-    echo "update: ${#__length_94[@]} repo(s) changed:"
+    local __length_96=("${changed_1319[@]}")
+    echo "update: ${#__length_96[@]} repo(s) changed:"
     for c_1331 in "${changed_1319[@]}"; do
         echo "  - ${c_1331}"
     done
     echo "Apply updates? [Y/n]"
-    local command_97
-    command_97="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
+    local command_99
+    command_99="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return "${__status}"
     fi
-    local ans_1332="${command_97}"
+    local ans_1332="${command_99}"
     if [ "$(( $(( $(( $([ "_${ans_1332}" != "_n" ]; echo $?) || $([ "_${ans_1332}" != "_N" ]; echo $?) )) || $([ "_${ans_1332}" != "_no" ]; echo $?) )) || $([ "_${ans_1332}" != "_NO" ]; echo $?) ))" != 0 ]; then
         echo "update: aborted"
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return 0
     fi
     for c_1333 in "${changed_1319[@]}"; do
-        run_step__510_v0 "${c_1333}"
+        run_step__512_v0 "${c_1333}"
     done
     cp "${meta_path_1306}" "${state_path_1307}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update511_v0=''
+        ret_cmd_update513_v0=''
         return "${__status}"
     fi
     echo "update: done"
 }
 
 typeset -r raw_args_58=("$0" "$@")
-__length_102=("${raw_args_58[@]}")
-slice_upper_101="${#__length_102[@]}"
-slice_offset_103=1
-slice_offset_103=$((${slice_offset_103} > 0 ? ${slice_offset_103} : 0))
-slice_length_104="$(( slice_upper_101 - slice_offset_103 ))"
-slice_length_104=$((${slice_length_104} > 0 ? ${slice_length_104} : 0))
-args_59=("${raw_args_58[@]:${slice_offset_103}:${slice_length_104}}")
+__length_104=("${raw_args_58[@]}")
+slice_upper_103="${#__length_104[@]}"
+slice_offset_105=1
+slice_offset_105=$((${slice_offset_105} > 0 ? ${slice_offset_105} : 0))
+slice_length_106="$(( slice_upper_103 - slice_offset_105 ))"
+slice_length_106=$((${slice_length_106} > 0 ? ${slice_length_106} : 0))
+args_59=("${raw_args_58[@]:${slice_offset_105}:${slice_length_106}}")
 step_args_60=()
 for a_61 in "${args_59[@]}"; do
     if [ "$([ "_${a_61}" != "_--ask" ]; echo $?)" != 0 ]; then
@@ -2858,8 +2864,8 @@ for a_61 in "${args_59[@]}"; do
         step_args_60+=("${a_61}")
     fi
 done
-__length_109=("${step_args_60[@]}")
-if [ "$(( ${#__length_109[@]} == 0 ))" != 0 ]; then
+__length_111=("${step_args_60[@]}")
+if [ "$(( ${#__length_111[@]} == 0 ))" != 0 ]; then
     install_apt_essential_tools__204_v0 
     install_apt_essential_ui__207_v0 
     install_dotfiles_essential__222_v0 
@@ -2869,31 +2875,31 @@ if [ "$(( ${#__length_109[@]} == 0 ))" != 0 ]; then
     install_rofi__273_v0 
     install_omz_config__282_v0 
     install_zshmarks__294_v0 
-    install_system_tools__334_v0 
-    install_browsers__354_v0 
-    install_ai_tools__398_v0 
-    install_quicksheet__400_v0 
-    install_nvim__405_v0 
-    install_tmux_warm_daemon__429_v0 
-    install_cmd_bookmarks__432_v0 
-    install_agent_global_config__445_v0 
-    install_agent_skills__480_v0 
-    install_skill_caveman__483_v0 
-    install_skill_humanizer__486_v0 
-    install_skill_ponytail__489_v0 
-    install_bazelisk__507_v0 
+    install_system_tools__336_v0 
+    install_browsers__356_v0 
+    install_ai_tools__400_v0 
+    install_quicksheet__402_v0 
+    install_nvim__407_v0 
+    install_tmux_warm_daemon__431_v0 
+    install_cmd_bookmarks__434_v0 
+    install_agent_global_config__447_v0 
+    install_agent_skills__482_v0 
+    install_skill_caveman__485_v0 
+    install_skill_humanizer__488_v0 
+    install_skill_ponytail__491_v0 
+    install_bazelisk__509_v0 
 fi
-__length_110=("${step_args_60[@]}")
-if [ "$(( $(( ${#__length_110[@]} == 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:658:44)"}" != "_update" ]; echo $?) ))" != 0 ]; then
-    cmd_update__511_v0 
+__length_112=("${step_args_60[@]}")
+if [ "$(( $(( ${#__length_112[@]} == 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:658:44)"}" != "_update" ]; echo $?) ))" != 0 ]; then
+    cmd_update__513_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         exit "${__status}"
     fi
 fi
-__length_111=("${step_args_60[@]}")
-if [ "$(( $(( ${#__length_111[@]} >= 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-5zrwxL/install.ab:660:44)"}" == "_update" ]; echo $?) ))" != 0 ]; then
+__length_113=("${step_args_60[@]}")
+if [ "$(( $(( ${#__length_113[@]} >= 1 )) && $([ "_${step_args_60[0]?"Index out of bounds (at /tmp/jbtd-install-build-LP73yz/install.ab:660:44)"}" == "_update" ]; echo $?) ))" != 0 ]; then
     for step_1336 in "${step_args_60[@]}"; do
-        run_step__510_v0 "${step_1336}"
+        run_step__512_v0 "${step_1336}"
     done
 fi
