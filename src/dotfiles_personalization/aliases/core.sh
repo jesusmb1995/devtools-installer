@@ -1,0 +1,23 @@
+#!/bin/bash
+
+[ -f "$HOME/.agent/sync-permissions.sh" ] && source "$HOME/.agent/sync-permissions.sh"
+
+alias j='jump $0'
+alias p='echo $PWD | xclip -selection clipboard'
+alias brc='git branch --show-current | xclip -selection clipboard'
+alias tb='tmux show-buffer -b $(tmux list-buffers | head -n 1 | cut -d: -f1) | xclip -selection clipboard'
+alias nvimf='NVIM_MINIMAL= nvim'
+
+# TODO create PR
+#
+
+function aliases-reload {
+  source $HOME/.aliases
+}
+
+alias wa='$HOME/.tmux_warm_daemon/attach_warm.sh agent'
+alias waw="$HOME/.tmux_warm_daemon/attach_warm.sh agent '' $(pwd)"
+alias temp-notes='vim $HOME/Documents/notes/tmp_notes.txt'
+alias aliases='vim $HOME/aliases'
+
+

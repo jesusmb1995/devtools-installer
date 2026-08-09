@@ -1,0 +1,19 @@
+# tmux-warm-daemon pool config
+#
+# Default location: ~/.config/tmux_warm_daemon/config.yaml (auto-loaded when
+# the daemon is started with no CLI argument — i.e. from .zshrc).
+#
+# `warm`  : pre-warmed shell sessions named `warm-0`, `warm-1`, ...
+# `agent` : pre-warmed sessions that auto-launch the agent CLI tool, named
+#           `agent-N` for generic pre-warm or `agent@<hash>` per registered
+#           workspace (hash = first 8 chars of md5sum of the workspace path).
+#           `command` points at agent-warm.sh, which reads `kv agentclitool`
+#           (set by nvim :AiSelect) and execs whichever tool is selected — so
+#           no tool is hardcoded here. tmux already starts each session in the
+#           workspace dir (-c), so the launcher drops `--workspace`.
+pools:
+  warm:
+    max_detached: 2
+  agent:
+    max_detached: 1
+    command: $HOME/.local/bin/agent-warm.sh

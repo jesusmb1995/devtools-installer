@@ -1,0 +1,7 @@
+# nnn profile — sourced by nnn on startup
+export NNN_OPTS="deH"
+# dragdrop needs a GUI DnD backend (dragon/kitty/zenity+X11); omit it in the
+# pure-TTY tmux-WM preset (gerpsonal_term). Gated by mode => other presets unaffected.
+export NNN_PLUG='j:zmarks;g:win-open;m:bm-create;n:nvim-cd'
+export NNN_BMS=""
+export NNN_USE_EDITOR=1

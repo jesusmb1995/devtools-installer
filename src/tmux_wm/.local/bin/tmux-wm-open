@@ -1,0 +1,33 @@
+#!/bin/sh
+# tmux-wm-open <command...> - open a program, i3-like.
+#
+# If the focused pane is IDLE (at a shell prompt): type the command directly
+# into the shell via send-keys. The command runs inside the shell; when it
+# exits, the shell prompt returns. This is the i3 "replace empty workspace"
+# behavior.
+#
+# If the pane is BUSY (running nvim, a nested tmux, etc.): split to the RIGHT
+# with the command.
+#
+# This works uniformly for ALL launch methods (Alt+Enter, Alt+g, Ctrl+Space).
+#
+# Idle-vs-busy is read from tmux's native #{pane_current_command} (the pane's
+# foreground process name), NOT from `pgrep -P pane_pid`: that process-tree
+# probe is fragile — it misses a nested/warm-daemon tmux client, and silently
+# always reports "idle" when pgrep/procps is absent, which makes every press
+# type the command INTO the running program instead of splitting (the
+# "Alt+Enter nests tmux twice" bug).
+CMD="$@"
+CWD=$(tmux display -p '#{pane_current_path}')
+CURRENT=$(tmux display -p '#{pane_current_command}')
+
+case "$CURRENT" in
+    zsh|bash|sh|dash|fish|csh|tcsh|ksh)
+        # Idle at a shell prompt → run the command inside it.
+        tmux send-keys "$CMD" Enter
+        ;;
+    *)
+        # Pane is busy (nvim / nested tmux / ...) → split a new pane to the right.
+        tmux split-window -h -c "$CWD" "$CMD"
+        ;;
+esac

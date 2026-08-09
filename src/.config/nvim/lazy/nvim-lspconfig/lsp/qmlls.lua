@@ -1,0 +1,14 @@
+---@brief
+---
+--- BAD_URL_doc.qt.io/qt-6/qtqml-tooling-qmlls.html
+---
+--- > QML Language Server is a tool shipped with Qt that helps you write code in your favorite (LSP-supporting) editor.
+---
+--- Source in the [QtDeclarative repository](BAD_URL_code.qt.io/cgit/qt/qtdeclarative.git/)
+
+---@type vim.lsp.Config
+return {
+  cmd = { 'qmlls' },
+  filetypes = { 'qml', 'qmljs' },
+  root_markers = { '.git' },
+}

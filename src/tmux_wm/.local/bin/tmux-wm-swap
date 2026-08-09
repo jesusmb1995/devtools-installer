@@ -1,0 +1,50 @@
+#!/bin/sh
+# tmux-wm-swap <down|up|left|right> - swap pane with neighbor (i3 mod+Shift+hjkl).
+#
+# 1. Tries a direct swap with the neighbor in that direction.
+# 2. If no direct neighbor, breaks the pane off and rejoins it below/above
+#    (or left/right of) an adjacent column/row — giving i3-like "move across".
+DIR=$1
+PANE=$(tmux display -p '#{pane_id}')
+
+# Step 1: try direct swap
+case "$DIR" in
+    left)  tmux swap-pane -s '{left-of}'  2>/dev/null && exit 0 ;;
+    right) tmux swap-pane -s '{right-of}' 2>/dev/null && exit 0 ;;
+    down)  tmux swap-pane -s '{down-of}'  2>/dev/null && exit 0 ;;
+    up)    tmux swap-pane -s '{up-of}'    2>/dev/null && exit 0 ;;
+    *) exit 1 ;;
+esac
+
+# Step 2: no direct neighbor — find a perpendicular neighbor and join there.
+# down/up with no vertical neighbor → join below/above a horizontal neighbor.
+# left/right with no horizontal neighbor → join left/right of a vertical neighbor.
+if [ "$DIR" = down ] || [ "$DIR" = up ]; then
+    # Try left first, then right
+    for SIDE in L R; do
+        tmux select-pane "-$SIDE" 2>/dev/null || continue
+        tmux select-pane -t "$PANE"        # back to original
+        NEW=$(tmux break-pane -s "$PANE" -dP -F '#{pane_id}' 2>/dev/null) || continue
+        tmux select-pane "-$SIDE"           # select the neighbor
+        if [ "$DIR" = down ]; then
+            tmux join-pane -s "$NEW" -v -d  2>/dev/null   # below neighbor
+        else
+            tmux join-pane -s "$NEW" -v    2>/dev/null   # above neighbor
+        fi
+        exit 0
+    done
+else
+    # Try down first, then up
+    for SIDE in D U; do
+        tmux select-pane "-$SIDE" 2>/dev/null || continue
+        tmux select-pane -t "$PANE"
+        NEW=$(tmux break-pane -s "$PANE" -dP -F '#{pane_id}' 2>/dev/null) || continue
+        tmux select-pane "-$SIDE"
+        if [ "$DIR" = right ]; then
+            tmux join-pane -s "$NEW" -h -d  2>/dev/null   # right of neighbor
+        else
+            tmux join-pane -s "$NEW" -h    2>/dev/null   # left of neighbor
+        fi
+        exit 0
+    done
+fi

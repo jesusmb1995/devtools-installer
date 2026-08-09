@@ -1,0 +1,15 @@
+#!/bin/sh
+# tmux-wm - launcher for the OUTER "window manager" tmux (i3 replacement).
+#
+# Uses a dedicated socket (-L wm) and a dedicated config
+# (~/.config/tmux/tmux-wm.conf) so it NEVER clashes with:
+#   * the persistent warm-daemon tmux (default socket, ~/.tmux.conf), or
+#   * an inner factory-default tmux (tmux-default -> -L inner).
+#
+# WM behavior: destroy-unattached on + exit-empty on (both set in the config)
+# mean detaching destroys the session and tears the server down - no reattach,
+# just a transient layout manager. `new-session -A` attaches if a session still
+# exists, otherwise creates a fresh one.
+set -eu
+CONF="$HOME/.config/tmux/tmux-wm.conf"
+exec tmux -L wm -f "$CONF" new-session -A -s wm "$@"

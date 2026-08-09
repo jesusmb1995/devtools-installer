@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+# Description: Create a zshmarks bookmark for the current directory.
+#              Name = directory basename with non-alphanumeric chars -> _
+# Dependencies: -
+# Shell: POSIX compliant
+# Keybind: ;m   (add  m:bm-create  to NNN_PLUG)
+
+BOOKMARKS_FILE="${BOOKMARKS_FILE:-$HOME/.bookmarks}"
+
+name=$(basename "$2" | sed 's/[^a-zA-Z0-9_-]/_/g')
+
+# Store path with $HOME literal (matching zmarks convention)
+case "$2" in
+    "$HOME"*) path="\$HOME${2#"$HOME"}" ;;
+    *) path="$2" ;;
+esac
+
+printf '%s|%s\n' "$path" "$name" >> "$BOOKMARKS_FILE"
+printf 'bookmark created: %s -> %s\n' "$name" "$2"

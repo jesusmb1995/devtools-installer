@@ -1,0 +1,25 @@
+#!/bin/sh
+# tmux-wm-terminal - attach to a pre-warmed tmux session (Ctrl+B layer).
+#
+# Called by tmux-wm-open when the user presses Alt+Enter on an idle shell.
+# The command is sent to the shell via send-keys, so this script runs as a
+# child of the pane shell. We `exec` the tmux client (rather than running it as
+# a child) so the pane's foreground process becomes "tmux" itself — that is what
+# tmux-wm-open reads (#{pane_current_command}) to tell an idle shell from a busy
+# pane. Without exec the foreground reads as this script's "sh", which looks
+# idle and makes the next Alt+Enter send-keys INTO the running tmux (nesting).
+# exec replaces only this script process; the pane shell is its parent and stays
+# alive, returning to the prompt when tmux detaches/exits.
+unset TMUX
+
+SESSION=$(tmux list-sessions -F '#{session_name} #{session_attached}' 2>/dev/null \
+  | awk '$1 ~ /^warm-/ && $2 == 0 { print $1; exit }')
+
+if [ -n "$SESSION" ]; then
+    PID=$(cat /tmp/tmux_warm_daemon.pid 2>/dev/null || true)
+    [ -n "$PID" ] && (sleep 1 && kill -USR1 "$PID" 2>/dev/null) &
+    tmux send-keys -t "$SESSION" "cd '$PWD'" Enter 2>/dev/null
+    exec tmux attach -t "$SESSION" 2>/dev/null
+else
+    exec tmux new-session 2>/dev/null
+fi

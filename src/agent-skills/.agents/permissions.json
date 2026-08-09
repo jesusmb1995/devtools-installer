@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "deny": [
+      "read:/tmp/**",
+      "write:/tmp/**"
+    ],
+    "allow": [
+      "read:/tmp/agent-*/**",
+      "write:/tmp/agent-*/**"
+    ]
+  },
+  "notes": "Deny all access under /tmp root; allow only per-agent scratch dirs /tmp/agent-<id>/. <id> is the agent's unique session id. Companion rule documented in .agents/skills/tmp-agent-skill/SKILL.md — every /tmp path in skills must resolve under $AGENT_TMP=/tmp/agent-<id>/."
+}

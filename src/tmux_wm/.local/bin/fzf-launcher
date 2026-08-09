@@ -1,0 +1,25 @@
+#!/bin/sh
+# fzf-launcher - fzf-based command launcher for the outer WM tmux.
+#
+# Bound to Ctrl+Space in tmux-wm.conf via:
+#   bind-key -n C-Space split-window -h ... fzf-launcher
+#
+# Lists executables on PATH (deduped, sorted), lets fzf pick one, then EXECs
+# the selection in-place (replaces fzf in this pane). Cancel (Esc) closes the
+# pane. Terminal-agnostic: only needs fzf (apt-installed) and tmux.
+set -u
+
+menu() {
+    for d in $(printf '%s' "$PATH" | tr ':' '\n'); do
+        [ -d "$d" ] || continue
+        for f in "$d"/*; do
+            [ -f "$f" ] && [ -x "$f" ] || continue
+            basename "$f"
+        done
+    done | sort -u
+}
+
+sel=$(menu | fzf --prompt='run > ' --reverse --height=100% --no-info --layout=reverse) || exit 0
+[ -n "${sel:-}" ] || exit 0
+
+exec "$sel"

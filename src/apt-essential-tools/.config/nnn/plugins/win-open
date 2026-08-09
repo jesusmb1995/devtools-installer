@@ -1,0 +1,57 @@
+#!/usr/bin/env sh
+# Description: Open selection in nvim inside a new terminal window.
+# Dependencies: nvim + a terminal emulator
+# Shell: POSIX compliant
+# Keybind: ;g   (add  g:win-open  to NNN_PLUG)
+#
+# Terminal chosen at runtime (no j2 bake-in):
+#   1. x-terminal-emulator (install hooks set this)
+#   2. ~/.local/bin/st-zsh (st home wrapper — never raw st when wrapper exists)
+#   3. alacritty / kitty / gnome-terminal / xfce4-terminal
+#   4. bare st only as last resort
+
+selection="${2:-}"
+[ -n "$selection" ] || exit 1
+
+pick_term() {
+    if command -v x-terminal-emulator >/dev/null 2>&1; then
+        target=$(readlink -f "$(command -v x-terminal-emulator)" 2>/dev/null || true)
+        case "$target" in
+            */st|*/stterm)
+                if [ -x "${HOME}/.local/bin/st-zsh" ]; then
+                    printf '%s\n' "${HOME}/.local/bin/st-zsh"
+                    return 0
+                fi
+                ;;
+        esac
+        printf '%s\n' "x-terminal-emulator"
+        return 0
+    fi
+    if [ -x "${HOME}/.local/bin/st-zsh" ]; then
+        printf '%s\n' "${HOME}/.local/bin/st-zsh"
+        return 0
+    fi
+    for c in alacritty kitty gnome-terminal xfce4-terminal; do
+        if command -v "$c" >/dev/null 2>&1; then
+            printf '%s\n' "$c"
+            return 0
+        fi
+    done
+    if command -v st >/dev/null 2>&1; then
+        printf '%s\n' "st"
+        return 0
+    fi
+    return 1
+}
+
+term=$(pick_term) || {
+    printf 'win-open: no terminal emulator found\n' >&2
+    exit 1
+}
+
+# Safety: never launch bare st when the home wrapper is present
+if [ "$term" = "st" ] && [ -x "${HOME}/.local/bin/st-zsh" ]; then
+    term="${HOME}/.local/bin/st-zsh"
+fi
+
+"$term" -e nvim "$selection" &

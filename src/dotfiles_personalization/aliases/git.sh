@@ -1,0 +1,274 @@
+#!/bin/bash
+
+
+
+# sorted
+function git-branch {
+ git for-each-ref --sort=-committerdate refs/heads/ --format='%(committerdate:short) %(refname:short)' | head -n 10
+}
+
+function git-exclude {
+ echo "${1}" >> .git/info/exclude
+}
+
+function git-delete-branch {
+ git push -d origin "${1}"
+ git branch -D "${1}"
+}
+
+function _git-delete-branch-completions {
+  local -a branches
+  branches=("${(@f)$(git for-each-ref --format='%(refname:short)' refs/heads refs/remotes/origin 2>/dev/null | sed -E '/^origin\/HEAD$/d; s#^origin/##' | sort -u)}")
+  compadd -- "${branches[@]}"
+}
+[[ -n "$ZSH_VERSION" ]] && compdef _git-delete-branch-completions git-delete-branch
+
+# List merged branches + unmerged branches that look like old iterations
+# of a merged one (same stem, different prefix or trailing number).
+# Usage: git-merged-branches [base-branch]
+function git-merged-branches {
+  local base="${1:-main}" b s
+  git rev-parse --show-toplevel &>/dev/null || { echo "Not in a git repo"; return 1; }
+
+  _gmb_stem() {
+    local b="$1"
+    b="${b#*/}"
+    b="$(echo "$b" | sed -E 's/^(feature-|temp-|fix[/-]|release-|hotfix-|bugfix-|eature-|jmb\/)//')"
+    b="$(echo "$b" | sed -E 's/[0-9]+$//')"
+    b="$(echo "$b" | sed -E 's/[-_]+$//')"
+    echo "$b"
+  }
+
+  typeset -A merged_map merged_stems
+
+  # Collect merged branches (local)
+  local local_merged=("${(@f)$(git branch --merged "$base" 2>/dev/null | sed 's/^[* ]*//')}")
+  for b in "${local_merged[@]}"; do
+    [[ -z "$b" || "$b" == "$base" || "$b" == "main" || "$b" == "master" ]] && continue
+    merged_map[$b]=1
+    s=$(_gmb_stem "$b")
+    merged_stems[$s]="${merged_stems[$s]:+${merged_stems[$s]}|}$b"
+  done
+
+  # Collect merged branches (remote)
+  local remote_merged=("${(@f)$(git branch -r --merged "$base" 2>/dev/null | sed 's/^[* ]*//')}")
+  for b in "${remote_merged[@]}"; do
+    [[ -z "$b" || "$b" == *"HEAD"* || "$b" == *"-> "* ]] && continue
+    [[ "$b" == */main || "$b" == */master ]] && continue
+    merged_map[$b]=1
+    s=$(_gmb_stem "$b")
+    merged_stems[$s]="${merged_stems[$s]:+${merged_stems[$s]}|}$b"
+  done
+
+  echo "=== Branches merged into '$base' ==="
+  echo ""
+  for b in $(echo "${(k)merged_map}" | tr ' ' '\n' | sort); do
+    echo "  $b"
+  done
+
+  # Collect unmerged local branches, group by stem
+  typeset -A unmerged_by_stem
+  local all_local=("${(@f)$(git branch 2>/dev/null | sed 's/^[* +]*//')}")
+  for b in "${all_local[@]}"; do
+    [[ -z "$b" || "$b" == "$base" || "$b" == "main" || "$b" == "master" ]] && continue
+    [[ -n "${merged_map[$b]:-}" ]] && continue
+    s=$(_gmb_stem "$b")
+    unmerged_by_stem[$s]="${unmerged_by_stem[$s]:+${unmerged_by_stem[$s]}|}$b"
+  done
+
+  echo ""
+  echo "=== Likely obsolete (stem matches a merged branch) ==="
+  echo ""
+
+  local found=0
+  for s in $(echo "${(k)merged_stems}" | tr ' ' '\n' | sort); do
+    [[ -z "${unmerged_by_stem[$s]:-}" ]] && continue
+    found=1
+
+    local m_list=("${(@s:|:)merged_stems[$s]}")
+    local u_list=("${(@s:|:)unmerged_by_stem[$s]}")
+
+    echo "  stem: $s"
+    echo "    merged:"
+    for b in "${m_list[@]}"; do echo "      $b"; done
+
+    local u_count
+    u_count="$(printf '%s\n' "${u_list[@]}" | wc -l)"
+    echo "    likely obsolete (${u_count}):"
+
+    # Group by base name (branch without trailing digits) for compact display
+    typeset -A pfx_groups
+    for b in "${u_list[@]}"; do
+      local base_name="$(echo "$b" | sed -E 's/[0-9]+$//')"
+      local num="$(echo "$b" | grep -oE '[0-9]+$' || echo "base")"
+      pfx_groups[$base_name]="${pfx_groups[$base_name]:+${pfx_groups[$base_name]},}$num"
+    done
+
+    for pg in $(echo "${(k)pfx_groups}" | tr ' ' '\n' | sort); do
+      local nums="${pfx_groups[$pg]}"
+      local count=$(echo "$nums" | tr ',' '\n' | wc -l)
+      if (( count > 3 )); then
+        local sorted_nums=$(echo "$nums" | tr ',' '\n' | sort -t'b' -k1,1n | tr '\n' ',' | sed 's/,$//')
+        echo "      ${pg}[${sorted_nums}]"
+      else
+        for n in $(echo "$nums" | tr ',' '\n'); do
+          if [[ "$n" == "base" ]]; then
+            echo "      ${pg%[-_]}"
+          else
+            echo "      ${pg}${n}"
+          fi
+        done
+      fi
+    done
+
+    unset pfx_groups
+    echo ""
+  done
+
+  (( found == 0 )) && echo "  (none found)"
+  return 0
+}
+
+function git-repo-open {
+    local remote="${1:-origin}"
+    local url
+    url=$(git remote get-url "$remote" 2>/dev/null)
+    if [[ -z "$url" ]]; then
+      echo "No git remote '$remote' found."
+      return 1
+    fi
+    url="${url%.git}"
+    url="${url/git@github.com:/BAD_URL_github.com/}"
+    echo "Opening $url"
+    xdg-open "$url"
+}
+
+function _git-repo-open-completions {
+    compadd -- $(git remote 2>/dev/null)
+}
+[[ -n "$ZSH_VERSION" ]] && compdef _git-repo-open-completions git-repo-open gro
+
+alias gro='git-repo-open'
+
+# print current commit hash
+function git-log-h1 {
+	git log | head -n 1 | awk '{print $NF}'
+}
+
+function git-log-n {
+  _n="$1"
+  git log -n "$_n" --pretty=%H | tee commits.txt
+}
+
+function cherry-pick-commits {
+ tac commits.txt | xargs git cherry-pick -m 1 --allow-empty
+}
+
+# mark as resolved all git conflict
+function git-resolve {
+	git status --short | grep '^UU' | awk '{print $2}' | xargs git add
+}
+
+function git-resolve-cherry-pick {
+	local root
+	root=$(git rev-parse --show-toplevel) || return 1
+	git diff --name-only --diff-filter=U -z | xargs -0 -I{} git add "$root/{}" && git cherry-pick --continue
+}
+
+function stash-name {
+git stash push -m "$1"
+}
+
+function stash-apply {
+git stash apply stash^{/"$1"}
+}
+
+# More reliable when trees have diverged: copy flat repo tree into current (package) dir.
+# Run from the package dir in the monorepo (e.g. packages/qvac-lib-infer-llamacpp-llm).
+# Usage: git-sync-from-flat-repo <path-to-flat-repo> [ref] [N]
+# ref defaults to HEAD. If N is given: only overwrite files changed in the last N commits
+# at ref; files not touched in those N commits are left as-is (local changes kept).
+# If N is omitted: full tree sync (all local changes overwritten).
+function git-sync-from-flat-repo {
+  local flat_repo ref n files
+  if [[ -z "$1" ]]; then
+    echo "Usage: git-sync-from-flat-repo <path-to-flat-repo> [ref] [N]"
+    return 1
+  fi
+  flat_repo="$1"
+  ref="${2:-HEAD}"
+  n="$3"
+  if [[ ! -d "$flat_repo/.git" ]]; then
+    echo "Not a git repo: $flat_repo"
+    return 1
+  fi
+  if [[ -z "$n" || ! "$n" =~ ^[0-9]+$ || "$n" -eq 0 ]]; then
+    (cd "$flat_repo" && git archive "$ref") | tar -x -C .
+    echo "Synced full tree $flat_repo @ $ref into $PWD."
+  else
+    # Files changed in last N commits may include renames/deletes; only archive paths that exist at ref
+    local changed at_ref
+    changed=$(cd "$flat_repo" && git log -n "$n" --name-only --pretty=format: "$ref" | sort -u | grep -v '^$')
+    at_ref=$(cd "$flat_repo" && git ls-tree -r --name-only "$ref" | sort)
+    files=$(comm -12 <(echo "$changed") <(echo "$at_ref"))
+    if [[ -z "$files" ]]; then
+      echo "No files changed in last $n commit(s) at $ref (or none exist at that ref)."
+      return 0
+    fi
+    # Pass one path per argument (zsh doesn't split $files on newlines; xargs does)
+    (cd "$flat_repo" && echo "$files" | xargs git archive "$ref" --) | tar -x -C .
+    echo "Synced $flat_repo @ $ref (last $n commits only) into $PWD. Files not touched in those commits left as-is."
+  fi
+  echo "Run: git status, fix conflicts, git add, git commit"
+}
+
+function force-pull {
+  local upstream remote branch force=false
+  [[ "$1" == "-f" ]] && force=true
+  upstream=$(git rev-parse --abbrev-ref @{upstream} 2>/dev/null)
+  if [[ -n "$upstream" ]] && git rev-parse --verify "$upstream" &>/dev/null; then
+    remote="${upstream%%/*}"
+    branch="${upstream#*/}"
+  else
+    branch="$(git branch --show-current)"
+    if [[ -z "$branch" ]]; then
+      branch="$(git branch --points-at HEAD --format='%(refname:short)' | grep -v '^(' | head -n1)"
+    fi
+    if [[ -z "$branch" ]]; then
+      branch="$(git branch | sed -n 's/\* (HEAD detached at \(.*\))/\1/p')"
+      if [[ -n "$branch" ]]; then
+        echo "Detached HEAD at '$branch'. Creating local branch..."
+        git checkout -b "$branch" 2>/dev/null || git checkout "$branch"
+      else
+        echo "Error: cannot determine branch (detached HEAD with no matching branch)."
+        return 1
+      fi
+    fi
+    upstream=$(git rev-parse --abbrev-ref @{upstream} 2>/dev/null)
+    if [[ -n "$upstream" ]] && git rev-parse --verify "$upstream" &>/dev/null; then
+      remote="${upstream%%/*}"
+      branch="${upstream#*/}"
+    else
+      remote=""
+      local r
+      for r in $(git remote); do
+        if [[ "$branch" == "$r/"* ]]; then
+          remote="$r"
+          branch="${branch#$r/}"
+          break
+        fi
+      done
+      [[ -z "$remote" ]] && remote="origin"
+    fi
+  fi
+  if ! $force; then
+    echo "Will reset to $remote/$branch. Continue? [y/N]"
+    read -r ans
+    [[ "$ans" =~ ^[Yy]$ ]] || { echo "Aborted."; return 1; }
+  fi
+  git fetch "$remote" "$branch" && git reset --hard FETCH_HEAD
+}
+
+function git-sub-rec() {
+    git submodule update --init --recursive "$@"
+}

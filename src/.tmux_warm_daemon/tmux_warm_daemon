@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Backend-agnostic entrypoint. Prefers the Rust binary (the gold backend) when
+# built, otherwise falls back to the pure-bash daemon. Generation strips the
+# unused backend folder, so in a deployed tree only the chosen one is present.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUST_BIN="${DIR}/rust/target/release/tmux_warm_daemon"
+BASH_DAEMON="${DIR}/bash/tmux_warm_daemon"
+
+if [ -x "$RUST_BIN" ]; then
+  exec "$RUST_BIN" "$@"
+elif [ -x "$BASH_DAEMON" ]; then
+  exec "$BASH_DAEMON" "$@"
+fi
+
+echo "No tmux_warm_daemon backend found." >&2
+echo "Build the Rust backend (cd rust && cargo build --release) or enable the bash backend." >&2
+exit 1

@@ -1,0 +1,126 @@
+#!/usr/bin/env sh
+# Description: Jump to a zshmarks bookmark from nnn via a dropdown, sorted by
+#              last-used (frecency). Mirrors the ohmyzsh-bookmark-jumper nvim
+#              plugin so the same `~/.bookmarks` drive both tools.
+# Dependencies: jq, fzf (in-terminal fuzzy dropdown; numbered menu fallback)
+# Shell: POSIX compliant
+# Keybind: ;j   (add  j:zmarks  to NNN_PLUG)
+#
+# Reads $BOOKMARKS_FILE (zshmarks default ~/.bookmarks, format "path|name").
+# Frecency stored at $ZMARKS_STATS
+# (default ${XDG_DATA_HOME:-$HOME/.local/share}/zmarks/stats.json, shape
+# {"<name>": <epoch>}). Override either via env to share stats with the nvim
+# jumper (point its data_file here too).
+#
+# Self-test (no nnn):  zmarks --selftest
+
+BOOKMARKS_FILE="${BOOKMARKS_FILE:-$HOME/.bookmarks}"
+STATS_FILE="${ZMARKS_STATS:-${XDG_DATA_HOME:-$HOME/.local/share}/zmarks/stats.json}"
+TAB=$(printf '\t')
+
+# zshmarks stores "$HOME/..." literally; expand without eval (safe).
+expand_home() {
+    case "$1" in
+        '$HOME'*) printf '%s' "$HOME${1#\$HOME}" ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+
+# For display only: $HOME -> ~
+shorten_home() {
+    case "$1" in
+        "$HOME"*) printf '~%s' "${1#"$HOME"}" ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+
+# Record a jump's timestamp (jq keeps the JSON safe — no eval of the name).
+update_stat() {  # $1 = bookmark name
+    _name="$1"; _now=$(date +%s)
+    mkdir -p "$(dirname "$STATS_FILE")"
+    if [ -f "$STATS_FILE" ]; then
+        jq --arg n "$_name" --argjson t "$_now" '.[$n]=$t' "$STATS_FILE"
+    else
+        jq -n --arg n "$_name" --argjson t "$_now" '{($n):$t}'
+    fi > "$STATS_FILE.tmp" && mv "$STATS_FILE.tmp" "$STATS_FILE"
+}
+
+# Prints sorted rows: epoch<TAB>name<TAB>expanded_dir  (most-recent first).
+build_sorted() {
+    mkdir -p "$(dirname "$STATS_FILE")"
+    [ -f "$STATS_FILE" ] || printf '%s\n' '{}' > "$STATS_FILE"
+    # ponytail: one jq call joins bookmarks + frecency. O(N log N), fine for a
+    # personal bookmarks file; revisit if it ever grows past hundreds.
+    jq -r -n --rawfile b "$BOOKMARKS_FILE" --slurpfile s "$STATS_FILE" '
+        ($b | split("\n")
+             | map(select(length > 0))
+             | map(split("|"))
+             | map(select(length == 2))
+             | map({name: .[1], path: .[0]})) as $bm
+        | ($s[0] // {}) as $st
+        | $bm
+        | map(. + {ts: ($st[.name] // 0)})
+        | sort_by(.ts) | reverse
+        | .[]
+        | "\(.ts)\t\(.name)\t\(.path)"
+    ' | while IFS="$TAB" read -r _ts _name _path; do
+        printf '%s\t%s\t%s\n' "$_ts" "$_name" "$(expand_home "$_path")"
+    done
+}
+
+if [ "${1:-}" = "--selftest" ]; then
+    _bm=$(mktemp); _st=$(mktemp)
+    printf '%s\n' '$HOME/older|aaa' '$HOME/newest|ccc' '$HOME/mid|bbb' > "$_bm"
+    printf '%s\n' '{"ccc":1000,"bbb":500,"aaa":10}' > "$_st"
+    BOOKMARKS_FILE="$_bm"; STATS_FILE="$_st"
+    _order=$(build_sorted | awk -F"$TAB" '{printf "%s%s", (NR>1?",":""), $2}')
+    rm -f "$_bm" "$_st"
+    echo "order=$_order" >&2
+    [ "$_order" = "ccc,bbb,aaa" ] && { echo "PASS: frecency sort" >&2; exit 0; }
+    echo "FAIL: expected ccc,bbb,aaa got $_order" >&2; exit 1
+fi
+
+[ -f "$BOOKMARKS_FILE" ] || { echo "zmarks: no bookmarks at $BOOKMARKS_FILE"; exit 0; }
+
+TMP=$(mktemp)
+trap 'rm -f "$TMP"' EXIT
+build_sorted > "$TMP"
+[ -s "$TMP" ] || { echo "zmarks: no bookmarks"; exit 0; }
+
+_sel=
+if command -v fzf >/dev/null 2>&1; then
+    # Feed "name<TAB>~path"; fzf fuzzy-matches the whole line (search by name
+    # or path). Empty query matches all -> tiebreak=index keeps frecency order.
+    _sel=$(while IFS="$TAB" read -r _ts _name _dir; do
+        printf '%s\t%s\n' "$_name" "$(shorten_home "$_dir")"
+    done < "$TMP" | fzf \
+        --delimiter="$TAB" --with-nth=1,2 \
+        --header='Jump to bookmark (most recent first)' \
+        --prompt='zmarks> ' --info=inline --tiebreak=index \
+        --height=40% --reverse 2>/dev/null) || true
+    _sel=${_sel%%"$TAB"*}
+else
+    _n=0
+    while IFS="$TAB" read -r _ts _name _dir; do
+        _n=$((_n + 1))
+        printf '%d) %-16s  %s\n' "$_n" "$_name" "$(shorten_home "$_dir")"
+    done < "$TMP"
+    printf 'jump to: '
+    read -r _choice
+    _sel=$(awk -F"$TAB" -v c="$_choice" 'NR==c{print $2; exit}' "$TMP")
+fi
+
+[ -n "$_sel" ] || exit 0   # cancelled / blank
+
+_dir=$(awk -F"$TAB" -v n="$_sel" '$2==n{print $3; exit}' "$TMP")
+[ -n "$_dir" ] && [ -d "$_dir" ] || { echo "zmarks: '$_sel' -> '${_dir:-<empty>}' missing"; exit 0; }
+
+update_stat "$_sel"
+
+if [ -n "${NNN_PIPE:-}" ]; then
+    # 0 = current context, c = cd (no selection clear). No trailing newline.
+    printf '0c%s' "$_dir" > "$NNN_PIPE"
+else
+    # ponytail: standalone fallback when run outside nnn.
+    cd "$_dir" && exec "${SHELL:-sh}"
+fi

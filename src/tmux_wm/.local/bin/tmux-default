@@ -1,0 +1,10 @@
+#!/bin/sh
+# tmux-default - launch a nested tmux with FACTORY defaults (Ctrl+B prefix).
+#
+# Uses a dedicated socket (-L inner) + `-f /dev/null` so it always gets the
+# compiled-in defaults, even when a warm-daemon tmux server is already running
+# on the default socket (plain `tmux -f /dev/null` would otherwise JOIN that
+# server and inherit its config). Independent of the outer WM (-L wm) too.
+#
+# Usage: tmux-default [tmux-args...]
+exec tmux -L inner -f /dev/null "$@"

@@ -1,0 +1,3 @@
+#!/bin/sh
+# nnn-wm - source nnn profile then run nnn (wrapper for tmux-wm-open)
+. "$HOME/.config/nnn/profile" && exec nnn

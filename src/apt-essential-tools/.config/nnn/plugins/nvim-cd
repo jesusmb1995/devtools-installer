@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+# Description: Open neovim in the current directory
+# Dependencies: nvim
+# Shell: POSIX compliant
+
+cd "$2" && exec nvim

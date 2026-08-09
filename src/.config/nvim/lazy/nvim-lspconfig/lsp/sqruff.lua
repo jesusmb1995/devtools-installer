@@ -1,0 +1,13 @@
+---@brief
+---
+--- BAD_URL_github.com/quarylabs/sqruff
+---
+--- `sqruff` can be installed by following the instructions [here](BAD_URL_github.com/quarylabs/sqruff?tab=readme-ov-file#installation)
+---
+
+---@type vim.lsp.Config
+return {
+  cmd = { 'sqruff', 'lsp' },
+  filetypes = { 'sql' },
+  root_markers = { '.sqruff', '.git' },
+}

@@ -1,0 +1,23 @@
+#!/bin/sh
+# tmux-wm-move N - move focused pane to window N (i3: mod+Shift+N).
+#
+# If window N exists: join-pane merges the current pane into it.
+# If window N is missing: create it (detached), join the pane in, then kill
+#   the dummy pane that new-window auto-created — leaving only the moved pane.
+#   This follows the tmux-tilish plugin approach.
+#
+# After the move, select-layout -E redistributes panes evenly (i3-like tiling).
+set -u
+N=${1:?usage: tmux-wm-move N}
+
+if tmux join-pane -t ":${N}" 2>/dev/null; then
+    # Window N existed: pane joined successfully.
+    tmux select-layout -E 2>/dev/null || true
+else
+    # Window N doesn't exist: create it, join pane, kill dummy pane.
+    tmux new-window -d -t ":${N}"
+    tmux join-pane -t ":${N}"
+    tmux select-pane -t top-left
+    tmux kill-pane
+    tmux select-layout -E 2>/dev/null || true
+fi

@@ -1,0 +1,12 @@
+.was_agent
+compile_commands.json
+.local_cmd_bookmarks
+.local_cmd_bookmarks_stats
+.stgit-edit.txt.swp
+.claude
+.cursor
+clang_tidy.new.log
+clang_tidy.old.log
+clang_tidy.diff.log
+.pushed_branches
+.pushed_branches.json

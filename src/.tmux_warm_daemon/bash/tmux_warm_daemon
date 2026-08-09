@@ -1,0 +1,316 @@
+#!/usr/bin/env bash
+# Pure-bash port of the Rust tmux-warm-daemon. The Rust implementation
+# (../rust/mod.rs) is the gold reference; this mirrors its behaviour without a
+# compile step or third-party crates. Only tmux, md5sum, date and coreutils are
+# required.
+#
+# Behaviour mirrored from Rust:
+#   - Reads a YAML config from ~/.config/tmux_warm_daemon/config.yaml (or the
+#     path given as $1); falls back to a single "warm" pool (max_detached: 2).
+#   - Daemonizes (new session, cwd /tmp, umask 002, pid + log files).
+#   - On startup and on every SIGUSR1, tops up each pool's pre-warmed sessions
+#     and creates per-workspace sessions listed in
+#     /tmp/tmux_warm_<pool>_workspaces.json.
+#
+# We deliberately avoid `set -e`: like the Rust version (which tolerates tmux
+# subprocesses exiting non-zero), the daemon must survive transient command
+# failures rather than dying on them.
+set -uo pipefail
+
+# ---- defaults (mirror default_pid_file / default_log_file / default_max_detached) ----
+DEFAULT_PID_FILE="/tmp/tmux_warm_daemon.pid"
+DEFAULT_LOG_FILE="/tmp/tmux_warm_daemon.log"
+DEFAULT_MAX_DETACHED=2
+
+PID_FILE="$DEFAULT_PID_FILE"
+LOG_FILE="$DEFAULT_LOG_FILE"
+
+# Parsed pool config: ordered names + attribute maps keyed by pool name.
+POOL_NAMES=()
+declare -A POOL_MAX=()
+declare -A POOL_CMD=()
+
+SCRIPT_ARGS=("$@")
+
+# ---------------------------------------------------------------------------
+# Config loading (minimal YAML for the fixed schema in README.md)
+# ---------------------------------------------------------------------------
+
+strip_quotes() {
+  local v="$1"
+  case "$v" in
+    \"*\") v="${v#\"}"; v="${v%\"}" ;;
+    \'*\') v="${v#\'}"; v="${v%\'}" ;;
+  esac
+  printf '%s' "$v"
+}
+
+# Parse the subset of YAML the daemon config uses: top-level pid_file/log_file
+# scalars and a `pools:` map of pool -> {max_detached, command}.
+load_config_file() {
+  local file="$1"
+  local in_pools=0 cur="" line trimmed nows indent key val
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%$'\r'}"
+    nows="${line%%[![:space:]]*}"     # leading whitespace
+    trimmed="${line#"$nows"}"
+    [ -z "$trimmed" ] && continue
+    case "$trimmed" in '#'*) continue ;; esac
+    indent=${#nows}
+
+    if [ "$indent" -eq 0 ]; then
+      in_pools=0; cur=""
+      key="${trimmed%%:*}"
+      val="${trimmed#*:}"
+      val="${val#"${val%%[![:space:]]*}"}"   # ltrim value
+      val="$(strip_quotes "$val")"
+      case "$key" in
+        pid_file) [ -n "$val" ] && PID_FILE="$val" ;;
+        log_file) [ -n "$val" ] && LOG_FILE="$val" ;;
+        pools) in_pools=1 ;;
+      esac
+      continue
+    fi
+
+    [ "$in_pools" -eq 1 ] || continue
+
+    key="${trimmed%%:*}"
+    val="${trimmed#*:}"
+    val="${val#"${val%%[![:space:]]*}"}"
+    val="$(strip_quotes "$val")"
+
+    case "$key" in
+      max_detached)
+        [ -n "$cur" ] || continue
+        case "$val" in ''|*[!0-9]*) val="$DEFAULT_MAX_DETACHED" ;; esac
+        POOL_MAX["$cur"]="$val"
+        ;;
+      command)
+        [ -n "$cur" ] || continue
+        POOL_CMD["$cur"]="$val"
+        ;;
+      *)
+        # A bare `name:` (no value) starts a new pool definition.
+        if [ -z "$val" ]; then
+          cur="$key"
+          POOL_NAMES+=("$cur")
+          POOL_MAX["$cur"]="$DEFAULT_MAX_DETACHED"
+        fi
+        ;;
+    esac
+  done < "$file"
+}
+
+use_default_pool() {
+  POOL_NAMES=("warm")
+  POOL_MAX=( ["warm"]="$DEFAULT_MAX_DETACHED" )
+  POOL_CMD=()
+}
+
+load_config() {
+  local path="$1"
+  if [ -f "$path" ]; then
+    load_config_file "$path"
+  else
+    echo "Config not found at $path, using defaults" >&2
+  fi
+  if [ "${#POOL_NAMES[@]}" -eq 0 ]; then
+    use_default_pool
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+log() {
+  printf '%s %s\n' "$(date '+%F %T')" "$1" >>"$LOG_FILE"
+}
+
+# Mirror Rust shell_quote: single-quote and escape embedded single quotes.
+shell_quote() {
+  local s="$1"
+  s="${s//\'/\'\\\'\'}"
+  printf "'%s'" "$s"
+}
+
+# "name attached" lines, attached is tmux's 0/1; empty when no server is up.
+existing_sessions() {
+  tmux list-sessions -F '#{session_name} #{session_attached}' 2>/dev/null
+}
+
+# Parse a JSON array of strings into the named array. Returns non-zero on
+# malformed input (mirrors Rust logging "Invalid JSON" and skipping).
+parse_json_string_array() {
+  local s="$1"
+  local -n __out="$2"
+  __out=()
+  local n=${#s} i c
+  local in_str=0 esc=0 cur=""
+  for ((i = 0; i < n; i++)); do
+    c="${s:i:1}"
+    if [ "$in_str" -eq 1 ]; then
+      if [ "$esc" -eq 1 ]; then
+        case "$c" in
+          n) cur+=$'\n' ;; t) cur+=$'\t' ;; r) cur+=$'\r' ;;
+          b) cur+=$'\b' ;; f) cur+=$'\f' ;;
+          *) cur+="$c" ;;   # \" \\ \/ and (approx) \uXXXX
+        esac
+        esc=0
+      elif [ "$c" = '\' ]; then
+        esc=1
+      elif [ "$c" = '"' ]; then
+        in_str=0; __out+=("$cur"); cur=""
+      else
+        cur+="$c"
+      fi
+    else
+      case "$c" in
+        '"') in_str=1; cur="" ;;
+        '['|']'|','|' '|$'\t'|$'\n'|$'\r') : ;;
+        *) return 1 ;;
+      esac
+    fi
+  done
+  [ "$in_str" -eq 0 ]
+}
+
+# ---------------------------------------------------------------------------
+# Pool maintenance
+# ---------------------------------------------------------------------------
+
+ensure_workspace_sessions() {
+  local pool="$1" trigger="$2"
+  local ws_file="/tmp/tmux_warm_${pool}_workspaces.json"
+  [ -f "$ws_file" ] || return 0
+
+  local content; content="$(cat "$ws_file")"
+  local -a workspaces
+  if ! parse_json_string_array "$content" workspaces; then
+    log "[$pool] Invalid JSON in '$ws_file'"
+    return 0
+  fi
+
+  local sessions; sessions="$(existing_sessions)"
+  local -A names_set=()
+  local name _rest
+  while IFS=' ' read -r name _rest; do
+    [ -n "$name" ] && names_set["$name"]=1
+  done <<<"$sessions"
+
+  local cmd="${POOL_CMD[$pool]:-}"
+  local ws hash session_name
+  for ws in "${workspaces[@]}"; do
+    hash="$(printf '%s' "$ws" | md5sum | cut -c1-8)"
+    session_name="${pool}@${hash}"
+    [ -n "${names_set[$session_name]:-}" ] && continue
+
+    if [ -n "$cmd" ]; then
+      tmux new-session -d -s "$session_name" -c "$ws" \
+        "$cmd --workspace $(shell_quote "$ws")"
+    else
+      tmux new-session -d -s "$session_name" -c "$ws"
+    fi
+    log "[$pool] Created workspace session '$session_name' for '$ws' (trigger: $trigger)"
+  done
+}
+
+ensure_pool() {
+  local pool="$1" trigger="$2"
+  local max="${POOL_MAX[$pool]:-$DEFAULT_MAX_DETACHED}"
+  local cmd="${POOL_CMD[$pool]:-}"
+
+  ensure_workspace_sessions "$pool" "$trigger"
+
+  [ "$max" -eq 0 ] && return 0
+
+  local sessions; sessions="$(existing_sessions)"
+  local prefix="${pool}-"
+  local -A names_set=()
+  local detached_count=0
+  local name attached
+  while IFS=' ' read -r name attached; do
+    [ -n "$name" ] || continue
+    names_set["$name"]=1
+    case "$name" in
+      "$prefix"*) [ "$attached" = "0" ] && detached_count=$((detached_count + 1)) ;;
+    esac
+  done <<<"$sessions"
+
+  if [ "$detached_count" -ge "$max" ]; then
+    log "[$pool] Skipping: already $detached_count detached session(s)"
+    return 0
+  fi
+
+  # Backfill up to max detached sessions in one trigger so a warm session is
+  # always ready (no 1-per-signal lag). No artificial sleep: the whole point of
+  # the pool is fast attach.
+  local deficit=$((max - detached_count))
+  local created=0 i=0 session_name
+  while [ "$created" -lt "$deficit" ]; do
+    session_name="${pool}-${i}"
+    if [ -z "${names_set[$session_name]:-}" ]; then
+      if [ -n "$cmd" ]; then
+        tmux new-session -d -s "$session_name" "$cmd"
+      else
+        tmux new-session -d -s "$session_name"
+      fi
+      names_set["$session_name"]=1
+      created=$((created + 1))
+      log "[$pool] Created session '$session_name' (trigger: $trigger)"
+    fi
+    i=$((i + 1))
+  done
+}
+
+ensure_all_pools() {
+  local trigger="$1" pool
+  for pool in "${POOL_NAMES[@]}"; do
+    ensure_pool "$pool" "$trigger"
+  done
+}
+
+# ---------------------------------------------------------------------------
+# Daemonization + main loop
+# ---------------------------------------------------------------------------
+
+daemonize() {
+  # Re-exec detached in its own session, redirecting output to the log.
+  if [ "${TWD_DAEMONIZED:-}" != "1" ]; then
+    umask 0002
+    TWD_DAEMONIZED=1 setsid "$0" "${SCRIPT_ARGS[@]+"${SCRIPT_ARGS[@]}"}" \
+      </dev/null >>"$LOG_FILE" 2>&1 &
+    exit 0
+  fi
+  umask 0002
+  cd /tmp || true
+  echo "$$" >"$PID_FILE"
+}
+
+RELOAD=0
+on_usr1() { RELOAD=1; }
+
+main_loop() {
+  ensure_all_pools "startup"
+  local sp
+  while :; do
+    sleep 2147483647 &
+    sp=$!
+    wait "$sp" 2>/dev/null
+    kill "$sp" 2>/dev/null
+    if [ "$RELOAD" -eq 1 ]; then
+      RELOAD=0
+      ensure_all_pools "SIGUSR1 $(date '+%F %T')"
+    fi
+  done
+}
+
+main() {
+  local config_path="${1:-${HOME:-/tmp}/.config/tmux_warm_daemon/config.yaml}"
+  load_config "$config_path"
+  daemonize
+  trap on_usr1 USR1
+  main_loop
+}
+
+main "${SCRIPT_ARGS[@]+"${SCRIPT_ARGS[@]}"}"
