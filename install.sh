@@ -123,34 +123,34 @@ replace_regex__3_v0() {
 
 # split(text: Text, delimiter: Text)
 split__4_v0() {
-    local text_870="${1}"
-    local delimiter_871="${2}"
-    local result_872=()
+    local text_874="${1}"
+    local delimiter_875="${2}"
+    local result_876=()
     # zsh uses -A for array, bash uses -a, ksh is VERY bad at splitting anything
     if [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
-        IFS="${delimiter_871}" read -rd '' -A result_872 < <(printf %s "$text_870")
+        IFS="${delimiter_875}" read -rd '' -A result_876 < <(printf %s "$text_874")
         __status=$?
     elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
-        if [ "$([ "_${delimiter_871}" != "_
+        if [ "$([ "_${delimiter_875}" != "_
 " ]; echo $?)" != 0 ]; then
-            while read -r -d $'\n'; do result_872+=("$REPLY"); done < <(echo "$text_870")
+            while read -r -d $'\n'; do result_876+=("$REPLY"); done < <(echo "$text_874")
             __status=$?
         else
-            IFS="${delimiter_871}" read -rd '' -a result_872 < <(printf %s "$text_870")
+            IFS="${delimiter_875}" read -rd '' -a result_876 < <(printf %s "$text_874")
             __status=$?
         fi
     elif [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
-        IFS="${delimiter_871}" read -rd '' -a result_872 < <(printf %s "$text_870")
+        IFS="${delimiter_875}" read -rd '' -a result_876 < <(printf %s "$text_874")
         __status=$?
     fi
-    ret_split4_v0=("${result_872[@]}")
+    ret_split4_v0=("${result_876[@]}")
     return 0
 }
 
 # split_lines(text: Text)
 split_lines__5_v0() {
-    local text_869="${1}"
-    split__4_v0 "${text_869}" "
+    local text_873="${1}"
+    split__4_v0 "${text_873}" "
 "
     ret_split_lines5_v0=("${ret_split4_v0[@]}")
     return 0
@@ -158,11 +158,11 @@ split_lines__5_v0() {
 
 # join(list: [Text], delimiter: Text)
 join__7_v0() {
-    local list_406=("${!1}")
-    local delimiter_407="${2}"
+    local list_410=("${!1}")
+    local delimiter_411="${2}"
     local command_5
-    command_5="$(IFS="${delimiter_407}" ; printf "%s
-" "${list_406[*]}")"
+    command_5="$(IFS="${delimiter_411}" ; printf "%s
+" "${list_410[*]}")"
     __status=$?
     ret_join7_v0="${command_5}"
     return 0
@@ -170,13 +170,13 @@ join__7_v0() {
 
 # trim(text: Text)
 trim__10_v0() {
-    local text_92="${1}"
-    local result_93=""
-    result_93="${text_92#${text_92%%[![:space:]]*}}"
+    local text_94="${1}"
+    local result_95=""
+    result_95="${text_94#${text_94%%[![:space:]]*}}"
     __status=$?
-    result_93="${result_93%${result_93##*[![:space:]]}}"
+    result_95="${result_95%${result_95##*[![:space:]]}}"
     __status=$?
-    ret_trim10_v0="${result_93}"
+    ret_trim10_v0="${result_95}"
     return 0
 }
 
@@ -200,11 +200,11 @@ file_exists__39_v0() {
 
 # file_write(path: Text, content: Text)
 file_write__41_v0() {
-    local path_434="${1}"
-    local content_435="${2}"
+    local path_438="${1}"
+    local content_439="${2}"
     local command_6
     command_6="$(printf '%s
-' "${content_435}" > "${path_434}")"
+' "${content_439}" > "${path_438}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_file_write41_v0=''
@@ -216,11 +216,11 @@ file_write__41_v0() {
 
 # dir_create(path: Text)
 dir_create__44_v0() {
-    local path_427="${1}"
-    dir_exists__38_v0 "${path_427}"
+    local path_431="${1}"
+    dir_exists__38_v0 "${path_431}"
     local ret_dir_exists38_v0__87_12="${ret_dir_exists38_v0}"
     if [ "$(( ! ret_dir_exists38_v0__87_12 ))" != 0 ]; then
-        mkdir -p "${path_427}"
+        mkdir -p "${path_431}"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_dir_create44_v0=''
@@ -244,71 +244,71 @@ is_mac_os_mktemp__45_v0() {
 
 # temp_dir_create(template: Text, auto_delete: Bool, force_delete: Bool)
 temp_dir_create__46_v0() {
-    local template_89="${1}"
-    local auto_delete_90="${2}"
-    local force_delete_91="${3}"
-    trim__10_v0 "${template_89}"
+    local template_91="${1}"
+    local auto_delete_92="${2}"
+    local force_delete_93="${3}"
+    trim__10_v0 "${template_91}"
     local ret_trim10_v0__113_8="${ret_trim10_v0}"
     if [ "$([ "_${ret_trim10_v0__113_8}" != "_" ]; echo $?)" != 0 ]; then
         echo "The template cannot be an empty string"'!'""
         ret_temp_dir_create46_v0=''
         return 1
     fi
-    local filename_94=""
+    local filename_96=""
     is_mac_os_mktemp__45_v0 
     local ret_is_mac_os_mktemp45_v0__119_8="${ret_is_mac_os_mktemp45_v0}"
     if [ "${ret_is_mac_os_mktemp45_v0__119_8}" != 0 ]; then
         # usage: mktemp [-d] [-p tmpdir] [-q] [-t prefix] [-u] template ...
         # mktemp [-d] [-p tmpdir] [-q] [-u] -t prefix
         local command_7
-        command_7="$(mktemp -d -p "$TMPDIR" "${template_89}")"
+        command_7="$(mktemp -d -p "$TMPDIR" "${template_91}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_temp_dir_create46_v0=''
             return "${__status}"
         fi
-        filename_94="${command_7}"
+        filename_96="${command_7}"
     else
         local command_8
-        command_8="$(mktemp -d -p "$TMPDIR" -t "${template_89}")"
+        command_8="$(mktemp -d -p "$TMPDIR" -t "${template_91}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_temp_dir_create46_v0=''
             return "${__status}"
         fi
-        filename_94="${command_8}"
+        filename_96="${command_8}"
     fi
-    if [ "$([ "_${filename_94}" != "_" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${filename_96}" != "_" ]; echo $?)" != 0 ]; then
         echo "Failed to make a temporary directory"
         ret_temp_dir_create46_v0=''
         return 1
     fi
-    if [ "$(( auto_delete_90 && $([ "_${EXEC_SHELL}" == "_ksh" ]; echo $?) ))" != 0 ]; then
-        if [ "${force_delete_91}" != 0 ]; then
-            trap 'rm -rf '"${filename_94}"'' EXIT
+    if [ "$(( auto_delete_92 && $([ "_${EXEC_SHELL}" == "_ksh" ]; echo $?) ))" != 0 ]; then
+        if [ "${force_delete_93}" != 0 ]; then
+            trap 'rm -rf '"${filename_96}"'' EXIT
             __status=$?
             if [ "${__status}" != 0 ]; then
-                echo "Setting auto deletion fails. You must delete temporary dir ${filename_94}."
+                echo "Setting auto deletion fails. You must delete temporary dir ${filename_96}."
             fi
         else
-            trap 'rmdir '"${filename_94}"'' EXIT
+            trap 'rmdir '"${filename_96}"'' EXIT
             __status=$?
             if [ "${__status}" != 0 ]; then
-                echo "Setting auto deletion fails. You must delete temporary dir ${filename_94}."
+                echo "Setting auto deletion fails. You must delete temporary dir ${filename_96}."
             fi
         fi
     fi
-    ret_temp_dir_create46_v0="${filename_94}"
+    ret_temp_dir_create46_v0="${filename_96}"
     return 0
 }
 
 # env_var_get(name: Text)
 env_var_get__124_v0() {
-    local name_399="${1}"
+    local name_403="${1}"
     if [ "$([ "_${EXEC_SHELL}" != "_bash" ]; echo $?)" != 0 ]; then
         local command_9
         command_9="$(printf "%s
-" "${!name_399}")"
+" "${!name_403}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get124_v0=''
@@ -319,7 +319,7 @@ env_var_get__124_v0() {
     elif [ "$([ "_${EXEC_SHELL}" != "_zsh" ]; echo $?)" != 0 ]; then
         local command_10
         command_10="$(printf "%s
-" "${(P)name_399}")"
+" "${(P)name_403}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get124_v0=''
@@ -329,7 +329,7 @@ env_var_get__124_v0() {
         return 0
     elif [ "$([ "_${EXEC_SHELL}" != "_ksh" ]; echo $?)" != 0 ]; then
         local command_11
-        command_11="$(eval "echo \${$name_399}")"
+        command_11="$(eval "echo \${$name_403}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_env_var_get124_v0=''
@@ -342,63 +342,63 @@ env_var_get__124_v0() {
 
 # printf(format: Text, args: [Text])
 printf__132_v0() {
-    local format_413="${1}"
-    local args_414=("${!2}")
-    args_414=("${format_413}" "${args_414[@]}")
+    local format_417="${1}"
+    local args_418=("${!2}")
+    args_418=("${format_417}" "${args_418[@]}")
     __status=$?
-    printf "${args_414[@]}"
+    printf "${args_418[@]}"
     __status=$?
 }
 
 # echo_warning(message: Text)
 echo_warning__141_v0() {
-    local message_419="${1}"
-    local array_12=("${message_419}")
+    local message_423="${1}"
+    local array_12=("${message_423}")
     printf__132_v0 "\\x1b[1;3;97;43m%s\\x1b[0m
 " array_12[@]
 }
 
 # echo_error(message: Text, exit_code: Int)
 echo_error__142_v0() {
-    local message_411="${1}"
-    local exit_code_412="${2}"
-    local array_13=("${message_411}")
+    local message_415="${1}"
+    local exit_code_416="${2}"
+    local array_13=("${message_415}")
     printf__132_v0 "\\x1b[1;3;97;41m%s\\x1b[0m
 " array_13[@]
-    if [ "$(( exit_code_412 > 0 ))" != 0 ]; then
-        exit "${exit_code_412}"
+    if [ "$(( exit_code_416 > 0 ))" != 0 ]; then
+        exit "${exit_code_416}"
     fi
 }
 
 # has_cmd(cmd: Text)
 has_cmd__165_v0() {
-    local cmd_404="${1}"
-    local found_405=0
-    command -v ${cmd_404} >/dev/null 2>&1
+    local cmd_408="${1}"
+    local found_409=0
+    command -v ${cmd_408} >/dev/null 2>&1
     __status=$?
     if [ "${__status}" = 0 ]; then
-        found_405=1
+        found_409=1
     fi
-    ret_has_cmd165_v0="${found_405}"
+    ret_has_cmd165_v0="${found_409}"
     return 0
 }
 
 # echo_error exits the process (default exit_code=1), so no fail needed.
 # sudo_cmd(cmd: Text, envvar: [])
 sudo_cmd__169_v0() {
-    local cmd_402="${1}"
-    local envvar_403=("${!2}")
+    local cmd_406="${1}"
+    local envvar_407=("${!2}")
     has_cmd__165_v0 "sudo"
     local ret_has_cmd165_v0__4_8="${ret_has_cmd165_v0}"
     if [ "${ret_has_cmd165_v0__4_8}" != 0 ]; then
-        sudo ${envvar_403[@]} ${cmd_402}
+        sudo ${envvar_407[@]} ${cmd_406}
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_sudo_cmd169_v0=''
             return "${__status}"
         fi
     else
-        env ${envvar_403[@]} ${cmd_402}
+        env ${envvar_407[@]} ${cmd_406}
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_sudo_cmd169_v0=''
@@ -409,19 +409,19 @@ sudo_cmd__169_v0() {
 
 # sudo_cmd(cmd: Text, envvar: [Text])
 sudo_cmd__169_v1() {
-    local cmd_409="${1}"
-    local envvar_410=("${!2}")
+    local cmd_413="${1}"
+    local envvar_414=("${!2}")
     has_cmd__165_v0 "sudo"
     local ret_has_cmd165_v0__4_8="${ret_has_cmd165_v0}"
     if [ "${ret_has_cmd165_v0__4_8}" != 0 ]; then
-        sudo ${envvar_410[@]} ${cmd_409}
+        sudo ${envvar_414[@]} ${cmd_413}
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_sudo_cmd169_v1=''
             return "${__status}"
         fi
     else
-        env ${envvar_410[@]} ${cmd_409}
+        env ${envvar_414[@]} ${cmd_413}
         __status=$?
         if [ "${__status}" != 0 ]; then
             ret_sudo_cmd169_v1=''
@@ -432,19 +432,19 @@ sudo_cmd__169_v1() {
 
 # prompt_user(description: Text)
 prompt_user__172_v0() {
-    local description_398="${1}"
+    local description_402="${1}"
     env_var_get__124_v0 "COPALS_ASK"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_prompt_user172_v0=1
         return 0
     fi
-    local ask_400="${ret_env_var_get124_v0}"
-    if [ "$([ "_${ask_400}" != "_" ]; echo $?)" != 0 ]; then
+    local ask_404="${ret_env_var_get124_v0}"
+    if [ "$([ "_${ask_404}" != "_" ]; echo $?)" != 0 ]; then
         ret_prompt_user172_v0=1
         return 0
     fi
-    echo "install: ${description_398}"
+    echo "install: ${description_402}"
     printf "Proceed? [Y/n] " >&2
     __status=$?
     local command_14
@@ -457,12 +457,12 @@ prompt_user__172_v0() {
         ret_prompt_user172_v0=1
         return 0
     fi
-    local ans_401="${command_14}"
-    if [ "$([ "_${ans_401}" != "_" ]; echo $?)" != 0 ]; then
+    local ans_405="${command_14}"
+    if [ "$([ "_${ans_405}" != "_" ]; echo $?)" != 0 ]; then
         ret_prompt_user172_v0=1
         return 0
     fi
-    if [ "$(( $(( $(( $(( $([ "_${ans_401}" != "_n" ]; echo $?) || $([ "_${ans_401}" != "_N" ]; echo $?) )) || $([ "_${ans_401}" != "_no" ]; echo $?) )) || $([ "_${ans_401}" != "_NO" ]; echo $?) )) || $([ "_${ans_401}" != "_No" ]; echo $?) ))" != 0 ]; then
+    if [ "$(( $(( $(( $(( $([ "_${ans_405}" != "_n" ]; echo $?) || $([ "_${ans_405}" != "_N" ]; echo $?) )) || $([ "_${ans_405}" != "_no" ]; echo $?) )) || $([ "_${ans_405}" != "_NO" ]; echo $?) )) || $([ "_${ans_405}" != "_No" ]; echo $?) ))" != 0 ]; then
         echo "skipping"
         ret_prompt_user172_v0=0
         return 0
@@ -473,14 +473,14 @@ prompt_user__172_v0() {
 
 # has_cmd(cmd: Text)
 has_cmd__175_v0() {
-    local cmd_417="${1}"
-    local found_418=0
-    command -v ${cmd_417} >/dev/null 2>&1
+    local cmd_421="${1}"
+    local found_422=0
+    command -v ${cmd_421} >/dev/null 2>&1
     __status=$?
     if [ "${__status}" = 0 ]; then
-        found_418=1
+        found_422=1
     fi
-    ret_has_cmd175_v0="${found_418}"
+    ret_has_cmd175_v0="${found_422}"
     return 0
 }
 
@@ -512,8 +512,8 @@ ensure_updated__180_v0() {
 
 # apt_install(packages: [Text])
 apt_install__181_v0() {
-    local packages_397=("${!1}")
-    prompt_user__172_v0 "apt install: ${packages_397[@]}"
+    local packages_401=("${!1}")
+    prompt_user__172_v0 "apt install: ${packages_401[@]}"
     local ret_prompt_user172_v0__19_12="${ret_prompt_user172_v0}"
     if [ "$(( ! ret_prompt_user172_v0__19_12 ))" != 0 ]; then
         ret_apt_install181_v0=''
@@ -525,10 +525,10 @@ apt_install__181_v0() {
         ret_apt_install181_v0=''
         return "${__status}"
     fi
-    join__7_v0 packages_397[@] " "
-    local pkgs_408="${ret_join7_v0}"
+    join__7_v0 packages_401[@] " "
+    local pkgs_412="${ret_join7_v0}"
     local array_16=("DEBIAN_FRONTEND=noninteractive")
-    sudo_cmd__169_v1 "apt-get install -y --no-install-recommends ${pkgs_408}" array_16[@]
+    sudo_cmd__169_v1 "apt-get install -y --no-install-recommends ${pkgs_412}" array_16[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_apt_install181_v0=''
@@ -538,11 +538,11 @@ apt_install__181_v0() {
 
 # apt_install_or_die(packages: [Text])
 apt_install_or_die__182_v0() {
-    local packages_396=("${!1}")
-    apt_install__181_v0 packages_396[@]
+    local packages_400=("${!1}")
+    apt_install__181_v0 packages_400[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "failed to apt install ${packages_396[@]}" 1
+        echo_error__142_v0 "failed to apt install ${packages_400[@]}" 1
     fi
 }
 
@@ -551,24 +551,24 @@ apt_install_or_die__182_v0() {
 # from the target distro (e.g. jj, which is not in Debian apt).
 # apt_install_or_warning(packages: [Text])
 apt_install_or_warning__183_v0() {
-    local packages_670=("${!1}")
-    apt_install__181_v0 packages_670[@]
+    local packages_674=("${!1}")
+    apt_install__181_v0 packages_674[@]
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_warning__141_v0 "could not apt install ${packages_670[@]} - skipping"
+        echo_warning__141_v0 "could not apt install ${packages_674[@]} - skipping"
     fi
 }
 
 # apt_install_if_missing_or_die(cmd: Text, pkg: Text)
 apt_install_if_missing_or_die__184_v0() {
-    local cmd_415="${1}"
-    local pkg_416="${2}"
-    has_cmd__175_v0 "${cmd_415}"
+    local cmd_419="${1}"
+    local pkg_420="${2}"
+    has_cmd__175_v0 "${cmd_419}"
     local ret_has_cmd175_v0__43_8="${ret_has_cmd175_v0}"
     if [ "${ret_has_cmd175_v0__43_8}" != 0 ]; then
-        echo_warning__141_v0 "${cmd_415} already installed, skipping apt install"
+        echo_warning__141_v0 "${cmd_419} already installed, skipping apt install"
     else
-        local array_17=("${pkg_416}")
+        local array_17=("${pkg_420}")
         apt_install_or_die__182_v0 array_17[@]
     fi
 }
@@ -587,17 +587,17 @@ home__188_v0() {
 
 # copy_into_home(src: Text, rel_dest: Text)
 copy_into_home__195_v0() {
-    local src_423="${1}"
-    local rel_dest_424="${2}"
+    local src_427="${1}"
+    local rel_dest_428="${2}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_copy_into_home195_v0=''
         return "${__status}"
     fi
-    local home_425="${ret_home188_v0}"
-    local dest_426="${home_425}/${rel_dest_424}"
-    dir_create__44_v0 "${dest_426}"
+    local home_429="${ret_home188_v0}"
+    local dest_430="${home_429}/${rel_dest_428}"
+    dir_create__44_v0 "${dest_430}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_copy_into_home195_v0=''
@@ -605,47 +605,47 @@ copy_into_home__195_v0() {
     fi
     local __cp_18=
     (( 1 )) && __cp_18="-f" || __cp_18=""
-    cp -r ${__cp_18} "${src_423}" "${dest_426}"
+    cp -r ${__cp_18} "${src_427}" "${dest_430}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_copy_into_home195_v0=''
         return "${__status}"
     fi
-    ret_copy_into_home195_v0="${dest_426}"
+    ret_copy_into_home195_v0="${dest_430}"
     return 0
 }
 
 # copy_into_home_or_die(src: Text, rel_dest: Text)
 copy_into_home_or_die__196_v0() {
-    local src_421="${1}"
-    local rel_dest_422="${2}"
-    prompt_user__172_v0 "cp into home: ${rel_dest_422}"
+    local src_425="${1}"
+    local rel_dest_426="${2}"
+    prompt_user__172_v0 "cp into home: ${rel_dest_426}"
     local ret_prompt_user172_v0__23_12="${ret_prompt_user172_v0}"
     if [ "$(( ! ret_prompt_user172_v0__23_12 ))" != 0 ]; then
         ret_copy_into_home_or_die196_v0=""
         return 0
     fi
-    copy_into_home__195_v0 "${src_421}" "${rel_dest_422}"
+    copy_into_home__195_v0 "${src_425}" "${rel_dest_426}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "deploy of ${rel_dest_422} into home failed" 1
+        echo_error__142_v0 "deploy of ${rel_dest_426} into home failed" 1
     fi
-    local dest_428="${ret_copy_into_home195_v0}"
-    ret_copy_into_home_or_die196_v0="${dest_428}"
+    local dest_432="${ret_copy_into_home195_v0}"
+    ret_copy_into_home_or_die196_v0="${dest_432}"
     return 0
 }
 
 # dir_create_at_home(rel: Text)
 dir_create_at_home__202_v0() {
-    local rel_430="${1}"
+    local rel_434="${1}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_dir_create_at_home202_v0=''
         return "${__status}"
     fi
-    local h_431="${ret_home188_v0}"
-    dir_create__44_v0 "${h_431}/${rel_430}"
+    local h_435="${ret_home188_v0}"
+    dir_create__44_v0 "${h_435}/${rel_434}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_dir_create_at_home202_v0=''
@@ -655,14 +655,14 @@ dir_create_at_home__202_v0() {
 
 # dir_create_at_home_or_die(rel: Text)
 dir_create_at_home_or_die__203_v0() {
-    local rel_429="${1}"
-    prompt_user__172_v0 "create directory ~/${rel_429}"
+    local rel_433="${1}"
+    prompt_user__172_v0 "create directory ~/${rel_433}"
     local ret_prompt_user172_v0__12_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__12_8}" != 0 ]; then
-        dir_create_at_home__202_v0 "${rel_429}"
+        dir_create_at_home__202_v0 "${rel_433}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            echo_error__142_v0 "failed to create directory at home/${rel_429}" 1
+            echo_error__142_v0 "failed to create directory at home/${rel_433}" 1
         fi
     fi
 }
@@ -682,13 +682,13 @@ home__207_v0() {
 __APPS_DIR_4=".local/share/applications"
 # make_nnn_desktop(h: Text)
 make_nnn_desktop__210_v0() {
-    local h_432="${1}"
-    local path_433="${h_432}/.local/bin/st-zsh"
+    local h_436="${1}"
+    local path_437="${h_436}/.local/bin/st-zsh"
     ret_make_nnn_desktop210_v0="[Desktop Entry]
 Type=Application
 Name=File Explorer (nnn)
 Comment=Terminal file manager
-Exec=${path_433} -e ${h_432}/.local/bin/nnn-launch
+Exec=${path_437} -e ${h_436}/.local/bin/nnn-launch
 Terminal=false
 Categories=Utility;FileManager;
 Icon=nnn
@@ -698,13 +698,13 @@ Icon=nnn
 
 # make_btop_desktop(h: Text)
 make_btop_desktop__211_v0() {
-    local h_436="${1}"
-    local path_437="${h_436}/.local/bin/st-zsh"
+    local h_440="${1}"
+    local path_441="${h_440}/.local/bin/st-zsh"
     ret_make_btop_desktop211_v0="[Desktop Entry]
 Type=Application
 Name=System Monitor (btop)
 Comment=Resource monitor
-Exec=${path_437} -e btop
+Exec=${path_441} -e btop
 Terminal=false
 Categories=System;Monitor;
 Icon=btop
@@ -714,13 +714,13 @@ Icon=btop
 
 # make_ncdu_desktop(h: Text)
 make_ncdu_desktop__212_v0() {
-    local h_438="${1}"
-    local path_439="${h_438}/.local/bin/st-zsh"
+    local h_442="${1}"
+    local path_443="${h_442}/.local/bin/st-zsh"
     ret_make_ncdu_desktop212_v0="[Desktop Entry]
 Type=Application
 Name=Disk Usage (ncdu)
 Comment=Disk usage analyzer
-Exec=${path_439} -e ncdu
+Exec=${path_443} -e ncdu
 Terminal=false
 Categories=System;Utility;
 Icon=ncdu
@@ -738,32 +738,32 @@ install_apt_essential_tools__213_v0() {
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to resolve HOME" 1
     fi
-    local h_420="${ret_home207_v0}"
+    local h_424="${ret_home207_v0}"
     copy_into_home_or_die__196_v0 "src/apt-essential-tools/.config/nnn" ".config/"
     copy_into_home_or_die__196_v0 "src/apt-essential-tools/.local/bin" ".local/"
-    chmod +x ${h_420}/.config/nnn/plugins/zmarks ${h_420}/.config/nnn/plugins/nvim-cd ${h_420}/.config/nnn/plugins/bm-create ${h_420}/.config/nnn/plugins/win-open ${h_420}/.config/nnn/profile ${h_420}/.local/bin/nnn-launch
+    chmod +x ${h_424}/.config/nnn/plugins/zmarks ${h_424}/.config/nnn/plugins/nvim-cd ${h_424}/.config/nnn/plugins/bm-create ${h_424}/.config/nnn/plugins/win-open ${h_424}/.config/nnn/profile ${h_424}/.local/bin/nnn-launch
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to chmod nnn files" 1
     fi
     dir_create_at_home_or_die__203_v0 "${__APPS_DIR_4}"
-    make_nnn_desktop__210_v0 "${h_420}"
+    make_nnn_desktop__210_v0 "${h_424}"
     local ret_make_nnn_desktop210_v0__40_46="${ret_make_nnn_desktop210_v0}"
-    file_write__41_v0 "${h_420}/${__APPS_DIR_4}/nnn.desktop" "${ret_make_nnn_desktop210_v0__40_46}"
+    file_write__41_v0 "${h_424}/${__APPS_DIR_4}/nnn.desktop" "${ret_make_nnn_desktop210_v0__40_46}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to write nnn.desktop" 1
     fi
-    make_btop_desktop__211_v0 "${h_420}"
+    make_btop_desktop__211_v0 "${h_424}"
     local ret_make_btop_desktop211_v0__43_47="${ret_make_btop_desktop211_v0}"
-    file_write__41_v0 "${h_420}/${__APPS_DIR_4}/btop.desktop" "${ret_make_btop_desktop211_v0__43_47}"
+    file_write__41_v0 "${h_424}/${__APPS_DIR_4}/btop.desktop" "${ret_make_btop_desktop211_v0__43_47}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to write btop.desktop" 1
     fi
-    make_ncdu_desktop__212_v0 "${h_420}"
+    make_ncdu_desktop__212_v0 "${h_424}"
     local ret_make_ncdu_desktop212_v0__46_47="${ret_make_ncdu_desktop212_v0}"
-    file_write__41_v0 "${h_420}/${__APPS_DIR_4}/ncdu.desktop" "${ret_make_ncdu_desktop212_v0__46_47}"
+    file_write__41_v0 "${h_424}/${__APPS_DIR_4}/ncdu.desktop" "${ret_make_ncdu_desktop212_v0__46_47}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to write ncdu.desktop" 1
@@ -778,14 +778,14 @@ setup_global_gitignore__218_v0() {
         ret_setup_global_gitignore218_v0=''
         return "${__status}"
     fi
-    local h_574="${ret_home188_v0}"
-    file_exists__39_v0 "${h_574}/.gitignore_global"
+    local h_578="${ret_home188_v0}"
+    file_exists__39_v0 "${h_578}/.gitignore_global"
     local ret_file_exists39_v0__7_12="${ret_file_exists39_v0}"
     if [ "$(( ! ret_file_exists39_v0__7_12 ))" != 0 ]; then
         ret_setup_global_gitignore218_v0=''
         return 1
     fi
-    git config --global core.excludesFile ${h_574}/.gitignore_global
+    git config --global core.excludesFile ${h_578}/.gitignore_global
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_setup_global_gitignore218_v0=''
@@ -804,26 +804,26 @@ setup_global_gitignore_or_die__219_v0() {
 
 # rsync(src: Text, target: Text, excludes: [Text], delete: Bool)
 rsync__227_v0() {
-    local src_553="${1}"
-    local target_554="${2}"
-    local excludes_555=("${!3}")
-    local delete_556="${4}"
-    dir_create__44_v0 "${target_554}"
+    local src_557="${1}"
+    local target_558="${2}"
+    local excludes_559=("${!3}")
+    local delete_560="${4}"
+    dir_create__44_v0 "${target_558}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync227_v0=''
         return "${__status}"
     fi
-    local excludes_arr_557=()
-    for exclude_558 in "${excludes_555[@]}"; do
-        local s_559="${exclude_558}"
-        excludes_arr_557+=("--exclude" "${s_559}")
+    local excludes_arr_561=()
+    for exclude_562 in "${excludes_559[@]}"; do
+        local s_563="${exclude_562}"
+        excludes_arr_561+=("--exclude" "${s_563}")
     done
-    local delopt_560=""
-    if [ "${delete_556}" != 0 ]; then
-        delopt_560="--delete"
+    local delopt_564=""
+    if [ "${delete_560}" != 0 ]; then
+        delopt_564="--delete"
     fi
-    rsync -a ${delopt_560} ${excludes_arr_557[@]} ${src_553} ${target_554}
+    rsync -a ${delopt_564} ${excludes_arr_561[@]} ${src_557} ${target_558}
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync227_v0=''
@@ -833,26 +833,26 @@ rsync__227_v0() {
 
 # rsync(src: Text, target: Text, excludes: [], delete: Bool)
 rsync__227_v1() {
-    local src_765="${1}"
-    local target_766="${2}"
-    local excludes_767=("${!3}")
-    local delete_768="${4}"
-    dir_create__44_v0 "${target_766}"
+    local src_769="${1}"
+    local target_770="${2}"
+    local excludes_771=("${!3}")
+    local delete_772="${4}"
+    dir_create__44_v0 "${target_770}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync227_v1=''
         return "${__status}"
     fi
-    local excludes_arr_769=()
-    for exclude_770 in "${excludes_767[@]}"; do
-        local s_771="${exclude_770}"
-        excludes_arr_769+=("--exclude" "${s_771}")
+    local excludes_arr_773=()
+    for exclude_774 in "${excludes_771[@]}"; do
+        local s_775="${exclude_774}"
+        excludes_arr_773+=("--exclude" "${s_775}")
     done
-    local delopt_772=""
-    if [ "${delete_768}" != 0 ]; then
-        delopt_772="--delete"
+    local delopt_776=""
+    if [ "${delete_772}" != 0 ]; then
+        delopt_776="--delete"
     fi
-    rsync -a ${delopt_772} ${excludes_arr_769[@]} ${src_765} ${target_766}
+    rsync -a ${delopt_776} ${excludes_arr_773[@]} ${src_769} ${target_770}
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync227_v1=''
@@ -862,25 +862,25 @@ rsync__227_v1() {
 
 # rsync_into_home(src: Text, rel_target: Text, delete: Bool)
 rsync_into_home__230_v0() {
-    local src_759="${1}"
-    local rel_target_760="${2}"
-    local delete_761="${3}"
-    local excludes_762=()
+    local src_763="${1}"
+    local rel_target_764="${2}"
+    local delete_765="${3}"
+    local excludes_766=()
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync_into_home230_v0=''
         return "${__status}"
     fi
-    local h_763="${ret_home188_v0}"
-    local target_764="${h_763}/${rel_target_760}"
-    dir_create__44_v0 "${target_764}"
+    local h_767="${ret_home188_v0}"
+    local target_768="${h_767}/${rel_target_764}"
+    dir_create__44_v0 "${target_768}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync_into_home230_v0=''
         return "${__status}"
     fi
-    rsync__227_v1 "${src_759}" "${target_764}" excludes_762[@] "${delete_761}"
+    rsync__227_v1 "${src_763}" "${target_768}" excludes_766[@] "${delete_765}"
     __status=$?
     if [ "${__status}" != 0 ]; then
         ret_rsync_into_home230_v0=''
@@ -890,44 +890,44 @@ rsync_into_home__230_v0() {
 
 # rsync_or_die_into_home(src: Text, rel_target: Text, delete: Bool)
 rsync_or_die_into_home__231_v0() {
-    local src_756="${1}"
-    local rel_target_757="${2}"
-    local delete_758="${3}"
-    prompt_user__172_v0 "rsync ${src_756} -> ~/${rel_target_757}"
+    local src_760="${1}"
+    local rel_target_761="${2}"
+    local delete_762="${3}"
+    prompt_user__172_v0 "rsync ${src_760} -> ~/${rel_target_761}"
     local ret_prompt_user172_v0__16_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__16_8}" != 0 ]; then
-        rsync_into_home__230_v0 "${src_756}" "${rel_target_757}" "${delete_758}"
+        rsync_into_home__230_v0 "${src_760}" "${rel_target_761}" "${delete_762}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            echo_error__142_v0 "rsync deploy of ${src_756} into ${rel_target_757} failed" 1
+            echo_error__142_v0 "rsync deploy of ${src_760} into ${rel_target_761} failed" 1
         fi
     fi
 }
 
 # rsync_or_die_opts(src: Text, target: Text, excludes: [Text], delete: Bool)
 rsync_or_die_opts__232_v0() {
-    local src_549="${1}"
-    local target_550="${2}"
-    local excludes_551=("${!3}")
-    local delete_552="${4}"
-    prompt_user__172_v0 "rsync ${src_549} -> ${target_550}"
+    local src_553="${1}"
+    local target_554="${2}"
+    local excludes_555=("${!3}")
+    local delete_556="${4}"
+    prompt_user__172_v0 "rsync ${src_553} -> ${target_554}"
     local ret_prompt_user172_v0__24_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__24_8}" != 0 ]; then
-        rsync__227_v0 "${src_549}" "${target_550}" excludes_551[@] "${delete_552}"
+        rsync__227_v0 "${src_553}" "${target_554}" excludes_555[@] "${delete_556}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            echo_error__142_v0 "rsync deploy of ${src_549} into ${target_550} failed" 1
+            echo_error__142_v0 "rsync deploy of ${src_553} into ${target_554} failed" 1
         fi
     fi
 }
 
 # rsync_or_die_opts_into_home(src: Text, rel_target: Text, excludes: [Text], delete: Bool)
 rsync_or_die_opts_into_home__233_v0() {
-    local src_544="${1}"
-    local rel_target_545="${2}"
-    local excludes_546=("${!3}")
-    local delete_547="${4}"
-    prompt_user__172_v0 "rsync ${src_544} -> ~/${rel_target_545}"
+    local src_548="${1}"
+    local rel_target_549="${2}"
+    local excludes_550=("${!3}")
+    local delete_551="${4}"
+    prompt_user__172_v0 "rsync ${src_548} -> ~/${rel_target_549}"
     local ret_prompt_user172_v0__32_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__32_8}" != 0 ]; then
         home__188_v0 
@@ -936,27 +936,29 @@ rsync_or_die_opts_into_home__233_v0() {
             echo_error__142_v0 "rsync_or_die_opts_into_home: failed to resolve home directory" 1
             exit 1
         fi
-        local h_548="${ret_home188_v0}"
-        rsync_or_die_opts__232_v0 "${src_544}" "${h_548}/${rel_target_545}" excludes_546[@] "${delete_547}"
+        local h_552="${ret_home188_v0}"
+        rsync_or_die_opts__232_v0 "${src_548}" "${h_552}/${rel_target_549}" excludes_550[@] "${delete_551}"
     fi
 }
 
-# _project_root()
-_project_root__247_v0() {
+# project_root() is the single canonical definition (doc 02). vars.ab and
+# other modules call it instead of re-defining the same heuristic.
+# project_root()
+project_root__247_v0() {
     file_exists__39_v0 "src/copals.ab"
-    local ret_file_exists39_v0__5_8="${ret_file_exists39_v0}"
-    if [ "${ret_file_exists39_v0__5_8}" != 0 ]; then
+    local ret_file_exists39_v0__7_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__7_8}" != 0 ]; then
         local pwd_val_55="$PWD"
         replace_regex__3_v0 "${pwd_val_55}" "/[^/]+\$" "" 1
-        ret__project_root247_v0="${ret_replace_regex3_v0}"
+        ret_project_root247_v0="${ret_replace_regex3_v0}"
         return 0
     fi
-    ret__project_root247_v0="$PWD"
+    ret_project_root247_v0="$PWD"
     return 0
 }
 
-_project_root__247_v0 
-__PROJECT_ROOT_65="${ret__project_root247_v0}"
+project_root__247_v0 
+__PROJECT_ROOT_65="${ret_project_root247_v0}"
 project_vendor_66="${__PROJECT_ROOT_65}/copals/vendor"
 installed_vendor_67="/usr/lib/copals/vendor"
 # The installed vendor dir is authoritative when copals runs inside its own
@@ -966,30 +968,30 @@ installed_vendor_67="/usr/lib/copals/vendor"
 # resolve_vendor_dir()
 resolve_vendor_dir__248_v0() {
     dir_exists__38_v0 "${installed_vendor_67}"
-    local ret_dir_exists38_v0__21_8="${ret_dir_exists38_v0}"
+    local ret_dir_exists38_v0__23_8="${ret_dir_exists38_v0}"
     file_exists__39_v0 "${installed_vendor_67}/jsonnet"
-    local ret_file_exists39_v0__21_41="${ret_file_exists39_v0}"
-    if [ "$(( ret_dir_exists38_v0__21_8 && ret_file_exists39_v0__21_41 ))" != 0 ]; then
+    local ret_file_exists39_v0__23_41="${ret_file_exists39_v0}"
+    if [ "$(( ret_dir_exists38_v0__23_8 && ret_file_exists39_v0__23_41 ))" != 0 ]; then
         ret_resolve_vendor_dir248_v0="${installed_vendor_67}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_66}"
-    local ret_dir_exists38_v0__24_8="${ret_dir_exists38_v0}"
+    local ret_dir_exists38_v0__26_8="${ret_dir_exists38_v0}"
     file_exists__39_v0 "${project_vendor_66}/jsonnet"
-    local ret_file_exists39_v0__24_39="${ret_file_exists39_v0}"
-    if [ "$(( ret_dir_exists38_v0__24_8 && ret_file_exists39_v0__24_39 ))" != 0 ]; then
+    local ret_file_exists39_v0__26_39="${ret_file_exists39_v0}"
+    if [ "$(( ret_dir_exists38_v0__26_8 && ret_file_exists39_v0__26_39 ))" != 0 ]; then
         ret_resolve_vendor_dir248_v0="${project_vendor_66}"
         return 0
     fi
     dir_exists__38_v0 "${installed_vendor_67}"
-    local ret_dir_exists38_v0__27_8="${ret_dir_exists38_v0}"
-    if [ "${ret_dir_exists38_v0__27_8}" != 0 ]; then
+    local ret_dir_exists38_v0__29_8="${ret_dir_exists38_v0}"
+    if [ "${ret_dir_exists38_v0__29_8}" != 0 ]; then
         ret_resolve_vendor_dir248_v0="${installed_vendor_67}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_66}"
-    local ret_dir_exists38_v0__30_8="${ret_dir_exists38_v0}"
-    if [ "${ret_dir_exists38_v0__30_8}" != 0 ]; then
+    local ret_dir_exists38_v0__32_8="${ret_dir_exists38_v0}"
+    if [ "${ret_dir_exists38_v0__32_8}" != 0 ]; then
         ret_resolve_vendor_dir248_v0="${project_vendor_66}"
         return 0
     fi
@@ -999,72 +1001,37 @@ resolve_vendor_dir__248_v0() {
 
 resolve_vendor_dir__248_v0 
 __VENDOR_DIR_74="${ret_resolve_vendor_dir248_v0}"
-# jq_resolve()
-jq_resolve__249_v0() {
+# resolve_vendor_tool: resolve a vendored binary by name. Falls back to the
+# bare name on PATH when no vendor dir is populated (doc 02, change 2: the
+# former jq_resolve/j2_resolve/jsonnet_resolve/jsonschema_resolve/lua_resolve
+# were 5 copies of this same 2-line rule).
+# resolve_vendor_tool(name: Text)
+resolve_vendor_tool__249_v0() {
+    local name_76="${1}"
     if [ "$([ "_${__VENDOR_DIR_74}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jq_resolve249_v0="jq"
+        ret_resolve_vendor_tool249_v0="${name_76}"
         return 0
     fi
-    ret_jq_resolve249_v0="${__VENDOR_DIR_74}/jq"
+    ret_resolve_vendor_tool249_v0="${__VENDOR_DIR_74}/${name_76}"
     return 0
 }
 
-# j2_resolve()
-j2_resolve__250_v0() {
-    if [ "$([ "_${__VENDOR_DIR_74}" != "_" ]; echo $?)" != 0 ]; then
-        ret_j2_resolve250_v0="j2"
-        return 0
-    fi
-    ret_j2_resolve250_v0="${__VENDOR_DIR_74}/j2"
-    return 0
-}
-
-# jsonnet_resolve()
-jsonnet_resolve__251_v0() {
-    if [ "$([ "_${__VENDOR_DIR_74}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonnet_resolve251_v0="jsonnet"
-        return 0
-    fi
-    ret_jsonnet_resolve251_v0="${__VENDOR_DIR_74}/jsonnet"
-    return 0
-}
-
-# jsonschema_resolve()
-jsonschema_resolve__252_v0() {
-    if [ "$([ "_${__VENDOR_DIR_74}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonschema_resolve252_v0="jsonschema"
-        return 0
-    fi
-    ret_jsonschema_resolve252_v0="${__VENDOR_DIR_74}/jsonschema"
-    return 0
-}
-
-# lua_resolve()
-lua_resolve__253_v0() {
-    if [ "$([ "_${__VENDOR_DIR_74}" != "_" ]; echo $?)" != 0 ]; then
-        ret_lua_resolve253_v0="lua"
-        return 0
-    fi
-    ret_lua_resolve253_v0="${__VENDOR_DIR_74}/lua"
-    return 0
-}
-
-jq_resolve__249_v0 
-j2_resolve__250_v0 
-jsonnet_resolve__251_v0 
-jsonschema_resolve__252_v0 
-lua_resolve__253_v0 
+resolve_vendor_tool__249_v0 "jq"
+resolve_vendor_tool__249_v0 "j2"
+resolve_vendor_tool__249_v0 "jsonnet"
+resolve_vendor_tool__249_v0 "jsonschema"
+resolve_vendor_tool__249_v0 "lua"
 # dirname(path: Text)
-dirname__255_v0() {
-    local path_569="${1}"
+dirname__251_v0() {
+    local path_573="${1}"
     local command_31
-    command_31="$(dirname ${path_569})"
+    command_31="$(dirname ${path_573})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_dirname255_v0=''
+        ret_dirname251_v0=''
         return "${__status}"
     fi
-    ret_dirname255_v0="${command_31}"
+    ret_dirname251_v0="${command_31}"
     return 0
 }
 
@@ -1076,20 +1043,20 @@ __status=$?
 if [ "${__status}" != 0 ]; then
     :
 fi
-__TMP_DIR_95="${ret_temp_dir_create46_v0}"
-token_96=1
+__TMP_DIR_97="${ret_temp_dir_create46_v0}"
+token_98=1
 # temp_file_create(suffix: Text)
-temp_file_create__273_v0() {
-    local suffix_571="${1}"
-    token_96="$(( token_96 + 1 ))"
-    local tmp_572="${__TMP_DIR_95}/${token_96}${suffix_571}"
-    touch "${tmp_572}"
+temp_file_create__269_v0() {
+    local suffix_575="${1}"
+    token_98="$(( token_98 + 1 ))"
+    local tmp_576="${__TMP_DIR_97}/${token_98}${suffix_575}"
+    touch "${tmp_576}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_temp_file_create273_v0=''
+        ret_temp_file_create269_v0=''
         return "${__status}"
     fi
-    ret_temp_file_create273_v0="${tmp_572}"
+    ret_temp_file_create269_v0="${tmp_576}"
     return 0
 }
 
@@ -1118,8 +1085,8 @@ temp_file_create__273_v0() {
 # installer's block; other tools' managed blocks (nvm/pyenv/pathman, ...) are
 # untouched. Begin/end are the single source of truth — they are interpolated
 # into HELPER below, so there is no duplicate literal to drift.
-__MANAGED_BEGIN_97="# BEGIN ___DEVTOOLS_AUTOGEN___ managed by install.sh - do not edit this block"
-__MANAGED_END_98="# END ___DEVTOOLS_AUTOGEN___"
+__MANAGED_BEGIN_99="# BEGIN ___DEVTOOLS_AUTOGEN___ managed by install.sh - do not edit this block"
+__MANAGED_END_100="# END ___DEVTOOLS_AUTOGEN___"
 # Verbatim, blank-line-preserving splice. Amber's split()/split_lines() drop
 # empty segments, so a pure-amber line-array pass would strip blank lines from
 # the user's rc file and from the shipped body. sed's range delete keeps every
@@ -1127,10 +1094,10 @@ __MANAGED_END_98="# END ___DEVTOOLS_AUTOGEN___"
 # newlines so the separator before the block is stable across re-runs (no
 # blank-line accumulation -> idempotent). Written to a temp file and run with
 # bash (amber's $...$ command literal cannot host the helper's $/quotes).
-__HELPER_99="#"'!'"/usr/bin/env bash
+__HELPER_101="#"'!'"/usr/bin/env bash
 set -euo pipefail
-m1='${__MANAGED_BEGIN_97}'
-m2='${__MANAGED_END_98}'
+m1='${__MANAGED_BEGIN_99}'
+m2='${__MANAGED_END_100}'
 src=\"\$1\"
 dest=\"\$2\"
 tmp=\"\$(mktemp)\"
@@ -1155,79 +1122,79 @@ rm -f \"\$tmp\"
 # replaces the block instead of duplicating it. If `dest` is absent it is
 # created holding just the block. Reusable for any source/dest pair.
 # managed_block(src: Text, dest: Text)
-managed_block__276_v0() {
-    local src_567="${1}"
-    local dest_568="${2}"
-    dirname__255_v0 "${dest_568}"
+managed_block__272_v0() {
+    local src_571="${1}"
+    local dest_572="${2}"
+    dirname__251_v0 "${dest_572}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
-    local parent_570="${ret_dirname255_v0}"
-    dir_create__44_v0 "${parent_570}"
+    local parent_574="${ret_dirname251_v0}"
+    dir_create__44_v0 "${parent_574}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
-    temp_file_create__273_v0 "-managed_block.sh"
+    temp_file_create__269_v0 "-managed_block.sh"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
-    local helper_573="${ret_temp_file_create273_v0}"
-    file_write__41_v0 "${helper_573}" "${__HELPER_99}"
+    local helper_577="${ret_temp_file_create269_v0}"
+    file_write__41_v0 "${helper_577}" "${__HELPER_101}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
-    bash ${helper_573} ${src_567} ${dest_568}
+    bash ${helper_577} ${src_571} ${dest_572}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
-    rm -f ${helper_573}
+    rm -f ${helper_577}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block276_v0=''
+        ret_managed_block272_v0=''
         return "${__status}"
     fi
 }
 
 # managed_block_into_home(src: Text, rel_dest: Text)
-managed_block_into_home__277_v0() {
-    local src_564="${1}"
-    local rel_dest_565="${2}"
+managed_block_into_home__273_v0() {
+    local src_568="${1}"
+    local rel_dest_569="${2}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block_into_home277_v0=''
+        ret_managed_block_into_home273_v0=''
         return "${__status}"
     fi
-    local h_566="${ret_home188_v0}"
-    managed_block__276_v0 "${src_564}" "${h_566}/${rel_dest_565}"
+    local h_570="${ret_home188_v0}"
+    managed_block__272_v0 "${src_568}" "${h_570}/${rel_dest_569}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_managed_block_into_home277_v0=''
+        ret_managed_block_into_home273_v0=''
         return "${__status}"
     fi
 }
 
 # managed_block_or_die_into_home(src: Text, rel_dest: Text)
-managed_block_or_die_into_home__279_v0() {
-    local src_562="${1}"
-    local rel_dest_563="${2}"
-    prompt_user__172_v0 "managed-block merge ${src_562} -> ~/${rel_dest_563}"
+managed_block_or_die_into_home__275_v0() {
+    local src_566="${1}"
+    local rel_dest_567="${2}"
+    prompt_user__172_v0 "managed-block merge ${src_566} -> ~/${rel_dest_567}"
     local ret_prompt_user172_v0__54_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__54_8}" != 0 ]; then
-        managed_block_into_home__277_v0 "${src_562}" "${rel_dest_563}"
+        managed_block_into_home__273_v0 "${src_566}" "${rel_dest_567}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            echo_error__142_v0 "managed-block merge of ${src_562} into ${rel_dest_563} failed" 1
+            echo_error__142_v0 "managed-block merge of ${src_566} into ${rel_dest_567} failed" 1
         fi
     fi
 }
@@ -1238,15 +1205,15 @@ managed_block_or_die_into_home__279_v0() {
 # dir (aliases/, Sh/, .local/, .tmux.conf, .gitignore_global, ...) is
 # bundle-owned and rsync'd normally. Add filenames here to extend coverage.
 # install_dotfiles_personalization()
-install_dotfiles_personalization__281_v0() {
-    local merge_files_543=(".zshrc" ".bashrc" ".zshenv" ".aliases")
+install_dotfiles_personalization__277_v0() {
+    local merge_files_547=(".zshrc" ".bashrc" ".zshenv" ".aliases")
     # rsync the whole tree EXCEPT the merge-managed files, so they are neither
     # created nor clobbered by rsync; managed_block reconciles them below.
-    rsync_or_die_opts_into_home__233_v0 "src/dotfiles_personalization/" "" merge_files_543[@] 0
+    rsync_or_die_opts_into_home__233_v0 "src/dotfiles_personalization/" "" merge_files_547[@] 0
     # merge-manage each rc/config file into home (idempotent; preserves user
     # content outside the marker-delimited block).
-    for f_561 in "${merge_files_543[@]}"; do
-        managed_block_or_die_into_home__279_v0 "src/dotfiles_personalization/${f_561}" "${f_561}"
+    for f_565 in "${merge_files_547[@]}"; do
+        managed_block_or_die_into_home__275_v0 "src/dotfiles_personalization/${f_565}" "${f_565}"
     done
     setup_global_gitignore_or_die__219_v0 
     # applications/ is removed at generate time for the tmux preset; copy only if present.
@@ -1258,100 +1225,100 @@ install_dotfiles_personalization__281_v0() {
 }
 
 # symlink_create_dir(origin: Text, destination: Text)
-symlink_create_dir__289_v0() {
-    local origin_627="${1}"
-    local destination_628="${2}"
-    dir_exists__38_v0 "${origin_627}"
+symlink_create_dir__285_v0() {
+    local origin_631="${1}"
+    local destination_632="${2}"
+    dir_exists__38_v0 "${origin_631}"
     local ret_dir_exists38_v0__4_12="${ret_dir_exists38_v0}"
     if [ "$(( ! ret_dir_exists38_v0__4_12 ))" != 0 ]; then
-        echo "The directory ${origin_627} doesn't exist"
-        ret_symlink_create_dir289_v0=''
+        echo "The directory ${origin_631} doesn't exist"
+        ret_symlink_create_dir285_v0=''
         return 1
     fi
-    ln -fsn ${origin_627} ${destination_628}
+    ln -fsn ${origin_631} ${destination_632}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_create_dir289_v0=''
+        ret_symlink_create_dir285_v0=''
         return "${__status}"
     fi
 }
 
 # TODO test this
 # _parent_dir(path: Text)
-_parent_dir__292_v0() {
-    local path_623="${1}"
+_parent_dir__288_v0() {
+    local path_627="${1}"
     local command_35
-    command_35="$(dirname ${path_623})"
+    command_35="$(dirname ${path_627})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret__parent_dir292_v0=''
+        ret__parent_dir288_v0=''
         return "${__status}"
     fi
-    local parent_624="${command_35}"
-    ret__parent_dir292_v0="${parent_624}"
+    local parent_628="${command_35}"
+    ret__parent_dir288_v0="${parent_628}"
     return 0
 }
 
 # symlink_into_home(src: Text, rel_dest: Text)
-symlink_into_home__293_v0() {
-    local src_619="${1}"
-    local rel_dest_620="${2}"
+symlink_into_home__289_v0() {
+    local src_623="${1}"
+    local rel_dest_624="${2}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_into_home293_v0=''
+        ret_symlink_into_home289_v0=''
         return "${__status}"
     fi
-    local home_621="${ret_home188_v0}"
-    local dest_622="${home_621}/${rel_dest_620}"
-    _parent_dir__292_v0 "${dest_622}"
+    local home_625="${ret_home188_v0}"
+    local dest_626="${home_625}/${rel_dest_624}"
+    _parent_dir__288_v0 "${dest_626}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_into_home293_v0=''
+        ret_symlink_into_home289_v0=''
         return "${__status}"
     fi
-    local parent_625="${ret__parent_dir292_v0}"
-    dir_create__44_v0 "${parent_625}"
+    local parent_629="${ret__parent_dir288_v0}"
+    dir_create__44_v0 "${parent_629}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_into_home293_v0=''
+        ret_symlink_into_home289_v0=''
         return "${__status}"
     fi
     local command_36
-    command_36="$(readlink -f ${src_619})"
+    command_36="$(readlink -f ${src_623})"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_into_home293_v0=''
+        ret_symlink_into_home289_v0=''
         return "${__status}"
     fi
-    local abs_src_626="${command_36}"
-    symlink_create_dir__289_v0 "${abs_src_626}" "${dest_622}"
+    local abs_src_630="${command_36}"
+    symlink_create_dir__285_v0 "${abs_src_630}" "${dest_626}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_into_home293_v0=''
+        ret_symlink_into_home289_v0=''
         return "${__status}"
     fi
-    ret_symlink_into_home293_v0="${dest_622}"
+    ret_symlink_into_home289_v0="${dest_626}"
     return 0
 }
 
 # symlink_into_home_or_die(src: Text, rel_dest: Text)
-symlink_into_home_or_die__294_v0() {
-    local src_617="${1}"
-    local rel_dest_618="${2}"
-    prompt_user__172_v0 "symlink ${src_617} -> ~/${rel_dest_618}"
+symlink_into_home_or_die__290_v0() {
+    local src_621="${1}"
+    local rel_dest_622="${2}"
+    prompt_user__172_v0 "symlink ${src_621} -> ~/${rel_dest_622}"
     local ret_prompt_user172_v0__26_12="${ret_prompt_user172_v0}"
     if [ "$(( ! ret_prompt_user172_v0__26_12 ))" != 0 ]; then
-        ret_symlink_into_home_or_die294_v0=""
+        ret_symlink_into_home_or_die290_v0=""
         return 0
     fi
-    symlink_into_home__293_v0 "${src_617}" "${rel_dest_618}"
+    symlink_into_home__289_v0 "${src_621}" "${rel_dest_622}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "deploy of ${src_617} symlink ${rel_dest_618}  into home failed" 1
+        echo_error__142_v0 "deploy of ${src_621} symlink ${rel_dest_622}  into home failed" 1
     fi
-    local dest_629="${ret_symlink_into_home293_v0}"
-    ret_symlink_into_home_or_die294_v0="${dest_629}"
+    local dest_633="${ret_symlink_into_home289_v0}"
+    ret_symlink_into_home_or_die290_v0="${dest_633}"
     return 0
 }
 
@@ -1359,163 +1326,163 @@ symlink_into_home_or_die__294_v0() {
 # against home()). Works for files (e.g. bridging a data file from one config
 # location to the path a plugin expects).
 # symlink_at_home(src_rel: Text, dest_rel: Text)
-symlink_at_home__295_v0() {
-    local src_rel_701="${1}"
-    local dest_rel_702="${2}"
+symlink_at_home__291_v0() {
+    local src_rel_705="${1}"
+    local dest_rel_706="${2}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_at_home295_v0=''
+        ret_symlink_at_home291_v0=''
         return "${__status}"
     fi
-    local h_703="${ret_home188_v0}"
-    local src_704="${h_703}/${src_rel_701}"
-    local dest_705="${h_703}/${dest_rel_702}"
-    file_exists__39_v0 "${src_704}"
+    local h_707="${ret_home188_v0}"
+    local src_708="${h_707}/${src_rel_705}"
+    local dest_709="${h_707}/${dest_rel_706}"
+    file_exists__39_v0 "${src_708}"
     local ret_file_exists39_v0__43_12="${ret_file_exists39_v0}"
     if [ "$(( ! ret_file_exists39_v0__43_12 ))" != 0 ]; then
-        echo_error__142_v0 "symlink source ${src_704} missing" 1
-        ret_symlink_at_home295_v0=''
+        echo_error__142_v0 "symlink source ${src_708} missing" 1
+        ret_symlink_at_home291_v0=''
         return 1
     fi
-    _parent_dir__292_v0 "${dest_705}"
+    _parent_dir__288_v0 "${dest_709}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_at_home295_v0=''
+        ret_symlink_at_home291_v0=''
         return "${__status}"
     fi
-    local parent_706="${ret__parent_dir292_v0}"
-    dir_create__44_v0 "${parent_706}"
+    local parent_710="${ret__parent_dir288_v0}"
+    dir_create__44_v0 "${parent_710}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_at_home295_v0=''
+        ret_symlink_at_home291_v0=''
         return "${__status}"
     fi
-    ln -fsn ${src_704} ${dest_705}
+    ln -fsn ${src_708} ${dest_709}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_symlink_at_home295_v0=''
+        ret_symlink_at_home291_v0=''
         return "${__status}"
     fi
-    ret_symlink_at_home295_v0="${dest_705}"
+    ret_symlink_at_home291_v0="${dest_709}"
     return 0
 }
 
 # symlink_at_home_or_die(src_rel: Text, dest_rel: Text)
-symlink_at_home_or_die__296_v0() {
-    local src_rel_699="${1}"
-    local dest_rel_700="${2}"
-    prompt_user__172_v0 "symlink ~/${src_rel_699} -> ~/${dest_rel_700}"
+symlink_at_home_or_die__292_v0() {
+    local src_rel_703="${1}"
+    local dest_rel_704="${2}"
+    prompt_user__172_v0 "symlink ~/${src_rel_703} -> ~/${dest_rel_704}"
     local ret_prompt_user172_v0__57_12="${ret_prompt_user172_v0}"
     if [ "$(( ! ret_prompt_user172_v0__57_12 ))" != 0 ]; then
-        ret_symlink_at_home_or_die296_v0=""
+        ret_symlink_at_home_or_die292_v0=""
         return 0
     fi
-    symlink_at_home__295_v0 "${src_rel_699}" "${dest_rel_700}"
+    symlink_at_home__291_v0 "${src_rel_703}" "${dest_rel_704}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "symlink ${src_rel_699} -> ${dest_rel_700} in home failed" 1
+        echo_error__142_v0 "symlink ${src_rel_703} -> ${dest_rel_704} in home failed" 1
     fi
-    local dest_707="${ret_symlink_at_home295_v0}"
-    ret_symlink_at_home_or_die296_v0="${dest_707}"
+    local dest_711="${ret_symlink_at_home291_v0}"
+    ret_symlink_at_home_or_die292_v0="${dest_711}"
     return 0
 }
 
 # install_nerd_fonts()
-install_nerd_fonts__298_v0() {
-    local subpath_616=".local/share/fonts/NerdFonts"
-    symlink_into_home_or_die__294_v0 "src/${subpath_616}" "${subpath_616}"
+install_nerd_fonts__294_v0() {
+    local subpath_620=".local/share/fonts/NerdFonts"
+    symlink_into_home_or_die__290_v0 "src/${subpath_620}" "${subpath_620}"
 }
 
 # set_only_user_write_or_die(path: Text)
-set_only_user_write_or_die__303_v0() {
-    local path_641="${1}"
-    chmod -R g-w,o-w ${path_641}
+set_only_user_write_or_die__299_v0() {
+    local path_645="${1}"
+    chmod -R g-w,o-w ${path_645}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "failed to set ${path_641} perms to user-only write" 1
+        echo_error__142_v0 "failed to set ${path_645} perms to user-only write" 1
     fi
 }
 
 # set_only_user_write_or_die_at_home(rel_path: Text)
-set_only_user_write_or_die_at_home__304_v0() {
-    local rel_path_639="${1}"
+set_only_user_write_or_die_at_home__300_v0() {
+    local rel_path_643="${1}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        echo_error__142_v0 "cannot determine home directory for ${rel_path_639}" 1
+        echo_error__142_v0 "cannot determine home directory for ${rel_path_643}" 1
     fi
-    local h_640="${ret_home188_v0}"
-    set_only_user_write_or_die__303_v0 "${h_640}/${rel_path_639}"
+    local h_644="${ret_home188_v0}"
+    set_only_user_write_or_die__299_v0 "${h_644}/${rel_path_643}"
 }
 
 # install_omz_config()
-install_omz_config__307_v0() {
-    local subpath_638=".oh-my-zsh"
+install_omz_config__303_v0() {
+    local subpath_642=".oh-my-zsh"
     local array_37=("custom/plugins/")
-    rsync_or_die_opts_into_home__233_v0 "src/${subpath_638}/" "${subpath_638}" array_37[@] 1
-    set_only_user_write_or_die_at_home__304_v0 "${subpath_638}"
+    rsync_or_die_opts_into_home__233_v0 "src/${subpath_642}/" "${subpath_642}" array_37[@] 1
+    set_only_user_write_or_die_at_home__300_v0 "${subpath_642}"
 }
 
 # execute(bin: Text, sh_path: Text)
-execute__311_v0() {
-    local bin_660="${1}"
-    local sh_path_661="${2}"
-    ${bin_660} ${sh_path_661}
+execute__307_v0() {
+    local bin_664="${1}"
+    local sh_path_665="${2}"
+    ${bin_664} ${sh_path_665}
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute311_v0=''
+        ret_execute307_v0=''
         return "${__status}"
     fi
 }
 
 # execute_sh(sh_path: Text)
-execute_sh__312_v0() {
-    local sh_path_796="${1}"
-    execute__311_v0 "bash" "${sh_path_796}"
+execute_sh__308_v0() {
+    local sh_path_800="${1}"
+    execute__307_v0 "bash" "${sh_path_800}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh312_v0=''
+        ret_execute_sh308_v0=''
         return "${__status}"
     fi
 }
 
 # execute_zsh(sh_path: Text)
-execute_zsh__313_v0() {
-    local sh_path_659="${1}"
-    execute__311_v0 "zsh" "${sh_path_659}"
+execute_zsh__309_v0() {
+    local sh_path_663="${1}"
+    execute__307_v0 "zsh" "${sh_path_663}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_zsh313_v0=''
+        ret_execute_zsh309_v0=''
         return "${__status}"
     fi
 }
 
 # execute_zsh_at_home(rel_sh_path: Text)
-execute_zsh_at_home__316_v0() {
-    local rel_sh_path_657="${1}"
+execute_zsh_at_home__312_v0() {
+    local rel_sh_path_661="${1}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_zsh_at_home316_v0=''
+        ret_execute_zsh_at_home312_v0=''
         return "${__status}"
     fi
-    local h_658="${ret_home188_v0}"
-    execute_zsh__313_v0 "${h_658}/${rel_sh_path_657}"
+    local h_662="${ret_home188_v0}"
+    execute_zsh__309_v0 "${h_662}/${rel_sh_path_661}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_zsh_at_home316_v0=''
+        ret_execute_zsh_at_home312_v0=''
         return "${__status}"
     fi
 }
 
 # install_zshmarks()
-install_zshmarks__319_v0() {
+install_zshmarks__315_v0() {
     mkdir -p ~/.oh-my-zsh/custom/plugins/zshmarks
     __status=$?
     cp src/zshmarks.plugin.zsh ~/.oh-my-zsh/custom/plugins/zshmarks/zshmarks.plugin.zsh
     __status=$?
-    execute_zsh_at_home__316_v0 ".oh-my-zsh/custom/plugins/zshmarks/zshmarks.plugin.zsh"
+    execute_zsh_at_home__312_v0 ".oh-my-zsh/custom/plugins/zshmarks/zshmarks.plugin.zsh"
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to source zshmarks plugin" 1
@@ -1532,42 +1499,42 @@ install_zshmarks__319_v0() {
 }
 
 # has_cmd(cmd: Text)
-has_cmd__324_v0() {
-    local cmd_668="${1}"
-    local found_669=0
-    command -v ${cmd_668} >/dev/null 2>&1
+has_cmd__320_v0() {
+    local cmd_672="${1}"
+    local found_673=0
+    command -v ${cmd_672} >/dev/null 2>&1
     __status=$?
     if [ "${__status}" = 0 ]; then
-        found_669=1
+        found_673=1
     fi
-    ret_has_cmd324_v0="${found_669}"
+    ret_has_cmd320_v0="${found_673}"
     return 0
 }
 
 # echo_error exits the process (default exit_code=1), so no fail needed.
 # install_system_tools()
-install_system_tools__353_v0() {
+install_system_tools__349_v0() {
     local array_38=("ncdu")
     apt_install_or_die__182_v0 array_38[@]
-    has_cmd__324_v0 "jj"
-    local ret_has_cmd324_v0__12_12="${ret_has_cmd324_v0}"
-    if [ "$(( ! ret_has_cmd324_v0__12_12 ))" != 0 ]; then
+    has_cmd__320_v0 "jj"
+    local ret_has_cmd320_v0__12_12="${ret_has_cmd320_v0}"
+    if [ "$(( ! ret_has_cmd320_v0__12_12 ))" != 0 ]; then
         local array_39=("jj")
         apt_install_or_warning__183_v0 array_39[@]
     fi
 }
 
 # install_nvim()
-install_nvim__358_v0() {
+install_nvim__354_v0() {
     local array_40=("fd-find" "clang" "g++")
     apt_install_or_die__182_v0 array_40[@]
-    local subpath_697=".config/nvim"
-    symlink_into_home_or_die__294_v0 "src/${subpath_697}" "${subpath_697}"
-    local lazy_dir_698="${subpath_697}/lazy"
-    symlink_into_home_or_die__294_v0 "src/${lazy_dir_698}" ".local/share/nvim/lazy"
+    local subpath_701=".config/nvim"
+    symlink_into_home_or_die__290_v0 "src/${subpath_701}" "${subpath_701}"
+    local lazy_dir_702="${subpath_701}/lazy"
+    symlink_into_home_or_die__290_v0 "src/${lazy_dir_702}" ".local/share/nvim/lazy"
     # quicksheet reads ~/.config/quicksheet.txt; the data ships from the nvim
     # repo as ~/.config/nvim/quicksheet.txt. Symlink it so quicksheet finds it.
-    symlink_at_home_or_die__296_v0 ".config/nvim/quicksheet.txt" ".config/quicksheet.txt"
+    symlink_at_home_or_die__292_v0 ".config/nvim/quicksheet.txt" ".config/quicksheet.txt"
     # base46's compiled cache (~/.local/share/nvim/base46/) is produced only by
     # its `build` hook, which lazy.nvim skips for pre-fetched plugins (once
     # state.json marks them installed). When plugins were pre-fetched and the
@@ -1604,16 +1571,21 @@ install_nvim__358_v0() {
 # This hook exists only because install.ab.j2 imports install_{repo.id}() for
 # every enabled repo.
 # install_quicksheet()
-install_quicksheet__360_v0() {
+install_quicksheet__356_v0() {
     :
 }
 
 # install_tmux_warm_daemon()
-install_tmux_warm_daemon__364_v0() {
+install_tmux_warm_daemon__360_v0() {
     copy_into_home_or_die__196_v0 "src/.tmux_warm_daemon/attach_warm.sh" ".local/bin/"
     copy_into_home_or_die__196_v0 "src/.tmux_warm_daemon/restart_daemon.sh" ".local/bin/"
     copy_into_home_or_die__196_v0 "src/.tmux_warm_daemon/agent-warm.sh" ".local/bin/"
     copy_into_home_or_die__196_v0 "src/.tmux_warm_daemon/bootstrap-warm-daemon.sh" ".local/bin/"
+    # Idle-session reaper: separate, non-blocking service that kills detached
+    # tmux sessions idle > idle_reaper_hours (default 26h). Started/stopped
+    # alongside the warm daemon by restart_daemon.sh (which looks for it on
+    # $HOME/.local/bin first). Deployed next to the other helper scripts.
+    copy_into_home_or_die__196_v0 "src/.tmux_warm_daemon/tmux_session_reaper.sh" ".local/bin/"
     # Pool config: defines the `agent` pool so the daemon pre-warms agent
     # sessions (agent-N / agent@<hash>) instead of only `warm-*`. The agent
     # command is agent-warm.sh, which execs whatever `kv agentclitool` points
@@ -1637,7 +1609,7 @@ install_tmux_warm_daemon__364_v0() {
 # config + 7 shell scripts into the home tree. No pre-fetch, no binaries, no
 # opaque blobs. Plain-text only; no system services beyond tmux.
 # install_tmux_wm()
-install_tmux_wm__370_v0() {
+install_tmux_wm__366_v0() {
     local array_41=("tmux")
     apt_install_or_die__182_v0 array_41[@]
     copy_into_home_or_die__196_v0 "src/tmux_wm/.config/tmux" ".config/"
@@ -1647,8 +1619,8 @@ install_tmux_wm__370_v0() {
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "tmux_wm: cannot resolve HOME" 1
     fi
-    local h_774="${ret_home207_v0}"
-    chmod +x ${h_774}/.local/bin/tmux-wm ${h_774}/.local/bin/tmux-default ${h_774}/.local/bin/fzf-launcher ${h_774}/.local/bin/tmux-wm-move ${h_774}/.local/bin/tmux-wm-terminal ${h_774}/.local/bin/tmux-wm-open ${h_774}/.local/bin/tmux-wm-swap ${h_774}/.local/bin/nnn-wm
+    local h_778="${ret_home207_v0}"
+    chmod +x ${h_778}/.local/bin/tmux-wm ${h_778}/.local/bin/tmux-default ${h_778}/.local/bin/fzf-launcher ${h_778}/.local/bin/tmux-wm-move ${h_778}/.local/bin/tmux-wm-terminal ${h_778}/.local/bin/tmux-wm-open ${h_778}/.local/bin/tmux-wm-swap ${h_778}/.local/bin/nnn-wm
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "tmux_wm: failed to chmod scripts" 1
@@ -1656,44 +1628,44 @@ install_tmux_wm__370_v0() {
 }
 
 # install_cmd_bookmarks()
-install_cmd_bookmarks__373_v0() {
-    symlink_into_home_or_die__294_v0 "src/cmd_bookmarks" ".local/share/cmd_bookmarks"
+install_cmd_bookmarks__369_v0() {
+    symlink_into_home_or_die__290_v0 "src/cmd_bookmarks" ".local/share/cmd_bookmarks"
 }
 
 # execute_sh_at_home(rel_sh_path: Text)
-execute_sh_at_home__380_v0() {
-    local rel_sh_path_794="${1}"
+execute_sh_at_home__376_v0() {
+    local rel_sh_path_798="${1}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home380_v0=''
+        ret_execute_sh_at_home376_v0=''
         return "${__status}"
     fi
-    local h_795="${ret_home188_v0}"
-    execute_sh__312_v0 "${h_795}/${rel_sh_path_794}"
+    local h_799="${ret_home188_v0}"
+    execute_sh__308_v0 "${h_799}/${rel_sh_path_798}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home380_v0=''
+        ret_execute_sh_at_home376_v0=''
         return "${__status}"
     fi
 }
 
 # execute_sh_at_home_or_die(rel_sh_path: Text)
-execute_sh_at_home_or_die__381_v0() {
-    local rel_sh_path_793="${1}"
-    prompt_user__172_v0 "execute ~/${rel_sh_path_793}"
+execute_sh_at_home_or_die__377_v0() {
+    local rel_sh_path_797="${1}"
+    prompt_user__172_v0 "execute ~/${rel_sh_path_797}"
     local ret_prompt_user172_v0__12_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__12_8}" != 0 ]; then
-        execute_sh_at_home__380_v0 "${rel_sh_path_793}"
+        execute_sh_at_home__376_v0 "${rel_sh_path_797}"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            echo_error__142_v0 "failed to run ${rel_sh_path_793}" 1
+            echo_error__142_v0 "failed to run ${rel_sh_path_797}" 1
         fi
     fi
 }
 
 # install_agent_global_config()
-install_agent_global_config__386_v0() {
+install_agent_global_config__382_v0() {
     rsync_or_die_into_home__231_v0 "src/.agent/" ".agent" 1
     home__207_v0 
     __status=$?
@@ -1701,164 +1673,131 @@ install_agent_global_config__386_v0() {
         echo_error__142_v0 "install_agent_global_config: home unresolved" 1
         exit 1
     fi
-    local h_790="${ret_home207_v0}"
-    local scripts_791=("sync-permissions-from-cli.sh" "sync-permissions.sh" "sync-antigravity-permissions.sh" "sync-kilocode-permissions.sh")
-    for script_792 in "${scripts_791[@]}"; do
-        file_exists__39_v0 "${h_790}/.agent/${script_792}"
+    local h_794="${ret_home207_v0}"
+    local scripts_795=("sync-permissions-from-cli.sh" "sync-permissions.sh" "sync-antigravity-permissions.sh" "sync-kilocode-permissions.sh")
+    for script_796 in "${scripts_795[@]}"; do
+        file_exists__39_v0 "${h_794}/.agent/${script_796}"
         local ret_file_exists39_v0__20_12="${ret_file_exists39_v0}"
         if [ "${ret_file_exists39_v0__20_12}" != 0 ]; then
-            execute_sh_at_home_or_die__381_v0 ".agent/${script_792}"
+            execute_sh_at_home_or_die__377_v0 ".agent/${script_796}"
         fi
     done
 }
 
-# _project_root()
-_project_root__395_v0() {
+# project_root() is the single canonical definition (doc 02). vars.ab and
+# other modules call it instead of re-defining the same heuristic.
+# project_root()
+project_root__391_v0() {
     file_exists__39_v0 "src/copals.ab"
-    local ret_file_exists39_v0__5_8="${ret_file_exists39_v0}"
-    if [ "${ret_file_exists39_v0__5_8}" != 0 ]; then
-        local pwd_val_102="$PWD"
-        replace_regex__3_v0 "${pwd_val_102}" "/[^/]+\$" "" 1
-        ret__project_root395_v0="${ret_replace_regex3_v0}"
+    local ret_file_exists39_v0__7_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__7_8}" != 0 ]; then
+        local pwd_val_104="$PWD"
+        replace_regex__3_v0 "${pwd_val_104}" "/[^/]+\$" "" 1
+        ret_project_root391_v0="${ret_replace_regex3_v0}"
         return 0
     fi
-    ret__project_root395_v0="$PWD"
+    ret_project_root391_v0="$PWD"
     return 0
 }
 
-_project_root__395_v0 
-__PROJECT_ROOT_103="${ret__project_root395_v0}"
-project_vendor_104="${__PROJECT_ROOT_103}/copals/vendor"
-installed_vendor_105="/usr/lib/copals/vendor"
+project_root__391_v0 
+__PROJECT_ROOT_105="${ret_project_root391_v0}"
+project_vendor_106="${__PROJECT_ROOT_105}/copals/vendor"
+installed_vendor_107="/usr/lib/copals/vendor"
 # The installed vendor dir is authoritative when copals runs inside its own
 # container: the host repo is bind-mounted at the same absolute path, so the
 # project vendor dir also "exists" but its tools are only populated inside the
 # image. Prefer the installed tree whenever it actually holds the binaries.
 # resolve_vendor_dir()
-resolve_vendor_dir__396_v0() {
-    dir_exists__38_v0 "${installed_vendor_105}"
-    local ret_dir_exists38_v0__21_8="${ret_dir_exists38_v0}"
-    file_exists__39_v0 "${installed_vendor_105}/jsonnet"
-    local ret_file_exists39_v0__21_41="${ret_file_exists39_v0}"
-    if [ "$(( ret_dir_exists38_v0__21_8 && ret_file_exists39_v0__21_41 ))" != 0 ]; then
-        ret_resolve_vendor_dir396_v0="${installed_vendor_105}"
+resolve_vendor_dir__392_v0() {
+    dir_exists__38_v0 "${installed_vendor_107}"
+    local ret_dir_exists38_v0__23_8="${ret_dir_exists38_v0}"
+    file_exists__39_v0 "${installed_vendor_107}/jsonnet"
+    local ret_file_exists39_v0__23_41="${ret_file_exists39_v0}"
+    if [ "$(( ret_dir_exists38_v0__23_8 && ret_file_exists39_v0__23_41 ))" != 0 ]; then
+        ret_resolve_vendor_dir392_v0="${installed_vendor_107}"
         return 0
     fi
-    dir_exists__38_v0 "${project_vendor_104}"
-    local ret_dir_exists38_v0__24_8="${ret_dir_exists38_v0}"
-    file_exists__39_v0 "${project_vendor_104}/jsonnet"
-    local ret_file_exists39_v0__24_39="${ret_file_exists39_v0}"
-    if [ "$(( ret_dir_exists38_v0__24_8 && ret_file_exists39_v0__24_39 ))" != 0 ]; then
-        ret_resolve_vendor_dir396_v0="${project_vendor_104}"
+    dir_exists__38_v0 "${project_vendor_106}"
+    local ret_dir_exists38_v0__26_8="${ret_dir_exists38_v0}"
+    file_exists__39_v0 "${project_vendor_106}/jsonnet"
+    local ret_file_exists39_v0__26_39="${ret_file_exists39_v0}"
+    if [ "$(( ret_dir_exists38_v0__26_8 && ret_file_exists39_v0__26_39 ))" != 0 ]; then
+        ret_resolve_vendor_dir392_v0="${project_vendor_106}"
         return 0
     fi
-    dir_exists__38_v0 "${installed_vendor_105}"
-    local ret_dir_exists38_v0__27_8="${ret_dir_exists38_v0}"
-    if [ "${ret_dir_exists38_v0__27_8}" != 0 ]; then
-        ret_resolve_vendor_dir396_v0="${installed_vendor_105}"
+    dir_exists__38_v0 "${installed_vendor_107}"
+    local ret_dir_exists38_v0__29_8="${ret_dir_exists38_v0}"
+    if [ "${ret_dir_exists38_v0__29_8}" != 0 ]; then
+        ret_resolve_vendor_dir392_v0="${installed_vendor_107}"
         return 0
     fi
-    dir_exists__38_v0 "${project_vendor_104}"
-    local ret_dir_exists38_v0__30_8="${ret_dir_exists38_v0}"
-    if [ "${ret_dir_exists38_v0__30_8}" != 0 ]; then
-        ret_resolve_vendor_dir396_v0="${project_vendor_104}"
+    dir_exists__38_v0 "${project_vendor_106}"
+    local ret_dir_exists38_v0__32_8="${ret_dir_exists38_v0}"
+    if [ "${ret_dir_exists38_v0__32_8}" != 0 ]; then
+        ret_resolve_vendor_dir392_v0="${project_vendor_106}"
         return 0
     fi
-    ret_resolve_vendor_dir396_v0=""
+    ret_resolve_vendor_dir392_v0=""
     return 0
 }
 
-resolve_vendor_dir__396_v0 
-__VENDOR_DIR_106="${ret_resolve_vendor_dir396_v0}"
-# jq_resolve()
-jq_resolve__397_v0() {
-    if [ "$([ "_${__VENDOR_DIR_106}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jq_resolve397_v0="jq"
+resolve_vendor_dir__392_v0 
+__VENDOR_DIR_108="${ret_resolve_vendor_dir392_v0}"
+# resolve_vendor_tool: resolve a vendored binary by name. Falls back to the
+# bare name on PATH when no vendor dir is populated (doc 02, change 2: the
+# former jq_resolve/j2_resolve/jsonnet_resolve/jsonschema_resolve/lua_resolve
+# were 5 copies of this same 2-line rule).
+# resolve_vendor_tool(name: Text)
+resolve_vendor_tool__393_v0() {
+    local name_110="${1}"
+    if [ "$([ "_${__VENDOR_DIR_108}" != "_" ]; echo $?)" != 0 ]; then
+        ret_resolve_vendor_tool393_v0="${name_110}"
         return 0
     fi
-    ret_jq_resolve397_v0="${__VENDOR_DIR_106}/jq"
+    ret_resolve_vendor_tool393_v0="${__VENDOR_DIR_108}/${name_110}"
     return 0
 }
 
-# j2_resolve()
-j2_resolve__398_v0() {
-    if [ "$([ "_${__VENDOR_DIR_106}" != "_" ]; echo $?)" != 0 ]; then
-        ret_j2_resolve398_v0="j2"
-        return 0
-    fi
-    ret_j2_resolve398_v0="${__VENDOR_DIR_106}/j2"
-    return 0
-}
-
-# jsonnet_resolve()
-jsonnet_resolve__399_v0() {
-    if [ "$([ "_${__VENDOR_DIR_106}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonnet_resolve399_v0="jsonnet"
-        return 0
-    fi
-    ret_jsonnet_resolve399_v0="${__VENDOR_DIR_106}/jsonnet"
-    return 0
-}
-
-# jsonschema_resolve()
-jsonschema_resolve__400_v0() {
-    if [ "$([ "_${__VENDOR_DIR_106}" != "_" ]; echo $?)" != 0 ]; then
-        ret_jsonschema_resolve400_v0="jsonschema"
-        return 0
-    fi
-    ret_jsonschema_resolve400_v0="${__VENDOR_DIR_106}/jsonschema"
-    return 0
-}
-
-# lua_resolve()
-lua_resolve__401_v0() {
-    if [ "$([ "_${__VENDOR_DIR_106}" != "_" ]; echo $?)" != 0 ]; then
-        ret_lua_resolve401_v0="lua"
-        return 0
-    fi
-    ret_lua_resolve401_v0="${__VENDOR_DIR_106}/lua"
-    return 0
-}
-
-jq_resolve__397_v0 
-j2_resolve__398_v0 
-jsonnet_resolve__399_v0 
-jsonschema_resolve__400_v0 
-lua_resolve__401_v0 
+resolve_vendor_tool__393_v0 "jq"
+resolve_vendor_tool__393_v0 "j2"
+resolve_vendor_tool__393_v0 "jsonnet"
+resolve_vendor_tool__393_v0 "jsonschema"
+resolve_vendor_tool__393_v0 "lua"
 # Inverse of rm_if_feature_not: remove rel_path when features[feature] == expected
 # (defaults to "" so an unset feature never triggers removal). Use to drop GUI
 # artifacts in pure-TTY presets, e.g. mode == "tmux".
 # install_agent_skills_impl()
-install_agent_skills_impl__425_v0() {
+install_agent_skills_impl__417_v0() {
     home__207_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_agent_skills_impl425_v0=''
+        ret_install_agent_skills_impl417_v0=''
         return "${__status}"
     fi
-    local h_805="${ret_home207_v0}"
-    local canon_806="${h_805}/.agents/skills"
-    local skills_src_807="src/agent-skills/.agents/skills"
-    rsync_or_die_into_home__231_v0 "${skills_src_807}/" ".agents/skills" 0
-    dir_exists__38_v0 "${canon_806}"
+    local h_809="${ret_home207_v0}"
+    local canon_810="${h_809}/.agents/skills"
+    local skills_src_811="src/agent-skills/.agents/skills"
+    rsync_or_die_into_home__231_v0 "${skills_src_811}/" ".agents/skills" 0
+    dir_exists__38_v0 "${canon_810}"
     local ret_dir_exists38_v0__49_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__49_8}" != 0 ]; then
-        local legacy_dir_808="${h_805}/.cursor/skills-cursor"
-        dir_exists__38_v0 "${legacy_dir_808}"
+        local legacy_dir_812="${h_809}/.cursor/skills-cursor"
+        dir_exists__38_v0 "${legacy_dir_812}"
         local ret_dir_exists38_v0__51_12="${ret_dir_exists38_v0}"
         if [ "${ret_dir_exists38_v0__51_12}" != 0 ]; then
             local __rm_47=
             (( 1 )) && __rm_47="-r" || __rm_47=""
             local __rm_48=
-            rm ${__rm_48} ${__rm_47} "${legacy_dir_808}"
+            rm ${__rm_48} ${__rm_47} "${legacy_dir_812}"
         fi
         # 2. Wire the store into each ENABLED tool. Antigravity reads ~/.agents/skills natively, so it needs no link.
     fi
 }
 
 # install_agent_skills()
-install_agent_skills__426_v0() {
-    install_agent_skills_impl__425_v0 
+install_agent_skills__418_v0() {
+    install_agent_skills_impl__417_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to install agent skills" 1
@@ -1866,18 +1805,18 @@ install_agent_skills__426_v0() {
 }
 
 # install_skill_caveman()
-install_skill_caveman__429_v0() {
-    symlink_into_home_or_die__294_v0 "src/.agents/skills/caveman" ".agents/skills/caveman"
+install_skill_caveman__421_v0() {
+    symlink_into_home_or_die__290_v0 "src/.agents/skills/caveman" ".agents/skills/caveman"
 }
 
 # install_skill_humanizer()
-install_skill_humanizer__432_v0() {
-    symlink_into_home_or_die__294_v0 "src/.agents/skills/humanizer" ".agents/skills/humanizer"
+install_skill_humanizer__424_v0() {
+    symlink_into_home_or_die__290_v0 "src/.agents/skills/humanizer" ".agents/skills/humanizer"
 }
 
 # install_skill_ponytail()
-install_skill_ponytail__435_v0() {
-    symlink_into_home_or_die__294_v0 "src/.agents/skills/ponytail" ".agents/skills/ponytail"
+install_skill_ponytail__427_v0() {
+    symlink_into_home_or_die__290_v0 "src/.agents/skills/ponytail" ".agents/skills/ponytail"
 }
 
 # Each hook must be IDEMPOTENT and KILL THE PROGRAM on failure.
@@ -1885,7 +1824,7 @@ install_skill_ponytail__435_v0() {
 # wrap it once at the installer level:  install_x() { x_impl() failed { exit(1) } }
 # So every install_*() is infallible and main() stays a plain sequence of calls.
 # print_help()
-print_help__437_v0() {
+print_help__429_v0() {
     echo "Usage: ./install.sh [--ask] [--trace] [step ...]"
     printf '%s\n' ""
     echo "Install all steps by default. Pass one or more step names to run"
@@ -1915,79 +1854,79 @@ print_help__437_v0() {
 }
 
 # run_step(step: Text)
-run_step__438_v0() {
-    local step_891="${1}"
-    local matched_892=0
-    if [ "$([ "_${step_891}" != "_help" ]; echo $?)" != 0 ]; then
-        print_help__437_v0 
-        matched_892=1
+run_step__430_v0() {
+    local step_895="${1}"
+    local matched_896=0
+    if [ "$([ "_${step_895}" != "_help" ]; echo $?)" != 0 ]; then
+        print_help__429_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_apt_essential_tools" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${step_895}" != "_apt_essential_tools" ]; echo $?)" != 0 ]; then
         install_apt_essential_tools__213_v0 
-        matched_892=1
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_dotfiles_personalization" ]; echo $?)" != 0 ]; then
-        install_dotfiles_personalization__281_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_dotfiles_personalization" ]; echo $?)" != 0 ]; then
+        install_dotfiles_personalization__277_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_nerd_fonts" ]; echo $?)" != 0 ]; then
-        install_nerd_fonts__298_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_nerd_fonts" ]; echo $?)" != 0 ]; then
+        install_nerd_fonts__294_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_omz_config" ]; echo $?)" != 0 ]; then
-        install_omz_config__307_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_omz_config" ]; echo $?)" != 0 ]; then
+        install_omz_config__303_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_zshmarks" ]; echo $?)" != 0 ]; then
-        install_zshmarks__319_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_zshmarks" ]; echo $?)" != 0 ]; then
+        install_zshmarks__315_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_system_tools" ]; echo $?)" != 0 ]; then
-        install_system_tools__353_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_system_tools" ]; echo $?)" != 0 ]; then
+        install_system_tools__349_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_nvim" ]; echo $?)" != 0 ]; then
-        install_nvim__358_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_nvim" ]; echo $?)" != 0 ]; then
+        install_nvim__354_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_quicksheet" ]; echo $?)" != 0 ]; then
-        install_quicksheet__360_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_quicksheet" ]; echo $?)" != 0 ]; then
+        install_quicksheet__356_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_tmux_warm_daemon" ]; echo $?)" != 0 ]; then
-        install_tmux_warm_daemon__364_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_tmux_warm_daemon" ]; echo $?)" != 0 ]; then
+        install_tmux_warm_daemon__360_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_tmux_wm" ]; echo $?)" != 0 ]; then
-        install_tmux_wm__370_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_tmux_wm" ]; echo $?)" != 0 ]; then
+        install_tmux_wm__366_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_cmd_bookmarks" ]; echo $?)" != 0 ]; then
-        install_cmd_bookmarks__373_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_cmd_bookmarks" ]; echo $?)" != 0 ]; then
+        install_cmd_bookmarks__369_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_agent_global_config" ]; echo $?)" != 0 ]; then
-        install_agent_global_config__386_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_agent_global_config" ]; echo $?)" != 0 ]; then
+        install_agent_global_config__382_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_agent_skills" ]; echo $?)" != 0 ]; then
-        install_agent_skills__426_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_agent_skills" ]; echo $?)" != 0 ]; then
+        install_agent_skills__418_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_skill_caveman" ]; echo $?)" != 0 ]; then
-        install_skill_caveman__429_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_skill_caveman" ]; echo $?)" != 0 ]; then
+        install_skill_caveman__421_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_skill_humanizer" ]; echo $?)" != 0 ]; then
-        install_skill_humanizer__432_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_skill_humanizer" ]; echo $?)" != 0 ]; then
+        install_skill_humanizer__424_v0 
+        matched_896=1
     fi
-    if [ "$([ "_${step_891}" != "_skill_ponytail" ]; echo $?)" != 0 ]; then
-        install_skill_ponytail__435_v0 
-        matched_892=1
+    if [ "$([ "_${step_895}" != "_skill_ponytail" ]; echo $?)" != 0 ]; then
+        install_skill_ponytail__427_v0 
+        matched_896=1
     fi
-    if [ "$(( ! matched_892 ))" != 0 ]; then
-        echo "Unknown step: '${step_891}'"
+    if [ "$(( ! matched_896 ))" != 0 ]; then
+        echo "Unknown step: '${step_895}'"
         echo "Run './install.sh help' for the list of available steps."
         exit 1
     fi
@@ -1999,202 +1938,202 @@ run_step__438_v0() {
 # the last-installed state, lists changes, asks Y/n, and re-runs installer
 # steps only for the changed repos.
 # cmd_update()
-cmd_update__439_v0() {
+cmd_update__431_v0() {
     local command_50
     command_50="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return "${__status}"
     fi
-    local script_dir_862="${command_50}"
-    local meta_path_863="${script_dir_862}/meta.json"
-    local state_path_864="${script_dir_862}/.last_installed.json"
+    local script_dir_866="${command_50}"
+    local meta_path_867="${script_dir_866}/meta.json"
+    local state_path_868="${script_dir_866}/.last_installed.json"
     local command_51
-    command_51="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_863}")"
+    command_51="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_867}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return "${__status}"
     fi
-    local new_lines_865="${command_51}"
-    local old_lines_866=""
-    file_exists__39_v0 "${state_path_864}"
+    local new_lines_869="${command_51}"
+    local old_lines_870=""
+    file_exists__39_v0 "${state_path_868}"
     local ret_file_exists39_v0__359_8="${ret_file_exists39_v0}"
     if [ "${ret_file_exists39_v0__359_8}" != 0 ]; then
         local command_52
-        command_52="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_864}")"
+        command_52="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_868}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_cmd_update439_v0=''
+            ret_cmd_update431_v0=''
             return "${__status}"
         fi
-        old_lines_866="${command_52}"
+        old_lines_870="${command_52}"
     fi
-    local old_keys_867=()
-    local old_vals_868=()
-    if [ "$([ "_${old_lines_866}" == "_" ]; echo $?)" != 0 ]; then
-        split_lines__5_v0 "${old_lines_866}"
-        local rows_873=("${ret_split_lines5_v0[@]}")
-        for row_874 in "${rows_873[@]}"; do
-            if [ "$([ "_${row_874}" != "_" ]; echo $?)" != 0 ]; then
+    local old_keys_871=()
+    local old_vals_872=()
+    if [ "$([ "_${old_lines_870}" == "_" ]; echo $?)" != 0 ]; then
+        split_lines__5_v0 "${old_lines_870}"
+        local rows_877=("${ret_split_lines5_v0[@]}")
+        for row_878 in "${rows_877[@]}"; do
+            if [ "$([ "_${row_878}" != "_" ]; echo $?)" != 0 ]; then
                 continue
             fi
-            split__4_v0 "	" "${row_874}"
-            local parts_875=("${ret_split4_v0[@]}")
-            local __length_57=("${parts_875[@]}")
+            split__4_v0 "	" "${row_878}"
+            local parts_879=("${ret_split4_v0[@]}")
+            local __length_57=("${parts_879[@]}")
             if [ "$(( ${#__length_57[@]} >= 2 ))" != 0 ]; then
-                old_keys_867+=("${parts_875[0]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:371:36)"}")
-                old_vals_868+=("${parts_875[1]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:372:36)"}")
+                old_keys_871+=("${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:371:36)"}")
+                old_vals_872+=("${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:372:36)"}")
             fi
         done
     fi
-    local changed_876=()
-    split_lines__5_v0 "${new_lines_865}"
-    local new_rows_877=("${ret_split_lines5_v0[@]}")
-    for row_878 in "${new_rows_877[@]}"; do
-        if [ "$([ "_${row_878}" != "_" ]; echo $?)" != 0 ]; then
+    local changed_880=()
+    split_lines__5_v0 "${new_lines_869}"
+    local new_rows_881=("${ret_split_lines5_v0[@]}")
+    for row_882 in "${new_rows_881[@]}"; do
+        if [ "$([ "_${row_882}" != "_" ]; echo $?)" != 0 ]; then
             continue
         fi
-        split__4_v0 "	" "${row_878}"
-        local parts_879=("${ret_split4_v0[@]}")
-        local __length_63=("${parts_879[@]}")
+        split__4_v0 "	" "${row_882}"
+        local parts_883=("${ret_split4_v0[@]}")
+        local __length_63=("${parts_883[@]}")
         if [ "$(( ${#__length_63[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_880="${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:383:27)"}"
-        local val_881="${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:384:27)"}"
-        local matched_882=0
-        local __range_start_883=0
-        local __length_64=("${old_keys_867[@]}")
-        local __range_end_883="${#__length_64[@]}"
-        local __dir_883=$(( ${__range_start_883} <= ${__range_end_883} ? 1 : -1 ))
-        for (( i_883=${__range_start_883}; i_883 * ${__dir_883} < ${__range_end_883} * ${__dir_883}; i_883+=${__dir_883} )); do
-            if [ "$([ "_${old_keys_867[${i_883}]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:387:25)"}" != "_${key_880}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_868[${i_883}]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:388:29)"}" == "_${val_881}" ]; echo $?)" != 0 ]; then
-                    local array_65=("${key_880}")
-                    changed_876+=("${array_65[@]}")
+        local key_884="${parts_883[0]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:383:27)"}"
+        local val_885="${parts_883[1]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:384:27)"}"
+        local matched_886=0
+        local __range_start_887=0
+        local __length_64=("${old_keys_871[@]}")
+        local __range_end_887="${#__length_64[@]}"
+        local __dir_887=$(( ${__range_start_887} <= ${__range_end_887} ? 1 : -1 ))
+        for (( i_887=${__range_start_887}; i_887 * ${__dir_887} < ${__range_end_887} * ${__dir_887}; i_887+=${__dir_887} )); do
+            if [ "$([ "_${old_keys_871[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:387:25)"}" != "_${key_884}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_872[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:388:29)"}" == "_${val_885}" ]; echo $?)" != 0 ]; then
+                    local array_65=("${key_884}")
+                    changed_880+=("${array_65[@]}")
                 fi
-                matched_882=1
+                matched_886=1
                 break
             fi
 done
-        if [ "$(( ! matched_882 ))" != 0 ]; then
-            changed_876+=("${key_880}")
+        if [ "$(( ! matched_886 ))" != 0 ]; then
+            changed_880+=("${key_884}")
         fi
     done
-    for ok_884 in "${old_keys_867[@]}"; do
-        local found_885=0
-        for row_886 in "${new_rows_877[@]}"; do
-            if [ "$([ "_${row_886}" != "_" ]; echo $?)" != 0 ]; then
+    for ok_888 in "${old_keys_871[@]}"; do
+        local found_889=0
+        for row_890 in "${new_rows_881[@]}"; do
+            if [ "$([ "_${row_890}" != "_" ]; echo $?)" != 0 ]; then
                 continue
             fi
-            split__4_v0 "	" "${row_886}"
-            local parts_887=("${ret_split4_v0[@]}")
-            local __length_71=("${parts_887[@]}")
-            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_887[0]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:405:42)"}" != "_${ok_884}" ]; echo $?) ))" != 0 ]; then
-                found_885=1
+            split__4_v0 "	" "${row_890}"
+            local parts_891=("${ret_split4_v0[@]}")
+            local __length_71=("${parts_891[@]}")
+            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_891[0]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:405:42)"}" != "_${ok_888}" ]; echo $?) ))" != 0 ]; then
+                found_889=1
                 break
             fi
         done
-        if [ "$(( ! found_885 ))" != 0 ]; then
-            changed_876+=("${ok_884}")
+        if [ "$(( ! found_889 ))" != 0 ]; then
+            changed_880+=("${ok_888}")
         fi
     done
-    local __length_73=("${changed_876[@]}")
+    local __length_73=("${changed_880[@]}")
     if [ "$(( ${#__length_73[@]} == 0 ))" != 0 ]; then
         echo "update: all repos up to date"
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return 0
     fi
-    local __length_74=("${changed_876[@]}")
+    local __length_74=("${changed_880[@]}")
     echo "update: ${#__length_74[@]} repo(s) changed:"
-    for c_888 in "${changed_876[@]}"; do
-        echo "  - ${c_888}"
+    for c_892 in "${changed_880[@]}"; do
+        echo "  - ${c_892}"
     done
     echo "Apply updates? [Y/n]"
     local command_77
     command_77="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return "${__status}"
     fi
-    local ans_889="${command_77}"
-    if [ "$(( $(( $(( $([ "_${ans_889}" != "_n" ]; echo $?) || $([ "_${ans_889}" != "_N" ]; echo $?) )) || $([ "_${ans_889}" != "_no" ]; echo $?) )) || $([ "_${ans_889}" != "_NO" ]; echo $?) ))" != 0 ]; then
+    local ans_893="${command_77}"
+    if [ "$(( $(( $(( $([ "_${ans_893}" != "_n" ]; echo $?) || $([ "_${ans_893}" != "_N" ]; echo $?) )) || $([ "_${ans_893}" != "_no" ]; echo $?) )) || $([ "_${ans_893}" != "_NO" ]; echo $?) ))" != 0 ]; then
         echo "update: aborted"
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return 0
     fi
-    for c_890 in "${changed_876[@]}"; do
-        run_step__438_v0 "${c_890}"
+    for c_894 in "${changed_880[@]}"; do
+        run_step__430_v0 "${c_894}"
     done
-    cp "${meta_path_863}" "${state_path_864}"
+    cp "${meta_path_867}" "${state_path_868}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update439_v0=''
+        ret_cmd_update431_v0=''
         return "${__status}"
     fi
     echo "update: done"
 }
 
-typeset -r raw_args_114=("$0" "$@")
-__length_82=("${raw_args_114[@]}")
+typeset -r raw_args_118=("$0" "$@")
+__length_82=("${raw_args_118[@]}")
 slice_upper_81="${#__length_82[@]}"
 slice_offset_83=1
 slice_offset_83=$((${slice_offset_83} > 0 ? ${slice_offset_83} : 0))
 slice_length_84="$(( slice_upper_81 - slice_offset_83 ))"
 slice_length_84=$((${slice_length_84} > 0 ? ${slice_length_84} : 0))
-args_115=("${raw_args_114[@]:${slice_offset_83}:${slice_length_84}}")
-step_args_116=()
-for a_117 in "${args_115[@]}"; do
-    if [ "$([ "_${a_117}" != "_--ask" ]; echo $?)" != 0 ]; then
+args_119=("${raw_args_118[@]:${slice_offset_83}:${slice_length_84}}")
+step_args_120=()
+for a_121 in "${args_119[@]}"; do
+    if [ "$([ "_${a_121}" != "_--ask" ]; echo $?)" != 0 ]; then
         export COPALS_ASK=1
         __status=$?
     fi
-    if [ "$([ "_${a_117}" != "_--trace" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${a_121}" != "_--trace" ]; echo $?)" != 0 ]; then
         set -x
         __status=$?
     fi
-    if [ "$([ "_${a_117}" == "_--ask" ]; echo $?)" != 0 ]; then
-        if [ "$([ "_${a_117}" == "_--trace" ]; echo $?)" != 0 ]; then
-            step_args_116+=("${a_117}")
+    if [ "$([ "_${a_121}" == "_--ask" ]; echo $?)" != 0 ]; then
+        if [ "$([ "_${a_121}" == "_--trace" ]; echo $?)" != 0 ]; then
+            step_args_120+=("${a_121}")
         fi
     fi
 done
-__length_89=("${step_args_116[@]}")
+__length_89=("${step_args_120[@]}")
 if [ "$(( ${#__length_89[@]} == 0 ))" != 0 ]; then
     install_apt_essential_tools__213_v0 
-    install_dotfiles_personalization__281_v0 
-    install_nerd_fonts__298_v0 
-    install_omz_config__307_v0 
-    install_zshmarks__319_v0 
-    install_system_tools__353_v0 
-    install_nvim__358_v0 
-    install_quicksheet__360_v0 
-    install_tmux_warm_daemon__364_v0 
-    install_tmux_wm__370_v0 
-    install_cmd_bookmarks__373_v0 
-    install_agent_global_config__386_v0 
-    install_agent_skills__426_v0 
-    install_skill_caveman__429_v0 
-    install_skill_humanizer__432_v0 
-    install_skill_ponytail__435_v0 
+    install_dotfiles_personalization__277_v0 
+    install_nerd_fonts__294_v0 
+    install_omz_config__303_v0 
+    install_zshmarks__315_v0 
+    install_system_tools__349_v0 
+    install_nvim__354_v0 
+    install_quicksheet__356_v0 
+    install_tmux_warm_daemon__360_v0 
+    install_tmux_wm__366_v0 
+    install_cmd_bookmarks__369_v0 
+    install_agent_global_config__382_v0 
+    install_agent_skills__418_v0 
+    install_skill_caveman__421_v0 
+    install_skill_humanizer__424_v0 
+    install_skill_ponytail__427_v0 
 fi
-__length_90=("${step_args_116[@]}")
+__length_90=("${step_args_120[@]}")
 if [ "$(( ${#__length_90[@]} >= 1 ))" != 0 ]; then
-    if [ "$([ "_${step_args_116[0]?"Index out of bounds (at /tmp/jbtd-install-build-3xIPKc/install.ab:524:22)"}" != "_update" ]; echo $?)" != 0 ]; then
-        __length_91=("${step_args_116[@]}")
+    if [ "$([ "_${step_args_120[0]?"Index out of bounds (at /tmp/jbtd-install-build-9g7jRu/install.ab:524:22)"}" != "_update" ]; echo $?)" != 0 ]; then
+        __length_91=("${step_args_120[@]}")
         if [ "$(( ${#__length_91[@]} == 1 ))" != 0 ]; then
-            cmd_update__439_v0 
+            cmd_update__431_v0 
             __status=$?
             if [ "${__status}" != 0 ]; then
                 exit "${__status}"
             fi
         fi
     else
-        for step_893 in "${step_args_116[@]}"; do
-            run_step__438_v0 "${step_893}"
+        for step_897 in "${step_args_120[@]}"; do
+            run_step__430_v0 "${step_897}"
         done
     fi
 fi

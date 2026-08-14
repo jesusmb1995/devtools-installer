@@ -11,6 +11,15 @@
 #           (set by nvim :AiSelect) and execs whichever tool is selected — so
 #           no tool is hardcoded here. tmux already starts each session in the
 #           workspace dir (-c), so the launcher drops `--workspace`.
+#
+# Idle-session reaper (tmux_session_reaper.sh). Detached tmux sessions with no
+# activity for longer than idle_reaper_hours are killed; attached sessions and
+# pool-managed ones (warm-N, agent-N, <pool>@<hash>) are always spared. The
+# reaper is a separate, non-blocking process; idle_reaper_interval is how often
+# (seconds) it wakes to scan. Set idle_reaper_hours to 0 to disable.
+# These keys are ignored by the warm daemon (Rust/bash), so they are safe here.
+idle_reaper_hours: 26
+idle_reaper_interval: 3600
 pools:
   warm:
     max_detached: 2

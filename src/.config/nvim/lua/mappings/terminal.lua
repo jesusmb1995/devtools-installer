@@ -63,18 +63,35 @@ local warm_terms = {
 -- for warm-* sessions the daemon never creates). Each toggle reattaches to a
 -- persistent per-id session via -A.
 local function warm_cmd(opts, dir)
-  return "env -u TMUX tmux new-session -A -s nvim-" .. opts.id .. " -c " .. vim.fn.shellescape(dir)
+  -- opts.id is nil for `new` (<leader>h): each call must spawn its OWN warm
+  -- session instead of reattaching a shared one, so derive a one-shot name.
+  local id = opts.id or ("adhoc" .. vim.loop.hrtime())
+  return "exec env -u TMUX tmux new-session -A -s nvim-" .. id .. " -c " .. vim.fn.shellescape(dir)
+end
+
+-- Turn a path into a key safe for buffer keys AND tmux session names
+-- (tmux forbids "." and ":").
+local function dir_key(dir)
+  return (dir:gsub("[^%w%-]", "_"))
 end
 
 for _, t in ipairs(warm_terms) do
   local lhs, modes, fn, opts, label = t[1], t[2], t[3], t[4], t[5]
   map(modes, lhs, function()
+    -- Workspace terminals keyed by WORKING DIRECTORY, not tab: warm_cwd is
+    -- the effective cwd (:lcd/:tcd-aware), so every tab sitting at the same
+    -- pwd reattaches the SAME terminal buffer and warm tmux session, while
+    -- tabs at different pwds each get their own. The session is born in that
+    -- pwd via -c/termopen cwd.
     local dir = warm_cwd()
-    require("nvchad.term")[fn](vim.tbl_extend("force", opts, {
-      cmd = warm_cmd(opts, dir),
+    local dir_opts = opts.id and vim.tbl_extend("force", opts, {
+      id = opts.id .. "-" .. dir_key(dir),
+    }) or opts
+    require("nvchad.term")[fn](vim.tbl_extend("force", dir_opts, {
+      cmd = warm_cmd(dir_opts, dir),
       termopen_opts = { cwd = dir },
     }))
-  end, { desc = "terminal " .. label .. " (warm tmux)" })
+  end, { desc = "terminal " .. label .. " (warm tmux, per pwd)" })
 end
 
 local terminal_file_ref_pattern = [[\v(\f+\/\f+|\f+\.\f+)(:\d+(:\d+)?)?]]

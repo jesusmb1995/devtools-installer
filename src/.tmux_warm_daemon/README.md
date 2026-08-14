@@ -37,6 +37,60 @@ A custom config path can be passed as a CLI argument:
 tmux_warm_daemon /path/to/config.yaml
 ```
 
+## Idle-session reaper
+
+`tmux_session_reaper.sh` is a separate, non-blocking bash service that reclaims
+forgotten tmux sessions. Every `idle_reaper_interval` seconds it scans the tmux
+server and kills any detached session with no activity for longer than
+`idle_reaper_hours` (default 26h). It never holds tmux locks between passes and
+never interferes with pre-warming.
+
+The reaper is started (and stopped) alongside the warm daemon by
+`restart_daemon.sh`, so it runs out of the box after install. It can also be
+invoked directly:
+
+```bash
+# single pass, then exit (handy from cron or for a manual cleanup)
+tmux_session_reaper.sh --once
+
+# run as the background service
+tmux_session_reaper.sh
+```
+
+A session is always **spared** if it is currently attached, if it is managed by
+a pool (`warm-N`, `agent-N`, `<pool>@<hash>` — read from `pools:` in this same
+config), or if its age cannot be determined. "No activity / did not change" is
+the time since the most recent of: the session's last change (the **max of
+`#{window_activity}` across its windows** — this advances on real output with
+the default `monitor-activity=off`, unlike `#{session_activity}` which stays
+frozen at creation), the last attach (`#{session_last_attached}`) and creation
+(`#{session_created}`, fallback). So a session started days ago that still
+produces output is measured by that recent change and spared; only one with no
+change or attach for longer than the threshold is reaped.
+
+Both knobs live in the same config as the daemon and are ignored by it, so the
+file configures both processes:
+
+```yaml
+idle_reaper_hours: 26      # 0 disables the reaper
+idle_reaper_interval: 3600 # seconds between scans
+```
+
+The reaper is started (and stopped) alongside the warm daemon by
+`restart_daemon.sh`, so it runs out of the box after install. It can also be
+invoked directly:
+
+```bash
+# single pass, then exit (handy from cron or for a manual cleanup)
+tmux_session_reaper.sh --once
+
+# run as the background service
+tmux_session_reaper.sh
+```
+
+Kills are logged (tagged `[reaper]`) to the daemon's `log_file`
+(`/tmp/tmux_warm_daemon.log` by default).
+
 ## Backends
 
 Two interchangeable implementations live side by side:

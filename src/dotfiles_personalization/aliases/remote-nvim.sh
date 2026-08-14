@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# TODO: This relies on complex .socket file... use standard-straigforward ssh commands
+# TODO: MY_VIMRC on nvim --headless needed
+
 # remote-nvim: connect to a remote host's Neovim over an SSH tunnel.
 #
 # Usage:
