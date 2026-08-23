@@ -11,6 +11,10 @@
 #           (set by nvim :AiSelect) and execs whichever tool is selected — so
 #           no tool is hardcoded here. tmux already starts each session in the
 #           workspace dir (-c), so the launcher drops `--workspace`.
+#           Workspace registration: `was-agent mark <path>` (sqlite registry
+#           at ~/.cache/tmux_warm_daemon/was_agent.db) is the preferred source
+#           for the BASH daemon; the legacy /tmp json is still dual-written so
+#           the Rust daemon keeps working unchanged.
 #
 # Idle-session reaper (tmux_session_reaper.sh). Detached tmux sessions with no
 # activity for longer than idle_reaper_hours are killed; attached sessions and

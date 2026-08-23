@@ -254,8 +254,7 @@ local function exec_shell_or_ctest(pos, term_id)
     ctest_gtest_picker(pos, term_id)
   end
 end
-
-map("n", "<leader><A-H>", function()
+map("n", "<leader><A-C>", function()
   exec_shell_or_ctest("sp", "htoggleTerm")
 end, { desc = "Execute shell script or CTest picker — horizontal" })
 

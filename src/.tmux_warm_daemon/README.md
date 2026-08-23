@@ -187,6 +187,33 @@ Set `max_detached: 0` to only use workspace-specific sessions.
 
 The JSON file can be managed by external tooling (IDE hooks, scripts, cron).
 
+## Agent-workspace registry (`was-agent`)
+
+`was-agent.sh` (deployed as `~/.local/bin/was-agent`) is the registry of
+"agent workspaces": `attach_warm.sh` and nvim's `<leader><C-l>` call
+`was-agent mark <path>`, and the bash daemon reads `was-agent json` (preferred
+over the legacy `/tmp` json) to decide which `agent@<hash>` sessions to
+pre-warm.
+
+- **Storage**: sqlite db at `~/.cache/tmux_warm_daemon/was_agent.db`
+  (table `workspaces(path, h8, marked_at)`; `path` is the primary key so
+  re-marking upserts).
+- **Subcommands**:
+  - `mark <path>` — register a workspace (sqlite upsert, plus a dual-write to
+    the legacy json so the Rust daemon keeps working)
+  - `is-marked <path>` — exit 0 when the path is in the db, has a legacy
+    `$path/.was_agent` file, or appears in the legacy json
+  - `list` / `json` — registered paths, one per line / as a JSON array
+  - `hash <path>` — the 8-char md5 prefix used in `agent@<hash>` names
+- **Fallback**: `sqlite3` is resolved from `PATH`, then
+  `/home/linuxbrew/.linuxbrew/bin/sqlite3`, then `/opt/homebrew/bin/sqlite3`
+  (an explicit `$WAS_AGENT_SQLITE3` overrides). Without any sqlite3, `mark`
+  degrades to the legacy scheme (touch `$path/.was_agent` + append to the
+  legacy json — note that in sqlite mode no per-directory file is created at
+  all), and `list`/`json` read the legacy json via `python3`.
+- **TMPDIR note**: the legacy json path is `${TMPDIR:-/tmp}/tmux_warm_agent_workspaces.json`,
+  so tests/sandboxes can redirect it by setting `TMPDIR`.
+
 ## Attaching to non-default pools
 
 Use `attach_warm.sh` to attach to a pre-warmed session from any pool:

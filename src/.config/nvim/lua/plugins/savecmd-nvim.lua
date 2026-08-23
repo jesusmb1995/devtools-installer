@@ -1,13 +1,17 @@
+
+-- cmd_bookmarks is deployed locally by its install hook to
+-- ~/.local/share/cmd_bookmarks: the same central store zsh's savecmd.zsh uses.
 return {
   {
-    url = "BAD_URL_github.com/jesusmb1995/cmd_bookmarks",
-    -- dir = "/luksmap/Code/savecmd",
+    dir = vim.fn.expand "~/.local/share/cmd_bookmarks",
     lazy = true,
     cmd = { "LaunchVert", "LaunchHoriz", "LaunchFloat" },
     keys = {
       { "<leader><A-v>", "<cmd>LaunchVert<cr>",  desc = "Launch command in vertical terminal" },
       { "<leader><A-h>", "<cmd>LaunchHoriz<cr>", desc = "Launch command in horizontal terminal" },
-      { "<leader><A-i>", "<cmd>LaunchFloat<cr>", desc = "Launch command in horizontal terminal" },
+      { "<leader><A-z>", "<cmd>LaunchHoriz<cr>", desc = "Run cmd bookmark in horizontal terminal" },
+      { "<leader><A-Y>", "<cmd>LaunchHoriz<cr>", desc = "Run cmd bookmark in horizontal terminal (tmux-wm safe)" },
+      { "<leader><A-i>", "<cmd>LaunchFloat<cr>", desc = "Launch command in floating window" },
       { "<leader>rr",    "<cmd>LaunchLast<cr>",  desc = "Launch last run command" },
     },
     config = function()
@@ -15,3 +19,4 @@ return {
     end
   }
 }
+

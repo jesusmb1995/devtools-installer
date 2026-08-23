@@ -13,28 +13,13 @@ init_cmd="${2-cd $(printf '%q' "$PWD")}"
 workspace="${3:-}"
 
 session=""
+was_agent=""
 
 if [ -n "$workspace" ]; then
-  if [ ! -f "$workspace/.was_agent" ]; then
-    touch "$workspace/.was_agent"
-  fi
-
-  ws_file="/tmp/tmux_warm_${pool}_workspaces.json"
-  if [ -f "$ws_file" ]; then
-    if ! grep -qF "\"$workspace\"" "$ws_file" 2>/dev/null; then
-      tmp=$(mktemp)
-      python3 -c "
-import json,sys
-ws=json.load(open('$ws_file'))
-ws.append('$workspace')
-json.dump(ws,open('$tmp','w'))
-" 2>/dev/null && mv "$tmp" "$ws_file" || rm -f "$tmp"
-    fi
-  else
-    printf '["%s"]\n' "$workspace" > "$ws_file"
-  fi
-
-  # Try workspace-specific session
+  # Try workspace-specific session. NOTE: the was-agent mark is deliberately
+  # DEFERRED until a session has been secured below — the failure paths here
+  # (no warm session for this workspace / no pool session at all) must not
+  # register the workspace.
   hash=$(printf '%s' "$workspace" | md5sum | cut -c1-8)
   ws_session="${pool}@${hash}"
   if tmux has-session -t "$ws_session" 2>/dev/null; then
@@ -62,6 +47,42 @@ fi
 if [ -z "$session" ]; then
   echo "No warm session available for pool '${pool}'" >&2
   exit 1
+fi
+
+# A session is secured for this workspace — NOW register it via was-agent
+# (sqlite registry at ~/.cache/tmux_warm_daemon/was_agent.db + legacy json
+# dual-write). Runs once for both the ws-session path and the generic-pool
+# fallback path above.
+if [ -n "$workspace" ]; then
+  if [ -x "$HOME/.local/bin/was-agent" ]; then
+    was_agent="$HOME/.local/bin/was-agent"
+  elif [ -x "$HOME/.tmux_warm_daemon/was-agent.sh" ]; then
+    was_agent="$HOME/.tmux_warm_daemon/was-agent.sh"
+  fi
+
+  if [ -n "$was_agent" ]; then
+    "$was_agent" mark "$workspace" 2>/dev/null || true
+  else
+    # Legacy fallback (was-agent not deployed): inline marker + json append.
+    if [ ! -f "$workspace/.was_agent" ]; then
+      touch "$workspace/.was_agent"
+    fi
+
+    ws_file="/tmp/tmux_warm_${pool}_workspaces.json"
+    if [ -f "$ws_file" ]; then
+      if ! grep -qF "\"$workspace\"" "$ws_file" 2>/dev/null; then
+        tmp=$(mktemp)
+        python3 -c "
+import json,sys
+ws=json.load(open('$ws_file'))
+ws.append('$workspace')
+json.dump(ws,open('$tmp','w'))
+" 2>/dev/null && mv "$tmp" "$ws_file" || rm -f "$tmp"
+      fi
+    else
+      printf '["%s"]\n' "$workspace" > "$ws_file"
+    fi
+  fi
 fi
 
 pid=$(cat /tmp/tmux_warm_daemon.pid 2>/dev/null || true)

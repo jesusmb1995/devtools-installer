@@ -182,9 +182,29 @@ parse_json_string_array() {
 ensure_workspace_sessions() {
   local pool="$1" trigger="$2"
   local ws_file="/tmp/tmux_warm_${pool}_workspaces.json"
-  [ -f "$ws_file" ] || return 0
 
-  local content; content="$(cat "$ws_file")"
+  # Prefer the was-agent sqlite registry (was-agent json emits the registered
+  # workspaces as a JSON array); fall back to the legacy json file when the
+  # helper is absent or yields nothing.
+  local content=""
+  local was_agent=""
+  if [ -x "${HOME:-}/.local/bin/was-agent" ]; then
+    was_agent="${HOME:-}/.local/bin/was-agent"
+  elif [ -x "${HOME:-}/.tmux_warm_daemon/was-agent.sh" ]; then
+    was_agent="${HOME:-}/.tmux_warm_daemon/was-agent.sh"
+  fi
+  if [ -n "$was_agent" ]; then
+    content="$("$was_agent" json 2>/dev/null || true)"
+  fi
+  # An empty registry prints "[]" — treat that as empty so the legacy json
+  # file is still honored (entries registered before was-agent existed).
+  case "$content" in
+    ""|"[]") content="" ;;
+  esac
+  if [ -z "$content" ] && [ -f "$ws_file" ]; then
+    content="$(cat "$ws_file")"
+  fi
+  [ -n "$content" ] || return 0
   local -a workspaces
   if ! parse_json_string_array "$content" workspaces; then
     log "[$pool] Invalid JSON in '$ws_file'"
