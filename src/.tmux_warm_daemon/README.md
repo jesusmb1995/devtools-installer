@@ -135,9 +135,18 @@ tmux_warm_daemon_dir="$(pwd)"
 
 The plugin patch adds two config variables:
 - `ZSH_TMUX_CD` — send `cd` to the attached session to match the launching terminal's pwd
+  (only when the target pane is a plain shell prompt; it is never typed into a
+  pane running another tool, and the fresh-session fallback needs no `cd` at
+  all — tmux starts it in the client's pwd)
 - `ZSH_TMUX_WARM_SESSION_PREFIX` — when set, auto-attach targets a detached session
   whose name starts with this prefix (e.g. `"warm"` matches `warm-0`, `warm-1`),
-  preventing accidental attachment to sessions from other pools like `agent-*`
+  preventing accidental attachment to sessions from other pools like `agent-*`.
+  The pick is CLEAN-AWARE: it skips warm sessions whose pane is currently
+  running another cli-tool (btop, an editor, an agent CLI, ...) and takes the
+  first one sitting at a plain shell prompt (one `list-panes` roundtrip, no
+  added latency). The forked omz-config plugin ships the same gate
+  (`_zsh_tmux_warm_pick` / `_zsh_tmux_pane_is_shell`); this diff mirrors it
+  for stock oh-my-zsh installs.
 
 Set up tmux plugin in `.zshrc`:
 

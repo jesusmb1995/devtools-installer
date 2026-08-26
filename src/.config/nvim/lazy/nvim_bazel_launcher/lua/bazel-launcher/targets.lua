@@ -73,6 +73,75 @@ function M.workspace_root()
     return M.find_root()
 end
 
+-- Path of the current buffer when it is a normal file (empty 'buftype',
+-- non-empty name), else nil. Gates the per-buffer features (package
+-- scoping, prompt pre-fill).
+function M.current_file()
+    local bufnr = vim.api.nvim_get_current_buf()
+    if vim.api.nvim_get_option_value("buftype", { buf = bufnr }) ~= "" then
+        return nil
+    end
+    local name = vim.api.nvim_buf_get_name(bufnr)
+    if name == "" then
+        return nil
+    end
+    local basename = vim.fs.basename(name)
+    if basename == "BUILD" or basename == "BUILD.bazel" or basename:match("%.bzl$") then
+        return name
+    end
+    return nil
+end
+
+-- Bazel package owning `path` (default: the current buffer's file), in
+-- label form ("//pkg/demo"; "//" for the workspace root package). The
+-- package is the nearest ANCESTOR dir of the file -- starting at the
+-- file's own dir, walking up to the workspace root inclusive -- holding
+-- BUILD or BUILD.bazel. Returns nil for non-file buffers, files outside
+-- the workspace, or files with no BUILD anywhere below the root; callers
+-- decide how to fall back. The configured root wins over find_root(),
+-- whose marker walk can stop at the file's own package BUILD.
+function M.package_for(path)
+    path = path or M.current_file()
+    if not path then
+        return nil
+    end
+    local root = config.get().root or M.find_root(path)
+    if not root then
+        return nil
+    end
+    root = abspath(root)
+    local dir = vim.fs.dirname(abspath(path))
+    while dir do
+        -- Only dirs AT or UNDER the workspace root are package candidates:
+        -- relpath() is nil both for the root itself and for unrelated trees,
+        -- so containment is decided by prefix here, not by relpath.
+        if dir ~= root and dir:sub(1, #root + 1) ~= root .. "/" then
+            return nil
+        end
+        if vim.fn.filereadable(dir .. "/BUILD") == 1 or vim.fn.filereadable(dir .. "/BUILD.bazel") == 1 then
+            local rel = vim.fs.relpath(root, dir)
+            if not rel or rel == "." or rel == "" then
+                return "//"
+            end
+            -- Belt and braces: a relpath that escapes the root ("..") means
+            -- the BUILD found belongs to some other tree.
+            if rel:sub(1, 2) == ".." then
+                return nil
+            end
+            return "//" .. rel
+        end
+        if dir == root then
+            break
+        end
+        local parent = vim.fs.dirname(dir)
+        if parent == dir then
+            break
+        end
+        dir = parent
+    end
+    return nil
+end
+
 local function resolve_query_args(opts, cfg)
     local query = opts.query or cfg.query
     if type(query) == "function" then

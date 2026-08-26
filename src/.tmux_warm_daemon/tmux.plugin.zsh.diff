@@ -19,33 +19,38 @@ index b1d97e9..3f2c4c6 100644
 -if [[ -z "$TMUX" && "$ZSH_TMUX_AUTOSTART" == "true" && -z "$INSIDE_EMACS" && -z "$EMACS" && -z "$VIM" && -z "$INTELLIJ_ENVIRONMENT_READER" && -z "$ZED_TERM" ]]; then
 +if [[ -z "$TMUX" && "$ZSH_TMUX_AUTOSTART" == "true" && -z "$INSIDE_EMACS" && -z "$EMACS" && -z "$VIM" && -z "$NVIM" && -z "$INTELLIJ_ENVIRONMENT_READER" && -z "$ZED_TERM" ]]; then
 
-@@ -135,12 +140,26 @@ function _zsh_tmux_plugin_run() {
+@@ -135,12 +140,40 @@ function _zsh_tmux_plugin_run() {
    fi
  
++  local _warm_picked=false
    # Try to connect to an existing session.
 -  if [[ -n "$session_name" ]]; then
 -    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name"
 -  else
 -    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached
++  # Clean-aware warm pick: first DETACHED warm-* session whose pane sits at
++  # a plain shell prompt (one list-panes roundtrip, no sleeps). A session
++  # running another cli-tool (btop, an editor, an agent CLI, ...) is skipped.
 +  if [[ -n "$ZSH_TMUX_WARM_SESSION_PREFIX" && -z "$session_name" ]]; then
-+    session_name=$(command tmux list-sessions -F '#{session_name} #{session_attached}' 2>/dev/null \
-+      | awk -v pfx="${ZSH_TMUX_WARM_SESSION_PREFIX}-" '$1 ~ "^"pfx && $2 == 0 { print $1; exit }')
++    session_name=$(command tmux list-panes -a -F '#{session_name}|#{session_attached}|#{pane_current_command}' 2>/dev/null \
++      | awk -v pfx="${ZSH_TMUX_WARM_SESSION_PREFIX}-" -F'|' \
++        '$1 ~ "^"pfx && $2 == 0 && ($3 == "zsh" || $3 == "bash" || $3 == "sh" || $3 == "dash" || $3 == "fish") { print $1; exit }')
++    [[ -n "$session_name" ]] && _warm_picked=true
    fi
  
-+  if [[ -n "$ZSH_TMUX_CD" ]]; then
++  # The `cd` correction is only ever TYPED into a shell pane -- send-keys
++  # into a running tool would be garbage input. Warm-picked sessions are
++  # already shell-verified; other named targets get one display-message
++  # lookup; with no target the plain attach creates/uses a session without
++  # typing anything.
++  if [[ "$ZSH_TMUX_CD" == "true" && -n "$session_name" ]] && { [[ "$_warm_picked" == true ]] || [[ "$(command tmux display-message -p -t "$session_name" '#{pane_current_command}' 2>/dev/null)" == (zsh|bash|sh|dash|fish) ]] }; then
 +    prelaunch_pwd=$(pwd)
-+  	if [[ -n "$session_name" ]]; then
-+  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name" \; send-keys "cd '${prelaunch_pwd}'" Enter
-+  	else
-+  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached \; send-keys "cd '${prelaunch_pwd}'" Enter
-+  	fi
++    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name" \; send-keys "cd '${prelaunch_pwd}'" Enter
++  elif [[ -n "$session_name" ]]; then
++    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name"
 +  else
-+  	if [[ -n "$session_name" ]]; then
-+  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name"
-+  else
-+  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached
-+  	fi
-+  fi 
++    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached
++  fi
 +
    # If failed, just run tmux, fixing the TERM variable if requested.
    if [[ $? -ne 0 ]]; then

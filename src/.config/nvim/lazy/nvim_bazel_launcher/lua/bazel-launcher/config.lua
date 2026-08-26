@@ -6,7 +6,7 @@ local function defaults()
     return {
         bazel_bin = "auto",
         query = { "query", "//..." },
-        workspace_markers = { "WORKSPACE", "WORKSPACE.bazel", "MODULE.bazel", "BUILD", "BUILD.bazel" },
+        workspace_markers = { "WORKSPACE", "WORKSPACE.bazel", "MODULE.bazel" },
         root = nil,
         build_command = nil,
         on_command = nil,

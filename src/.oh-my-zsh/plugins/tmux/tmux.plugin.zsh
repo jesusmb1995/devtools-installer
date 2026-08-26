@@ -112,6 +112,26 @@ else
   export _ZSH_TMUX_FIXED_CONFIG="${0:h:a}/tmux.only.conf"
 fi
 
+# Pick the first DETACHED session of the warm pool whose pane sits at a plain
+# shell prompt -- one list-panes roundtrip, no sleeps, so autostart latency is
+# unchanged. Warm-pool sessions that are running something else (btop, an
+# editor, an agent CLI, ...) are skipped: attaching there drops the user into
+# a running program and the `cd` correction would be typed into it.
+function _zsh_tmux_warm_pick() {
+  local prefix="${ZSH_TMUX_WARM_SESSION_PREFIX}-"
+  command tmux list-panes -a -F '#{session_name}|#{session_attached}|#{pane_current_command}' 2>/dev/null \
+    | awk -v pfx="$prefix" -F'|' \
+      '$1 ~ "^"pfx && $2 == 0 && ($3 == "zsh" || $3 == "bash" || $3 == "sh" || $3 == "dash" || $3 == "fish") { print $1; exit }'
+}
+
+# True when the current pane of session $1 sits at a plain shell prompt
+# (i.e. it is safe to send-keys a `cd` line into it).
+function _zsh_tmux_pane_is_shell() {
+  local cmd
+  cmd=$(command tmux display-message -p -t "$1" '#{pane_current_command}' 2>/dev/null)
+  [[ "$cmd" == (zsh|bash|sh|dash|fish) ]]
+}
+
 # Wrapper function for tmux.
 function _zsh_tmux_plugin_run() {
   if [[ -n "$@" ]]; then
@@ -139,30 +159,32 @@ function _zsh_tmux_plugin_run() {
       session_name="$ZSH_TMUX_DEFAULT_SESSION_NAME"
   fi
 
+  local _warm_picked=false
   if [[ -n "$ZSH_TMUX_WARM_SESSION_PREFIX" && -z "$session_name" ]]; then
-    session_name=$(command tmux list-sessions -F '#{session_name} #{session_attached}' 2>/dev/null \
-      | awk -v pfx="${ZSH_TMUX_WARM_SESSION_PREFIX}-" '$1 ~ "^"pfx && $2 == 0 { print $1; exit }')
+    session_name=$(_zsh_tmux_warm_pick)
+    [[ -n "$session_name" ]] && _warm_picked=true
   fi
 
-  # Try to connect to an existing session.
-  if [[ -n "$ZSH_TMUX_CD" ]]; then
+  # Try to connect to an existing session. The `cd` correction is only ever
+  # TYPED into a session whose pane is a plain shell prompt -- send-keys into
+  # a pane running another tool (btop, an agent CLI, ...) is garbage input.
+  # Warm-picked sessions are already shell-verified by the pick, so the
+  # common path costs exactly ONE tmux roundtrip; any other named target
+  # gets one extra display-message lookup. With no named target the plain
+  # attach either creates a fresh session (already in this pwd) or lands on
+  # an unknown session -- either way nothing is typed.
+  if [[ "$ZSH_TMUX_CD" == "true" && -n "$session_name" ]] && { [[ "$_warm_picked" == true ]] || _zsh_tmux_pane_is_shell "$session_name" }; then
     # $NVIM_WARM_CD is exported by Neovim onto its :terminal children (it
     # survives `env -u NVIM -u TMUX`); prefer it so the warm session lands in
     # the project regardless of this shell's $(pwd), which is unreliable when
     # opened from nvim. Plain terminals fall back to $(pwd).
     prelaunch_pwd="${NVIM_WARM_CD:-$(pwd)}"; prelaunch_pwd="${prelaunch_pwd/#\~/$HOME}"
-  	if [[ -n "$session_name" ]]; then
-  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name" \; send-keys "cd '${prelaunch_pwd}'" Enter
-  	else
-  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached \; send-keys "cd '${prelaunch_pwd}'" Enter
-  	fi
+    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name" \; send-keys "cd '${prelaunch_pwd}'" Enter
+  elif [[ -n "$session_name" ]]; then
+    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name"
   else
-  	if [[ -n "$session_name" ]]; then
-  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached -t "$session_name"
-  	else
-  	  [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached
-  	fi
-  fi 
+    [[ "$ZSH_TMUX_AUTOCONNECT" == "true" ]] && $tmux_cmd attach $_detached
+  fi
 
   # If failed, just run tmux, fixing the TERM variable if requested.
   if [[ $? -ne 0 ]]; then
