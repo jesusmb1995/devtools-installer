@@ -155,6 +155,11 @@ vim.api.nvim_create_autocmd("DirChanged", {
   callback = register_warm_workspace,
 })
 
+-- :NvKill — kill whole current nvim instance/process quickly in one command (no need to close all windows)
+-- User commands must start with uppercase, so :nvkill is invalid; add cnoreabbrev for lowercase.
+vim.api.nvim_create_user_command("NvKill", function() vim.cmd("qa!") end, { desc = "Kill whole nvim instance (qa!)" })
+vim.cmd("cnoreabbrev nvkill NvKill")
+
 -- [copals postrender] prefetched/locked bundle: block lazy plugin installs.
 vim.schedule(function()
   local ok, task = pcall(require, "lazy.manage.task.git")

@@ -21,6 +21,8 @@ function M.default_name(type, target)
     end
     if type == "build" then
         label = label .. "_build"
+    elseif type == "test" then
+        label = label .. "_test"
     end
     return label
 end

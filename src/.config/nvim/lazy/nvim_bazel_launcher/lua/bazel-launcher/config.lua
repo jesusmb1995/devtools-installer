@@ -13,7 +13,7 @@ local function defaults()
         bookmarks = {
             enabled = true,
             file = ".local_cmd_bookmarks",
-            save = { run = true, build = true },
+            save = { run = true, build = true, test = true },
             name = nil,
         },
         terminal = { mode = "horiz" },
@@ -79,6 +79,9 @@ local function validate(opts)
             end
             if b.save.build ~= nil and type(b.save.build) ~= "boolean" then
                 fail("bookmarks.save.build must be a boolean")
+            end
+            if b.save.test ~= nil and type(b.save.test) ~= "boolean" then
+                fail("bookmarks.save.test must be a boolean")
             end
         end
         if b.name ~= nil and type(b.name) ~= "function" then

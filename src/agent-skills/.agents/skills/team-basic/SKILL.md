@@ -12,6 +12,7 @@ Master orchestrate only. Split → spawn → judge → aggregate → continue. M
 ## Notes
 - Use /caveman skill to save tokens if possible
 - Use proper ai model to be efficient as needed by task difficulty
+- Parallel editing in one jj repo: give each subagent its own workspace via /jj-parallel-workspaces (names contain `-agent`), merge pieces back per /per_patch, then /jj-workspace-cleanup to remove stale ones
 
 ## Do
 

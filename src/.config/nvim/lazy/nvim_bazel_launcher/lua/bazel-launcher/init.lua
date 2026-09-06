@@ -41,6 +41,12 @@ function M.setup(opts)
         nargs = "?",
         desc = "Bazel build [target] (no arg opens picker)",
     })
+    vim.api.nvim_create_user_command("BazelTest", function(args)
+        launch_command("test", args.args)
+    end, {
+        nargs = "?",
+        desc = "Bazel test [target] (no arg opens picker)",
+    })
     vim.api.nvim_create_user_command("BazelLast", function()
         M.launch.launch_last()
     end, {

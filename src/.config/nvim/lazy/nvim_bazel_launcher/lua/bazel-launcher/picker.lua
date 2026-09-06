@@ -109,6 +109,9 @@ function M.open(opts)
             }),
             sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
             attach_mappings = function(prompt_bufnr, map)
+                local function is_test_target(label)
+                    return label:match("_test") ~= nil
+                end
                 local function dispatch(launch_type)
                     -- Read the selection BEFORE closing: close tears down the
                     -- picker state on some telescope versions, and Enter must
@@ -119,16 +122,24 @@ function M.open(opts)
                         require("bazel-launcher.launch").launch(launch_type, selection.value)
                     end
                 end
+                local function dispatch_heuristic()
+                    local selection = action_state.get_selected_entry()
+                    actions.close(prompt_bufnr)
+                    if selection and selection.value then
+                        local lt = is_test_target(selection.value) and "test" or "run"
+                        require("bazel-launcher.launch").launch(lt, selection.value)
+                    end
+                end
                 local function refresh()
                     actions.close(prompt_bufnr)
                     targets.clear_cache()
                     M.open()
                 end
                 map("i", "<CR>", function()
-                    dispatch("run")
+                    dispatch_heuristic()
                 end)
                 map("n", "<CR>", function()
-                    dispatch("run")
+                    dispatch_heuristic()
                 end)
                 map("i", "<C-d>", function()
                     dispatch("build")
@@ -136,10 +147,22 @@ function M.open(opts)
                 map("n", "<C-d>", function()
                     dispatch("build")
                 end)
+                map("i", "<C-t>", function()
+                    dispatch("test")
+                end)
+                map("n", "<C-t>", function()
+                    dispatch("test")
+                end)
+                map("i", "<C-g>", function()
+                    dispatch("run")
+                end)
+                map("n", "<C-g>", function()
+                    dispatch("run")
+                end)
                 map("i", "<C-r>", refresh)
                 map("n", "<C-r>", refresh)
                 actions.select_default:replace(function()
-                    dispatch("run")
+                    dispatch_heuristic()
                 end)
                 return true
             end,

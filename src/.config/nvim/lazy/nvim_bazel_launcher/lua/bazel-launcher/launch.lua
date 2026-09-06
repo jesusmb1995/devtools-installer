@@ -142,7 +142,7 @@ local function launch_via_shared_panel(cmd_string, cfg)
 end
 
 function M.launch(launch_type, target)
-    if launch_type ~= "run" and launch_type ~= "build" then
+    if launch_type ~= "run" and launch_type ~= "build" and launch_type ~= "test" then
         vim.notify("bazel-launcher: invalid launch type: " .. tostring(launch_type), vim.log.levels.ERROR)
         return nil
     end

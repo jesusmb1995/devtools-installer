@@ -28,5 +28,5 @@ pools:
   warm:
     max_detached: 2
   agent:
-    max_detached: 1
+    max_detached: "3"
     command: $HOME/.local/bin/agent-warm.sh
