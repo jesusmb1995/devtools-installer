@@ -46,6 +46,26 @@ local function _jj_in_root(jj_root, fn)
   end
 end
 
+-- Tab-local cwd, explicit per-tab query: gwg opens one tab per jj workspace
+-- via tcd, so the TAB (not the buffer — tabnew keeps showing the old buffer)
+-- decides which workspace's @ the log panel shows. Bare getcwd() would follow
+-- a window-local lcd if one ever exists; getcwd(-1, tab) is the tab's own.
+local function _tab_cwd()
+  local ok, d = pcall(vim.fn.getcwd, -1, vim.fn.tabpagenr())
+  if ok and d ~= "" then return d end
+  return vim.fn.getcwd()
+end
+
+-- jj root of the current TAB's worktree (nil when the tab sits outside any
+-- jj repo). Preferred over the buffer-based _find_jj_root for workspace-wide
+-- views (log panel): the buffer may belong to another workspace's checkout.
+local function _find_jj_root_in_tab()
+  local dir = _tab_cwd()
+  local out = vim.fn.system({ "sh", "-c", "cd " .. vim.fn.shellescape(dir) .. " && jj root 2>/dev/null" })
+  if vim.v.shell_error == 0 and vim.trim(out) ~= "" then return vim.trim(out) end
+  return nil
+end
+
 local function _get_current_bookmark(runner)
   local out = runner.execute_command("jj log --ignore-working-copy -r '::@ & bookmarks()' --no-graph -T 'bookmarks.map(|b| b.name()).join(\"\\n\")' --limit 1 2>/dev/null", nil, nil, true)
   if not out then return nil end
@@ -58,12 +78,43 @@ end
 
 --              key        command / pipeline                        desc
 map("n", "<leader>gg", "<cmd>JJ status<CR>", { desc = "jj status" })
-map("n", "<leader>gl", "<cmd>JJ log<CR>", { desc = "jj log" })
+-- gl/gkg: open the jj.nvim log panel. The panel backend (terminal.run) never
+-- reports a non-zero `jj log` exit via noice — it just leaves a dead buffer —
+-- so pre-flight synchronously with silent=false (the runner then notifies
+-- stderr at ERROR level, which noice picks up) and only open the panel on
+-- success. Body in pcall so even loader failures notify instead of vanishing.
+-- Root is the TAB's worktree first (gwg tabs are workspaces; the visible
+-- buffer may still belong to another workspace), buffer-based root as fallback.
+map("n", "<leader>gl", function()
+  local root = _find_jj_root_in_tab() or _find_jj_root()
+  if not root then vim.notify("Not a jj repo", vim.log.levels.WARN) return end
+  _jj_in_root(root, function()
+    local ok, err = pcall(function()
+      require("lazy").load({ plugins = { "jj.nvim" } })
+      local runner = require("jj.core.runner")
+      local _, success = runner.execute_command(
+        "jj log --ignore-working-copy --no-graph --limit 1 -T 'commit_id.shortest(8)'",
+        "jj log", nil, false)
+      if not success then return end
+      require("jj.cmd").log({})
+    end)
+    if not ok then vim.notify("JJ log failed: " .. tostring(err), vim.log.levels.ERROR, { title = "JJ" }) end
+  end)
+end, { desc = "jj log" })
 map("n", "<leader>gkg", function()
-  _with_jj_repo(function()
-  local jj_root_cap = _find_jj_root() or vim.fn.getcwd()
-    require("lazy").load({ plugins = { "jj.nvim" } })
-    require("jj.cmd").log({ revisions = "mutable()" })
+  local root = _find_jj_root_in_tab() or _find_jj_root()
+  if not root then vim.notify("Not a jj repo", vim.log.levels.WARN) return end
+  _jj_in_root(root, function()
+    local ok, err = pcall(function()
+      require("lazy").load({ plugins = { "jj.nvim" } })
+      local runner = require("jj.core.runner")
+      local _, success = runner.execute_command(
+        "jj log --ignore-working-copy --no-graph --limit 1 -r 'mutable()' -T 'commit_id.shortest(8)'",
+        "jj log -r mutable()", nil, false)
+      if not success then return end
+      require("jj.cmd").log({ revisions = "mutable()" })
+    end)
+    if not ok then vim.notify("JJ log failed: " .. tostring(err), vim.log.levels.ERROR, { title = "JJ" }) end
   end)
 end, { desc = "jj log -r mutable()" })
 map("n", "<leader>gd", "<cmd>JJdiff<CR>", { desc = "jj diff" })
@@ -379,7 +430,10 @@ map("n", "<leader>gB", "<cmd>JJ annotate<CR>", { desc = "jj annotate <file>" })
 map("n", "<leader>gp", "<cmd>JJ push<CR>", { desc = "jj git push [--bookmark <1>] [-r <remote>]" })
 map("n", "<leader>gf", "<cmd>JJ fetch<CR>", { desc = "jj git fetch [-r <remote>]" })
 map("n", "<leader>go", "<cmd>JJ open_pr<CR>", { desc = "jj log --ignore-working-copy -r @ -T bookmarks; open browser <url>" })
-map("n", "<leader>gw", "<cmd>JJbrowse<CR>", { desc = "jj: open file on remote in browser" })
+-- gO (not gw): bare <leader>gw would shadow the gw* worktree family
+-- (gwg/gwG/gwc/...) — typing gwX would hang on timeoutlen, and a pause after
+-- gw fires the browser instead of the worktree picker.
+map("n", "<leader>gO", "<cmd>JJbrowse<CR>", { desc = "jj: open file on remote in browser" })
 
 -- gF: move current buffer's file diff ( @ vs parent ) to another change — picker for destination
 map("n", "<leader>gF", function()
@@ -717,10 +771,48 @@ map("n", "<leader>gwd", function()
   end)
 end, { desc = "jj workspace forget" })
 
--- Gd: pick FROM then TO (like multi-select D in <leader>gl log) → diffview tab.
--- FROM excludes @ (diff @..@ would be empty); TO defaults to @ first.
+-- Gd: evolog of CURRENT patch only (@ and its predecessors) → pick one older
+-- version → diff picked..@ in diffview tab. Single-patch evolution, unlike GD
+-- (whole op stack) and GR (arbitrary range across the stack).
 map("n", "<leader>Gd", function()
   local gd_root = _find_jj_root() or vim.fn.getcwd()
+  _with_jj_repo(function()
+    require("lazy").load({ plugins = { "jj.nvim" } })
+    local runner = require("jj.core.runner")
+    local cur = vim.trim(runner.execute_command("jj log --ignore-working-copy -r @ --no-graph -T 'commit_id.shortest(8)' 2>/dev/null", nil, nil, true) or "")
+    local out = runner.execute_command("jj evolog --ignore-working-copy -r @ --no-graph -T 'commit.commit_id().shortest(8) ++ \"\\t\" ++ commit.description().first_line() ++ \"\\n\"' 2>/dev/null", nil, nil, true) or ""
+    local items = {}
+    for _, line in ipairs(vim.split(out, "\n")) do
+      line = vim.trim(line)
+      if line ~= "" then
+        local cid, desc = line:match("^([^\t]+)\t(.*)$")
+        cid = cid or line
+        -- Exclude current @ itself (diff @..@ would be empty).
+        if vim.trim(cid) ~= cur then
+          table.insert(items, { rev = vim.trim(cid), label = vim.trim(cid) .. " " .. vim.trim(desc or "") })
+        end
+      end
+    end
+    if #items == 0 then vim.notify("No earlier versions of @ yet (evolog empty)", vim.log.levels.WARN) return end
+    vim.ui.select(items, { prompt = "Evolog @ (pick older version, diff vs current):", format_item = function(i) return i.label end }, function(choice)
+      _jj_in_root(gd_root, function()
+      if not choice then return end
+      local from = vim.trim(choice.rev)
+      _jj_in_root(gd_root, function()
+        require("lazy").load({ plugins = { "jj.nvim" } })
+        -- Same view as multi-select D in <leader>gl log: diffview in a new tab.
+        require("jj.diff").diff_revisions({ left = from, right = "@" })
+      end)
+      end)
+    end)
+  end)
+end, { desc = "jj evolog @ (pick version, diff vs current, diffview tab)" })
+
+-- GR: pick FROM then TO (like multi-select D in <leader>gl log) → diffview tab.
+-- Arbitrary range across the stack; FROM excludes @ (diff @..@ would be empty);
+-- TO defaults to @ first. For single-patch evolution use <leader>Gd instead.
+map("n", "<leader>GR", function()
+  local gr_root = _find_jj_root() or vim.fn.getcwd()
   _with_jj_repo(function()
     require("lazy").load({ plugins = { "jj.nvim" } })
     local runner = require("jj.core.runner")
@@ -740,11 +832,11 @@ map("n", "<leader>Gd", function()
       local to_items = { { rev = "@", label = "@ (current)" } }
       for _, it in ipairs(items) do table.insert(to_items, it) end
       vim.ui.select(to_items, { prompt = "Diff TO (newer):", format_item = function(i) return i.label end }, function(to_choice)
-        _jj_in_root(gd_root, function()
+        _jj_in_root(gr_root, function()
         if not to_choice then return end
         local to = vim.trim(to_choice.rev)
         if from == to then vim.notify("FROM == TO, empty diff", vim.log.levels.WARN) return end
-        _jj_in_root(gd_root, function()
+        _jj_in_root(gr_root, function()
           require("lazy").load({ plugins = { "jj.nvim" } })
           -- Same view as multi-select D in <leader>gl log: diffview in a new tab.
           require("jj.diff").diff_revisions({ left = from, right = to })

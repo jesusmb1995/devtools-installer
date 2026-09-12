@@ -26,3 +26,18 @@ This installs all skills globally without prompting.
 - `progress-report`: summarizes recent developer activity into a confirmed compact HTML progress report with per-task comments.
 - `stg-last-patch-description`: reviews the top StGit patch and rewrites its message with concise short and long descriptions.
 - `stg-series-descriptions`: reviews up to five StGit patches and rewrites patch messages with concise short and long descriptions.
+
+## General-purpose
+
+- `wrap-up`: summarize changed files, caveats, stop. No open questions.
+- `per_patch`: group changes, commit per patch.
+- `per_patch_fixups`: fix as a child patch on top, leave parent untouched, user squashes later.
+- `fork-md [name]`: dump convo to `/tmp/fork-<name>.md`, uncompressed.
+- `fork-md-use <name>`: restore a `/fork-md` snapshot into context.
+- `plan-points`: turn the plan into short bullets.
+- `explain-short-simple`: plain short explanation, no jargon.
+- `commit`: stage + commit with a proper message. No push.
+- `commit-push`: `commit` then push.
+- `cmdsave [name]`: save last command as a project bookmark (cmd_bookmarks).
+- `cmdrun [name] [-d]`: run a saved bookmark, deps first with `-d`.
+- `do-task-from-md <path>`: run a task from a .md, log progress in a separate section of that file.
