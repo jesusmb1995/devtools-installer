@@ -41,3 +41,20 @@ This installs all skills globally without prompting.
 - `cmdsave [name]`: save last command as a project bookmark (cmd_bookmarks).
 - `cmdrun [name] [-d]`: run a saved bookmark, deps first with `-d`.
 - `do-task-from-md <path>`: run a task from a .md, log progress in a separate section of that file.
+- `recommend-skills-plan <task>`: ordered plan of which skills to use first/second for the task.
+- `gon`: continue the previous task; interruption was a mistake.
+- `y`: answer yes to the pending question and go on.
+- `review-stack-up`: check if current patch review comments apply thematically to sibling patches.
+- `pr-comments-tdd-fix-direct <URL>`: TDD-fix open review comments here, no sub-agents.
+- `pr-comments-fix-direct <URL>`: fix open review comments here directly, no TDD.
+- `per_patch_fix_comments`: combo of `per_patch_fixups` + `pr-comments-fix-direct`.
+- `add_ai_permissions <command>`: allow a command in the current agent's permissions config.
+- `harden_ai_permissions_review`: read-only audit of the agent permissions config.
+- `sub <what>`: run a task in a sub-agent, use its result.
+- `side <what>`: side-task in a sub-agent while you keep focus; no deviation.
+- `describe-conflicts`: compact conflict summary + full report in a tmp .md.
+- `explain-min-example`: explain through a minimal example with concrete values.
+- `clean-proposal <issue>`: short fix in chat + straight-to-point detail file.
+- `dsum`: compact summary of recent changes with small snippets.
+- `newtask <what>`: park current work in context, switch full focus to the new task.
+- `readability_review_patch` / `readability_review_stack`: readability review of patch or stack; simpler, clearer, aux-lib suggestions.

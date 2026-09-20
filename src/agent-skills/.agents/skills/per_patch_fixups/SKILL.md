@@ -18,6 +18,14 @@ Like `/per_patch`. Never edit a patch in place. Build a child on top, leave pare
 3. Describe the child so the squash step is obvious.
 4. Report concise summary with code blocks — key hunks only.
 
+## Placement: chain vs siblings
+
+Stack is `A -> B` and `A` needs a fixup:
+- `B` depends on the fixed lines (touches same lines/children) → chain: `A -> fixup -> B` (rebase `B` onto the fixup). `B` then builds on fixed code.
+- Independent → siblings fine: `A -> {fixup, B}`.
+
+When in doubt, chain — a needless rebase is cheaper than a fixup that silently misses its dependent.
+
 ## Output
 
 ```
