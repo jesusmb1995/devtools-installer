@@ -64,3 +64,4 @@ This installs all skills globally without prompting.
 - `pr-ok <URL>`: PR readiness lite — open comments only, skips CI.
 - `just-dpatch`: justify why the current patch is needed, summarized.
 - `just-dstack`: justify why the whole stack is needed, per patch + through-line.
+- `divergence-planfix`: investigate jj divergent versions (/0 /1), propose plan, fix only after yes.
