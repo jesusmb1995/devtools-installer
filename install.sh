@@ -1835,13 +1835,18 @@ install_skill_caveman__423_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/caveman" ".agents/skills/caveman"
 }
 
+# install_skill_bro()
+install_skill_bro__426_v0() {
+    symlink_into_home_or_die__290_v0 "src/.agents/skills/bro" ".agents/skills/bro"
+}
+
 # install_skill_humanizer()
-install_skill_humanizer__426_v0() {
+install_skill_humanizer__429_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/humanizer" ".agents/skills/humanizer"
 }
 
 # install_skill_ponytail()
-install_skill_ponytail__429_v0() {
+install_skill_ponytail__432_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/ponytail" ".agents/skills/ponytail"
 }
 
@@ -1850,7 +1855,7 @@ install_skill_ponytail__429_v0() {
 # wrap it once at the installer level:  install_x() { x_impl() failed { exit(1) } }
 # So every install_*() is infallible and main() stays a plain sequence of calls.
 # print_help()
-print_help__431_v0() {
+print_help__434_v0() {
     echo "Usage: ./install.sh [--ask] [--trace] [step ...]"
     printf '%s\n' ""
     echo "Install all steps by default. Pass one or more step names to run"
@@ -1876,16 +1881,17 @@ print_help__431_v0() {
     echo "  agent_global_config"
     echo "  agent_skills"
     echo "  skill_caveman"
+    echo "  skill_bro"
     echo "  skill_humanizer"
     echo "  skill_ponytail"
 }
 
 # run_step(step: Text)
-run_step__432_v0() {
+run_step__435_v0() {
     local step_895="${1}"
     local matched_896=0
     if [ "$([ "_${step_895}" != "_help" ]; echo $?)" != 0 ]; then
-        print_help__431_v0 
+        print_help__434_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_apt_essential_tools" ]; echo $?)" != 0 ]; then
@@ -1948,12 +1954,16 @@ run_step__432_v0() {
         install_skill_caveman__423_v0 
         matched_896=1
     fi
+    if [ "$([ "_${step_895}" != "_skill_bro" ]; echo $?)" != 0 ]; then
+        install_skill_bro__426_v0 
+        matched_896=1
+    fi
     if [ "$([ "_${step_895}" != "_skill_humanizer" ]; echo $?)" != 0 ]; then
-        install_skill_humanizer__426_v0 
+        install_skill_humanizer__429_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_skill_ponytail" ]; echo $?)" != 0 ]; then
-        install_skill_ponytail__429_v0 
+        install_skill_ponytail__432_v0 
         matched_896=1
     fi
     if [ "$(( ! matched_896 ))" != 0 ]; then
@@ -1969,12 +1979,12 @@ run_step__432_v0() {
 # the last-installed state, lists changes, asks Y/n, and re-runs installer
 # steps only for the changed repos.
 # cmd_update()
-cmd_update__433_v0() {
+cmd_update__436_v0() {
     local command_50
     command_50="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return "${__status}"
     fi
     local script_dir_866="${command_50}"
@@ -1984,19 +1994,19 @@ cmd_update__433_v0() {
     command_51="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_867}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return "${__status}"
     fi
     local new_lines_869="${command_51}"
     local old_lines_870=""
     file_exists__39_v0 "${state_path_868}"
-    local ret_file_exists39_v0__378_8="${ret_file_exists39_v0}"
-    if [ "${ret_file_exists39_v0__378_8}" != 0 ]; then
+    local ret_file_exists39_v0__397_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__397_8}" != 0 ]; then
         local command_52
         command_52="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_868}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_cmd_update433_v0=''
+            ret_cmd_update436_v0=''
             return "${__status}"
         fi
         old_lines_870="${command_52}"
@@ -2014,8 +2024,8 @@ cmd_update__433_v0() {
             local parts_879=("${ret_split4_v0[@]}")
             local __length_57=("${parts_879[@]}")
             if [ "$(( ${#__length_57[@]} >= 2 ))" != 0 ]; then
-                old_keys_871+=("${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:390:36)"}")
-                old_vals_872+=("${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:391:36)"}")
+                old_keys_871+=("${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:409:36)"}")
+                old_vals_872+=("${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:410:36)"}")
             fi
         done
     fi
@@ -2032,16 +2042,16 @@ cmd_update__433_v0() {
         if [ "$(( ${#__length_63[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_884="${parts_883[0]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:402:27)"}"
-        local val_885="${parts_883[1]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:403:27)"}"
+        local key_884="${parts_883[0]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:421:27)"}"
+        local val_885="${parts_883[1]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:422:27)"}"
         local matched_886=0
         local __range_start_887=0
         local __length_64=("${old_keys_871[@]}")
         local __range_end_887="${#__length_64[@]}"
         local __dir_887=$(( ${__range_start_887} <= ${__range_end_887} ? 1 : -1 ))
         for (( i_887=${__range_start_887}; i_887 * ${__dir_887} < ${__range_end_887} * ${__dir_887}; i_887+=${__dir_887} )); do
-            if [ "$([ "_${old_keys_871[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:406:25)"}" != "_${key_884}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_872[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:407:29)"}" == "_${val_885}" ]; echo $?)" != 0 ]; then
+            if [ "$([ "_${old_keys_871[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:425:25)"}" != "_${key_884}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_872[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:426:29)"}" == "_${val_885}" ]; echo $?)" != 0 ]; then
                     local array_65=("${key_884}")
                     changed_880+=("${array_65[@]}")
                 fi
@@ -2062,7 +2072,7 @@ done
             split__4_v0 "	" "${row_890}"
             local parts_891=("${ret_split4_v0[@]}")
             local __length_71=("${parts_891[@]}")
-            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_891[0]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:424:42)"}" != "_${ok_888}" ]; echo $?) ))" != 0 ]; then
+            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_891[0]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:443:42)"}" != "_${ok_888}" ]; echo $?) ))" != 0 ]; then
                 found_889=1
                 break
             fi
@@ -2074,7 +2084,7 @@ done
     local __length_73=("${changed_880[@]}")
     if [ "$(( ${#__length_73[@]} == 0 ))" != 0 ]; then
         echo "update: all repos up to date"
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return 0
     fi
     local __length_74=("${changed_880[@]}")
@@ -2087,22 +2097,22 @@ done
     command_77="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return "${__status}"
     fi
     local ans_893="${command_77}"
     if [ "$(( $(( $(( $([ "_${ans_893}" != "_n" ]; echo $?) || $([ "_${ans_893}" != "_N" ]; echo $?) )) || $([ "_${ans_893}" != "_no" ]; echo $?) )) || $([ "_${ans_893}" != "_NO" ]; echo $?) ))" != 0 ]; then
         echo "update: aborted"
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return 0
     fi
     for c_894 in "${changed_880[@]}"; do
-        run_step__432_v0 "${c_894}"
+        run_step__435_v0 "${c_894}"
     done
     cp "${meta_path_867}" "${state_path_868}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update433_v0=''
+        ret_cmd_update436_v0=''
         return "${__status}"
     fi
     echo "update: done"
@@ -2149,15 +2159,16 @@ if [ "$(( ${#__length_89[@]} == 0 ))" != 0 ]; then
     install_agent_global_config__384_v0 
     install_agent_skills__420_v0 
     install_skill_caveman__423_v0 
-    install_skill_humanizer__426_v0 
-    install_skill_ponytail__429_v0 
+    install_skill_bro__426_v0 
+    install_skill_humanizer__429_v0 
+    install_skill_ponytail__432_v0 
 fi
 __length_90=("${step_args_120[@]}")
 if [ "$(( ${#__length_90[@]} >= 1 ))" != 0 ]; then
-    if [ "$([ "_${step_args_120[0]?"Index out of bounds (at /tmp/jbtd-install-build-xvBcim/install.ab:547:22)"}" != "_update" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${step_args_120[0]?"Index out of bounds (at /tmp/jbtd-install-build-ErtbD3/install.ab:570:22)"}" != "_update" ]; echo $?)" != 0 ]; then
         __length_91=("${step_args_120[@]}")
         if [ "$(( ${#__length_91[@]} == 1 ))" != 0 ]; then
-            cmd_update__433_v0 
+            cmd_update__436_v0 
             __status=$?
             if [ "${__status}" != 0 ]; then
                 exit "${__status}"
@@ -2165,7 +2176,7 @@ if [ "$(( ${#__length_90[@]} >= 1 ))" != 0 ]; then
         fi
     else
         for step_897 in "${step_args_120[@]}"; do
-            run_step__432_v0 "${step_897}"
+            run_step__435_v0 "${step_897}"
         done
     fi
 fi

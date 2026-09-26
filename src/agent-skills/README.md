@@ -58,3 +58,9 @@ This installs all skills globally without prompting.
 - `dsum`: compact summary of recent changes with small snippets.
 - `newtask <what>`: park current work in context, switch full focus to the new task.
 - `readability_review_patch` / `readability_review_stack`: readability review of patch or stack; simpler, clearer, aux-lib suggestions.
+- `split_with_diffeq <how>`: split a patch per instructions, verify splits sum to the original diff.
+- `md-block`: re-emit markdown wrapped in a codeblock for clean copypaste.
+- `pr-checkok <URL>`: full PR readiness — format, lint, tests, no open comments.
+- `pr-ok <URL>`: PR readiness lite — open comments only, skips CI.
+- `just-dpatch`: justify why the current patch is needed, summarized.
+- `just-dstack`: justify why the whole stack is needed, per patch + through-line.

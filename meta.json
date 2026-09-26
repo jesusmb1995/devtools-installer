@@ -102,6 +102,7 @@
     "agent_global_config",
     "agent_skills",
     "skill_caveman",
+    "skill_bro",
     "skill_humanizer",
     "skill_ponytail"
   ],
@@ -128,8 +129,9 @@
     "cmd_bookmarks": "ac8f6bbd4be00ba806ecdd91675831d2db1c5c40a5e34254bba2b7af460b42d5",
     "nvim_bazel_launcher": "eae5922e419faf83482770c973a7bbfefcbfab2156f27837cdc0f53ffd61cea0",
     "agent_global_config": "617163c38c5d40e47fe72e3b01f98f3ca132b692f9f93ddb5a0f921821d977ca",
-    "agent_skills": "a8ff2c8bf430695e28f234fee5340985f77700971e5a1a21f8c65aa5ba1b83d7",
+    "agent_skills": "0af27476bd8d56599a1f431a88b9bbd9bc40a48c93986e3655aecc6be41d5a35",
     "skill_caveman": "b273bf9895a6f7b271c9fe6f7707d195890529876d5b8b3fe2ce3fc1f62a3c11",
+    "skill_bro": "c50ea7e2a07ccdf3b21ecb1e51076226d6604ae86e581adca27eccbc59b7fbef",
     "skill_humanizer": "fd604bb637a72678db62cbcb30c5f6be6a347737bfb7cea0610c48b2970017e3",
     "skill_ponytail": "bb26cea70a220e446584c444e0c3ce0de0b2792186d4cd14dad8a50e8b08a45e"
   }

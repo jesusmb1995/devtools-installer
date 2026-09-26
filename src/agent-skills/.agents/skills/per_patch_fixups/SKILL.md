@@ -14,17 +14,18 @@ Like `/per_patch`. Never edit a patch in place. Build a child on top, leave pare
 ## Procedure
 
 1. Find target patch (named, or `@`).
-2. Make changes in a **new child** on top — `jj new @`, then edit. Do not touch the parent.
+2. **Verify `@` is empty before touching anything** — `jj st` must show no uncommitted changes, or `stg status` clean. Existing changes on `@` means edits land on top of someone else's work and corrupt it. Stuck? Stop and ask. This check is mandatory, not optional.
+3. Make changes in a **new child** on top — `jj new @`, then edit. Do not touch the parent.
 3. Describe the child so the squash step is obvious.
 4. Report concise summary with code blocks — key hunks only.
 
 ## Placement: chain vs siblings
 
-Stack is `A -> B` and `A` needs a fixup:
-- `B` depends on the fixed lines (touches same lines/children) → chain: `A -> fixup -> B` (rebase `B` onto the fixup). `B` then builds on fixed code.
-- Independent → siblings fine: `A -> {fixup, B}`.
+Stack is `A -> B` and `A` needs a fixup. Ask first: does `B` need the fixup underneath it?
+- Yes — `B` touches the same lines or builds on the fixed code → put fixup in the middle: `A -> fixup -> B` (rebase `B` onto the fixup). `B` then builds on fixed code.
+- No — unrelated → siblings fine: `A -> {fixup, B}`.
 
-When in doubt, chain — a needless rebase is cheaper than a fixup that silently misses its dependent.
+Sibling placement with a dependent `B` leaves `B` built on broken lines. When in doubt, chain — a needless rebase is cheaper than a fixup that silently misses its dependent.
 
 ## Output
 
