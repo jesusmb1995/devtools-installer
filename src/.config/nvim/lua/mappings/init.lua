@@ -14,6 +14,7 @@ if vim.env.NVIM_MINIMAL == nil then
   require "mappings.cmp"
 
   opt "mappings.jj"
+  opt "mappings.jj-conflicts"
 
   opt "mappings.gitsigns"
   opt "mappings.git-worktrees"

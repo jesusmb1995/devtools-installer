@@ -14,12 +14,24 @@ return {
   config = function()
     require("jj").setup({
       diff = { backend = "diffview" },
+      -- Log panel: quarter height, not half.
+      terminal = {
+        window = { type = "hsplit", split_size = 0.25 },
+      },
       cmd = {
         describe = {
           editor = {
             type = "buffer",
             keymaps = { close = { "q", "<Esc>", "<C-c>" } },
           },
+        },
+        -- Upstream quick-squash passes -u (keeps parent message, DROPS the
+        -- squashed message). Disabled here: our log-panel <S-s> override
+        -- (mappings/jj.lua) squashes with an "Includes squashed:" summary.
+        -- `n`/`N` stay free for /-search navigation: new moves to m,
+        -- new-after-immutable moves to M.
+        keymaps = {
+          log = { quick_squash = false, new = "m", new_after_immutable = "M" },
         },
       },
     })
