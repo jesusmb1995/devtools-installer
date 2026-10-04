@@ -11,9 +11,10 @@ return {
     dir = vim.fn.stdpath("data") .. "/lazy/nvim_bazel_launcher",
     name = "nvim_bazel_launcher",
     lazy = true,
-    cmd = { "BazelTargets", "BazelRun", "BazelBuild", "BazelLast" },
+    cmd = { "BazelTargets", "BazelRun", "BazelBuild", "BazelLast", "BazelGTest" },
     keys = {
       { "<leader><A-G>", "<cmd>BazelTargets<cr>", desc = "Bazel targets picker (enter=run, C-d=build)" },
+      { "<leader><C-Y>", "<cmd>BazelTargets<cr>", desc = "Bazel targets picker (subtests inline when test file open)" },
     },
     dependencies = { "nvim-telescope/telescope.nvim" },
     config = function()

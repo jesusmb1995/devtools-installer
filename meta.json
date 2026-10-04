@@ -99,12 +99,14 @@
     "tmux_wm",
     "cmd_bookmarks",
     "nvim_bazel_launcher",
+    "projnote",
     "agent_global_config",
     "agent_skills",
     "skill_caveman",
     "skill_bro",
     "skill_humanizer",
-    "skill_ponytail"
+    "skill_ponytail",
+    "skill_log_analyzer"
   ],
   "system_tools": {
     "jj": true,
@@ -117,22 +119,24 @@
   },
   "repo_hashes": {
     "apt_essential_tools": "f32b3df0ccd956b75b6b89fd98460ead97343e35e9ad29f158d6b2ee7033f1f1",
-    "dotfiles_personalization": "ca2f8ca693c0754ebd4d3634f8d252efd4fb7a7f7c44cc283c7cfe53ebdfbfce",
+    "dotfiles_personalization": "ecebf9c29c228b32754a437271b5cc99a23b1eb4e6f4dbc0541d8be014cbe5ec",
     "nerd_fonts": "71feaa7839a21dfc0e1d9aa14f00f4aa1fbcc35fe5d500263612cc7f0ff56881",
     "omz_config": "9fc5b8b333870dfe1480e580f9857233bd3860ad93ecfeabefb92a7191d1574a",
     "zshmarks": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
     "system_tools": "f245f154e0c3b664a3246a87cc7177c805dfd24cc0bfa34cd76d9db9dd4409bb",
-    "nvim": "7e77afe8e5b3964ffcb3343c87776792b21b570f89a9a2d27342f9c2d187e04c",
+    "nvim": "9fdd106a96c873d2e1aa6033bf522debe479133112a44a29638f02881eec904a",
     "quicksheet": "b4799cafd484fd148ebdfecbba402069bb0a9336de1129007c9d00debf3f9353",
     "tmux_warm_daemon": "c642aa966bc122854ef6b842d4032c59ca25dc95e73e5d8e4efa9173c76bc5b3",
     "tmux_wm": "cc4c9a6f255977dbef91fdfb9081c9be128f6bafec36a5d91cb852e1fae62704",
     "cmd_bookmarks": "ac8f6bbd4be00ba806ecdd91675831d2db1c5c40a5e34254bba2b7af460b42d5",
-    "nvim_bazel_launcher": "eae5922e419faf83482770c973a7bbfefcbfab2156f27837cdc0f53ffd61cea0",
+    "nvim_bazel_launcher": "347cf80d9da59fa61a5f91cb1cc53c575d180fdad83538d72d5957bf06a1a010",
+    "projnote": "b6229b52a5112bb562fcd359a571ca1599116c73db8f3b57d8ccfaadc3125451",
     "agent_global_config": "617163c38c5d40e47fe72e3b01f98f3ca132b692f9f93ddb5a0f921821d977ca",
-    "agent_skills": "9df06a4ce1fc94e61e5002b787a7d971aaa90c859d2f2e8aa38a04b827b90860",
+    "agent_skills": "0ff0afeb23ec48d279f06b96e89198f2efc26f9d99b1b5fb28573dc123f004d6",
     "skill_caveman": "b273bf9895a6f7b271c9fe6f7707d195890529876d5b8b3fe2ce3fc1f62a3c11",
     "skill_bro": "c50ea7e2a07ccdf3b21ecb1e51076226d6604ae86e581adca27eccbc59b7fbef",
     "skill_humanizer": "fd604bb637a72678db62cbcb30c5f6be6a347737bfb7cea0610c48b2970017e3",
-    "skill_ponytail": "bb26cea70a220e446584c444e0c3ce0de0b2792186d4cd14dad8a50e8b08a45e"
+    "skill_ponytail": "bb26cea70a220e446584c444e0c3ce0de0b2792186d4cd14dad8a50e8b08a45e",
+    "skill_log_analyzer": "23fdd80a85d0f5e9c836a18980bbb6f29f99208642a1d8bf56bc40d7cae5aa2a"
   }
 }

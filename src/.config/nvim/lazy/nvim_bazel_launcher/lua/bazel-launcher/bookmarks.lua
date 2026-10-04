@@ -3,12 +3,30 @@ local targets = require("bazel-launcher.targets")
 
 local M = {}
 
+-- Store layout mirrors cmd_bookmarks (savecmd-nvim.lua): when its central
+-- store is deployed (~/.local/share/cmd_bookmarks/savecmd.zsh exists),
+-- per-project subdirs there are the live store the UI reads; otherwise
+-- files stay legacy-style in the workspace root. Writing anywhere else
+-- makes launches invisible to the bookmarks UI.
+local function store_paths(root)
+    local central_root = vim.fn.expand("~/.local/share/cmd_bookmarks")
+    if vim.fn.filereadable(central_root .. "/savecmd.zsh") == 1 then
+        local dir = central_root .. "/" .. root:gsub("/", "_")
+        vim.fn.mkdir(dir, "p")
+        return dir .. "/.local_cmd_bookmarks", dir .. "/.local_cmd_bookmarks_stats"
+    end
+    return root .. "/" .. config.get().bookmarks.file,
+        root .. "/" .. config.get().bookmarks.file .. "_stats"
+end
+
 local function bookmark_path(root)
-    return root .. "/" .. config.get().bookmarks.file
+    local path = store_paths(root)
+    return path
 end
 
 local function stats_path(root)
-    return bookmark_path(root) .. "_stats"
+    local _, stats = store_paths(root)
+    return stats
 end
 
 -- Short label: text after the last ':' in //pkg/path:name, or after the last
@@ -78,7 +96,23 @@ end
 
 -- Gated auto-save: bookmarks.enabled AND bookmarks.save[type] AND a
 -- workspace root was found. Silently skipped otherwise (launch still works).
-function M.maybe_save(type, target, command)
+-- extra carries launch extras (e.g. {"--test_filter=Suite.Name"}); a
+-- filtered run gets its own bookmark name so it never overwrites the
+-- whole-target one (or vice versa).
+function M.filter_suffix(extra)
+    if type(extra) ~= "table" then
+        return ""
+    end
+    for _, part in ipairs(extra) do
+        local filter = type(part) == "string" and part:match("^%-%-test_filter=(.+)$")
+        if filter and filter ~= "" then
+            return "__" .. filter:gsub("[^%w%._%+-]", "_")
+        end
+    end
+    return ""
+end
+
+function M.maybe_save(type, target, command, extra)
     local cfg = config.get().bookmarks
     if not cfg.enabled then
         return false
@@ -92,14 +126,14 @@ function M.maybe_save(type, target, command)
     end
     local raw_name
     if cfg.name then
-        local ok, res = pcall(cfg.name, type, target)
+        local ok, res = pcall(cfg.name, type, target, extra)
         if not ok then
             vim.notify("bazel-launcher: bookmarks.name error: " .. tostring(res), vim.log.levels.ERROR)
             return false
         end
         raw_name = res
     else
-        raw_name = M.default_name(type, target)
+        raw_name = M.default_name(type, target) .. M.filter_suffix(extra)
     end
     if not raw_name or raw_name == "" then
         return false

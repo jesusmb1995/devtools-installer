@@ -24,7 +24,21 @@ local function valid_command(cmd)
     return true
 end
 
-local function resolve_command(launch_type, target)
+-- extra: optional list of trailing args (e.g. {"--test_filter=Suite.Case"}).
+local function with_extra(cmd, extra)
+    if not extra or #extra == 0 then
+        return cmd
+    end
+    if type(cmd) == "table" then
+        for _, part in ipairs(extra) do
+            cmd[#cmd + 1] = part
+        end
+        return cmd
+    end
+    return cmd .. " " .. table.concat(extra, " ")
+end
+
+local function resolve_command(launch_type, target, extra)
     local cfg = config.get()
     if cfg.build_command then
         local ok, res = pcall(cfg.build_command, launch_type, target)
@@ -35,17 +49,17 @@ local function resolve_command(launch_type, target)
         if not valid_command(res) then
             return nil, "build_command must return a non-empty string or a list of non-empty strings"
         end
-        return res, nil
+        return with_extra(res, extra), nil
     end
     local bin = targets.resolve_bin()
     if not bin then
         return nil, "no bazel binary available"
     end
-    return string.format("%s %s %s", bin, launch_type, target), nil
+    return with_extra(string.format("%s %s %s", bin, launch_type, target), extra), nil
 end
 
-function M.build_command_string(launch_type, target)
-    local cmd, err = resolve_command(launch_type, target)
+function M.build_command_string(launch_type, target, extra)
+    local cmd, err = resolve_command(launch_type, target, extra)
     if not cmd then
         return nil, err
     end
@@ -141,7 +155,7 @@ local function launch_via_shared_panel(cmd_string, cfg)
     return true
 end
 
-function M.launch(launch_type, target)
+function M.launch(launch_type, target, extra)
     if launch_type ~= "run" and launch_type ~= "build" and launch_type ~= "test" then
         vim.notify("bazel-launcher: invalid launch type: " .. tostring(launch_type), vim.log.levels.ERROR)
         return nil
@@ -150,13 +164,13 @@ function M.launch(launch_type, target)
         vim.notify("bazel-launcher: missing target", vim.log.levels.ERROR)
         return nil
     end
-    local cmd, err = resolve_command(launch_type, target)
+    local cmd, err = resolve_command(launch_type, target, extra)
     if not cmd then
         vim.notify("bazel-launcher: " .. tostring(err or "cannot build command"), vim.log.levels.ERROR)
         return nil
     end
     local cmd_string = type(cmd) == "table" and table.concat(cmd, " ") or cmd
-    local ctx = { type = launch_type, target = target, command = cmd_string }
+    local ctx = { type = launch_type, target = target, command = cmd_string, extra = extra }
     local cfg = config.get()
     if cfg.on_command then
         local ok, res = pcall(cfg.on_command, cmd_string, ctx)
@@ -164,8 +178,8 @@ function M.launch(launch_type, target)
             vim.notify("bazel-launcher: on_command error: " .. tostring(res), vim.log.levels.ERROR)
         end
     end
-    bookmarks.maybe_save(launch_type, target, cmd_string)
-    M.last = { type = launch_type, target = target, command = cmd_string }
+    bookmarks.maybe_save(launch_type, target, cmd_string, extra)
+    M.last = { type = launch_type, target = target, extra = extra, command = cmd_string }
     if launch_via_shared_panel(cmd_string, cfg) then
         safe_startinsert()
         return cmd_string
@@ -183,7 +197,7 @@ function M.launch_last()
         vim.notify("bazel-launcher: no previous command to launch", vim.log.levels.WARN)
         return nil
     end
-    return M.launch(M.last.type, M.last.target)
+    return M.launch(M.last.type, M.last.target, M.last.extra)
 end
 
 return M

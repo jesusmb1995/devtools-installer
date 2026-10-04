@@ -6,6 +6,7 @@ M.config = config
 M.targets = require("bazel-launcher.targets")
 M.launch = require("bazel-launcher.launch")
 M.bookmarks = require("bazel-launcher.bookmarks")
+M.gtest = require("bazel-launcher.gtest")
 
 local function trim(s)
     return (s:gsub("^%s+", ""):gsub("%s+$", ""))
@@ -51,6 +52,11 @@ function M.setup(opts)
         M.launch.launch_last()
     end, {
         desc = "Re-launch last bazel command",
+    })
+    vim.api.nvim_create_user_command("BazelGTest", function()
+        require("bazel-launcher.gtest").run_current_buffer()
+    end, {
+        desc = "Bazel test GoogleTest cases in current file (pick subtest)",
     })
     local lhs = config.get().keymaps.picker
     if lhs and lhs ~= "" and vim.fn.maparg(lhs, "n") == "" then

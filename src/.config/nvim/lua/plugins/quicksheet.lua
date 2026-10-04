@@ -16,6 +16,121 @@ return {
     config = function()
       require("quicksheet").setup({ auto_mapping = false })
       require("telescope").load_extension("quicksheet")
+
+      -- <C-s> in the picker: narrow to the section of the hovered entry.
+      -- Replaces the private plugin's picker via a module-function override
+      -- (same trick as quicknote's GetDataPath) so the plugin itself — which
+      -- is re-cloned from a private repo on every generate — stays untouched.
+      -- refresh({ reset_prompt = false }) keeps whatever text is typed, so the
+      -- section filter and the typed filter compose.
+      -- Colour the three parts of a row differently so the list is scannable:
+      -- section is a bold title colour, description stays plain text, code is a
+      -- distinct accent, separator is dimmed. The plugin's own quick* links all
+      -- point at neighbouring colours, so define our own groups here.
+      vim.api.nvim_set_hl(0, "QuickSheetSection", { default = true, bold = true, link = "Title" })
+      vim.api.nvim_set_hl(0, "QuickSheetCode", { default = true, link = "Identifier" })
+      vim.api.nvim_set_hl(0, "QuickSheetSep", { default = true, link = "NonText" })
+
+      local function make_entry(entry)
+        return {
+          value = entry,
+          -- Telescope's entry_display.resolve only honours a display that
+          -- returns a STRING (plus an optional highlights table). Returning a
+          -- chunk list renders nothing at all, so build the string here and
+          -- pass 0-based [start, end) highlight ranges alongside it.
+          -- Called as entry:display(picker), so the first arg is the entry.
+          display = function(e)
+            local s, d, c = e.section, e.description, e.code
+            local a = #s -- end of section
+            local b = a + 3 + #d -- end of description
+            return s .. " | " .. d .. " | " .. c,
+              {
+                { { 0, a }, "QuickSheetSection" },
+                { { a, a + 3 }, "QuickSheetSep" },
+                { { b, b + 3 }, "QuickSheetSep" },
+                { { b + 3, b + 3 + #c }, "QuickSheetCode" },
+              }
+          end,
+          ordinal = entry.section .. " " .. entry.description .. " " .. entry.code,
+          description = entry.description,
+          code = entry.code,
+          section = entry.section,
+          lineno = entry.lineno,
+        }
+      end
+
+      -- open(section_filter, default_text)
+      -- Picker over the sheet, optionally narrowed to one section, with any
+      -- text still in the prompt carried over.
+      local function open(section_filter, default_text)
+        local cheats = require("quicksheet").get_cheats()
+        local results = cheats
+        if section_filter then
+          results = vim.tbl_filter(function(c)
+            return c.section == section_filter
+          end, cheats)
+        end
+        local pickers = require("telescope.pickers")
+        local finders = require("telescope.finders")
+        local conf = require("telescope.config").values
+        local config = require("quicksheet.config")
+        local actions = require("quicksheet.telescope").actions
+
+        pickers
+          .new({}, {
+            -- Title doubles as the legend for <C-s>: shows the active section
+            -- filter and what the key would do next.
+            prompt_title = section_filter and ("QuickSheet [" .. section_filter .. "]  ·  <C-s> clear section")
+              or "QuickSheet  ·  <C-s> filter to hovered section",
+            finder = finders.new_table({ results = results, entry_maker = make_entry }),
+            sorter = conf.generic_sorter({}),
+            default_text = default_text,
+            attach_mappings = function(prompt_bufnr, map)
+              -- keep the plugin's own <CR>/<C-y>/<C-e> actions
+              for key, action_name in pairs(config.options.telescope_mappings or {}) do
+                local fn = actions[action_name]
+                if fn then
+                  map("i", key, function()
+                    fn(prompt_bufnr)
+                  end)
+                end
+              end
+              -- <C-s>: narrow to the hovered entry's section; press again to
+              -- clear. Reopens with the current prompt text so the typed
+              -- filter keeps composing (picker:refresh() swaps the finder but
+              -- does not rebuild the entry manager, hence close+reopen).
+              map("i", "<C-s>", function()
+                local action_state = require("telescope.actions.state")
+                local picker = action_state.get_current_picker(prompt_bufnr)
+                local entry = action_state.get_selected_entry()
+                if not picker then return end
+                local typed = picker:_get_prompt() or ""
+                local next_filter = nil
+                if section_filter == nil and entry and entry.section then
+                  next_filter = entry.section
+                end
+                require("telescope.actions").close(prompt_bufnr)
+                vim.schedule(function()
+                  open(next_filter, typed)
+                end)
+              end)
+              return true
+            end,
+          })
+          :find()
+      end
+
+      local function pick(opts)
+        open(nil, nil)
+      end
+
+      local qt = require("quicksheet.telescope")
+      qt.pick = pick
+      -- :Telescope quicksheet <export> captured the original function, so the
+      -- registered export has to be swapped too.
+      pcall(function()
+        require("telescope").extensions.quicksheet.exports.quicksheet = pick
+      end)
     end,
   },
 }

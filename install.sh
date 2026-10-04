@@ -1658,31 +1658,50 @@ install_nvim_bazel_launcher__371_v0() {
     :
 }
 
+# No-op install hook.
+# 
+# The projnote plugin body is staged into the build tree by
+# generate_projnote.ab (filtered rsync into
+# src/.config/nvim/lazy/projnote) and the lazy spec by
+# generate_projnote_postrender.ab. install_nvim then symlinks
+# ~/.local/share/nvim/lazy -> src/.config/nvim/lazy, so the plugin is
+# reachable at runtime via that symlink. Nothing to do here. Do NOT rsync
+# src/.config/nvim/lazy/projnote into
+# ~/.local/share/nvim/lazy/projnote: that target is the symlink
+# above, so it would rsync the directory onto itself.
+# 
+# This hook exists only because install.ab.j2 imports install_{repo.id}() for
+# every enabled repo.
+# install_projnote()
+install_projnote__373_v0() {
+    :
+}
+
 # execute_sh_at_home(rel_sh_path: Text)
-execute_sh_at_home__378_v0() {
+execute_sh_at_home__380_v0() {
     local rel_sh_path_798="${1}"
     home__188_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home378_v0=''
+        ret_execute_sh_at_home380_v0=''
         return "${__status}"
     fi
     local h_799="${ret_home188_v0}"
     execute_sh__308_v0 "${h_799}/${rel_sh_path_798}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_execute_sh_at_home378_v0=''
+        ret_execute_sh_at_home380_v0=''
         return "${__status}"
     fi
 }
 
 # execute_sh_at_home_or_die(rel_sh_path: Text)
-execute_sh_at_home_or_die__379_v0() {
+execute_sh_at_home_or_die__381_v0() {
     local rel_sh_path_797="${1}"
     prompt_user__172_v0 "execute ~/${rel_sh_path_797}"
     local ret_prompt_user172_v0__12_8="${ret_prompt_user172_v0}"
     if [ "${ret_prompt_user172_v0__12_8}" != 0 ]; then
-        execute_sh_at_home__378_v0 "${rel_sh_path_797}"
+        execute_sh_at_home__380_v0 "${rel_sh_path_797}"
         __status=$?
         if [ "${__status}" != 0 ]; then
             echo_error__142_v0 "failed to run ${rel_sh_path_797}" 1
@@ -1691,7 +1710,7 @@ execute_sh_at_home_or_die__379_v0() {
 }
 
 # install_agent_global_config()
-install_agent_global_config__384_v0() {
+install_agent_global_config__386_v0() {
     rsync_or_die_into_home__231_v0 "src/.agent/" ".agent" 1
     home__207_v0 
     __status=$?
@@ -1705,7 +1724,7 @@ install_agent_global_config__384_v0() {
         file_exists__39_v0 "${h_794}/.agent/${script_796}"
         local ret_file_exists39_v0__20_12="${ret_file_exists39_v0}"
         if [ "${ret_file_exists39_v0__20_12}" != 0 ]; then
-            execute_sh_at_home_or_die__379_v0 ".agent/${script_796}"
+            execute_sh_at_home_or_die__381_v0 ".agent/${script_796}"
         fi
     done
 }
@@ -1713,21 +1732,21 @@ install_agent_global_config__384_v0() {
 # project_root() is the single canonical definition (doc 02). vars.ab and
 # other modules call it instead of re-defining the same heuristic.
 # project_root()
-project_root__393_v0() {
+project_root__395_v0() {
     file_exists__39_v0 "src/copals.ab"
     local ret_file_exists39_v0__7_8="${ret_file_exists39_v0}"
     if [ "${ret_file_exists39_v0__7_8}" != 0 ]; then
         local pwd_val_104="$PWD"
         replace_regex__3_v0 "${pwd_val_104}" "/[^/]+\$" "" 1
-        ret_project_root393_v0="${ret_replace_regex3_v0}"
+        ret_project_root395_v0="${ret_replace_regex3_v0}"
         return 0
     fi
-    ret_project_root393_v0="$PWD"
+    ret_project_root395_v0="$PWD"
     return 0
 }
 
-project_root__393_v0 
-__PROJECT_ROOT_105="${ret_project_root393_v0}"
+project_root__395_v0 
+__PROJECT_ROOT_105="${ret_project_root395_v0}"
 project_vendor_106="${__PROJECT_ROOT_105}/copals/vendor"
 installed_vendor_107="/usr/lib/copals/vendor"
 # The installed vendor dir is authoritative when copals runs inside its own
@@ -1735,13 +1754,13 @@ installed_vendor_107="/usr/lib/copals/vendor"
 # project vendor dir also "exists" but its tools are only populated inside the
 # image. Prefer the installed tree whenever it actually holds the binaries.
 # resolve_vendor_dir()
-resolve_vendor_dir__394_v0() {
+resolve_vendor_dir__396_v0() {
     dir_exists__38_v0 "${installed_vendor_107}"
     local ret_dir_exists38_v0__23_8="${ret_dir_exists38_v0}"
     file_exists__39_v0 "${installed_vendor_107}/jsonnet"
     local ret_file_exists39_v0__23_41="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__23_8 && ret_file_exists39_v0__23_41 ))" != 0 ]; then
-        ret_resolve_vendor_dir394_v0="${installed_vendor_107}"
+        ret_resolve_vendor_dir396_v0="${installed_vendor_107}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_106}"
@@ -1749,81 +1768,92 @@ resolve_vendor_dir__394_v0() {
     file_exists__39_v0 "${project_vendor_106}/jsonnet"
     local ret_file_exists39_v0__26_39="${ret_file_exists39_v0}"
     if [ "$(( ret_dir_exists38_v0__26_8 && ret_file_exists39_v0__26_39 ))" != 0 ]; then
-        ret_resolve_vendor_dir394_v0="${project_vendor_106}"
+        ret_resolve_vendor_dir396_v0="${project_vendor_106}"
         return 0
     fi
     dir_exists__38_v0 "${installed_vendor_107}"
     local ret_dir_exists38_v0__29_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__29_8}" != 0 ]; then
-        ret_resolve_vendor_dir394_v0="${installed_vendor_107}"
+        ret_resolve_vendor_dir396_v0="${installed_vendor_107}"
         return 0
     fi
     dir_exists__38_v0 "${project_vendor_106}"
     local ret_dir_exists38_v0__32_8="${ret_dir_exists38_v0}"
     if [ "${ret_dir_exists38_v0__32_8}" != 0 ]; then
-        ret_resolve_vendor_dir394_v0="${project_vendor_106}"
+        ret_resolve_vendor_dir396_v0="${project_vendor_106}"
         return 0
     fi
-    ret_resolve_vendor_dir394_v0=""
+    ret_resolve_vendor_dir396_v0=""
     return 0
 }
 
-resolve_vendor_dir__394_v0 
-__VENDOR_DIR_108="${ret_resolve_vendor_dir394_v0}"
+resolve_vendor_dir__396_v0 
+__VENDOR_DIR_108="${ret_resolve_vendor_dir396_v0}"
 # resolve_vendor_tool: resolve a vendored binary by name. Falls back to the
 # bare name on PATH when no vendor dir is populated (doc 02, change 2: the
 # former jq_resolve/j2_resolve/jsonnet_resolve/jsonschema_resolve/lua_resolve
 # were 5 copies of this same 2-line rule).
 # resolve_vendor_tool(name: Text)
-resolve_vendor_tool__395_v0() {
+resolve_vendor_tool__397_v0() {
     local name_110="${1}"
     if [ "$([ "_${__VENDOR_DIR_108}" != "_" ]; echo $?)" != 0 ]; then
-        ret_resolve_vendor_tool395_v0="${name_110}"
+        ret_resolve_vendor_tool397_v0="${name_110}"
         return 0
     fi
-    ret_resolve_vendor_tool395_v0="${__VENDOR_DIR_108}/${name_110}"
+    ret_resolve_vendor_tool397_v0="${__VENDOR_DIR_108}/${name_110}"
     return 0
 }
 
-resolve_vendor_tool__395_v0 "jq"
-resolve_vendor_tool__395_v0 "j2"
-resolve_vendor_tool__395_v0 "jsonnet"
-resolve_vendor_tool__395_v0 "jsonschema"
-resolve_vendor_tool__395_v0 "lua"
+resolve_vendor_tool__397_v0 "jq"
+resolve_vendor_tool__397_v0 "j2"
+resolve_vendor_tool__397_v0 "jsonnet"
+resolve_vendor_tool__397_v0 "jsonschema"
+resolve_vendor_tool__397_v0 "lua"
 # Inverse of rm_if_feature_not: remove rel_path when features[feature] == expected
 # (defaults to "" so an unset feature never triggers removal). Use to drop GUI
 # artifacts in pure-TTY presets, e.g. mode == "tmux".
 # install_agent_skills_impl()
-install_agent_skills_impl__419_v0() {
+install_agent_skills_impl__421_v0() {
     home__207_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_install_agent_skills_impl419_v0=''
+        ret_install_agent_skills_impl421_v0=''
         return "${__status}"
     fi
     local h_809="${ret_home207_v0}"
     local canon_810="${h_809}/.agents/skills"
     local skills_src_811="src/agent-skills/.agents/skills"
     rsync_or_die_into_home__231_v0 "${skills_src_811}/" ".agents/skills" 0
+    # Global entry point + scoped rules ride next to the skills store so
+    # every tool resolves them from one canonical tree. The source keeps the
+    # generic AGENTS.md name; per-tool filenames land at link time.
+    rsync_or_die_into_home__231_v0 "src/agent-skills/AGENTS.md" ".agents/AGENTS.md" 0
+    rsync_or_die_into_home__231_v0 "src/agent-skills/rules/" ".agents/rules" 0
     dir_exists__38_v0 "${canon_810}"
-    local ret_dir_exists38_v0__49_8="${ret_dir_exists38_v0}"
-    if [ "${ret_dir_exists38_v0__49_8}" != 0 ]; then
+    local ret_dir_exists38_v0__55_8="${ret_dir_exists38_v0}"
+    if [ "${ret_dir_exists38_v0__55_8}" != 0 ]; then
         local legacy_dir_812="${h_809}/.cursor/skills-cursor"
         dir_exists__38_v0 "${legacy_dir_812}"
-        local ret_dir_exists38_v0__51_12="${ret_dir_exists38_v0}"
-        if [ "${ret_dir_exists38_v0__51_12}" != 0 ]; then
+        local ret_dir_exists38_v0__57_12="${ret_dir_exists38_v0}"
+        if [ "${ret_dir_exists38_v0__57_12}" != 0 ]; then
             local __rm_47=
             (( 1 )) && __rm_47="-r" || __rm_47=""
             local __rm_48=
             rm ${__rm_48} ${__rm_47} "${legacy_dir_812}"
         fi
-        # 2. Wire the store into each ENABLED tool. Antigravity reads ~/.agents/skills natively, so it needs no link.
+        # 2. Wire the store into each ENABLED tool, matching each tool's real
+        # discovery rules (researched 2026-10: claude reads ~/.claude/CLAUDE.md
+        # + ~/.claude/rules/*.md with `paths:` frontmatter; kilo reads
+        # ~/.agents/skills by default plus ~/.config/kilo/AGENTS.md and the
+        # `instructions` key in kilo.jsonc; agy reads ~/.gemini/GEMINI.md +
+        # ~/.gemini/antigravity-cli/skills/; cursor reads .mdc rules with
+        # description/globs/alwaysApply and has no reliable global entry file).
     fi
 }
 
 # install_agent_skills()
-install_agent_skills__420_v0() {
-    install_agent_skills_impl__419_v0 
+install_agent_skills__422_v0() {
+    install_agent_skills_impl__421_v0 
     __status=$?
     if [ "${__status}" != 0 ]; then
         echo_error__142_v0 "failed to install agent skills" 1
@@ -1831,23 +1861,28 @@ install_agent_skills__420_v0() {
 }
 
 # install_skill_caveman()
-install_skill_caveman__423_v0() {
+install_skill_caveman__425_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/caveman" ".agents/skills/caveman"
 }
 
 # install_skill_bro()
-install_skill_bro__426_v0() {
+install_skill_bro__428_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/bro" ".agents/skills/bro"
 }
 
 # install_skill_humanizer()
-install_skill_humanizer__429_v0() {
+install_skill_humanizer__431_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/humanizer" ".agents/skills/humanizer"
 }
 
 # install_skill_ponytail()
-install_skill_ponytail__432_v0() {
+install_skill_ponytail__434_v0() {
     symlink_into_home_or_die__290_v0 "src/.agents/skills/ponytail" ".agents/skills/ponytail"
+}
+
+# install_skill_log_analyzer()
+install_skill_log_analyzer__437_v0() {
+    symlink_into_home_or_die__290_v0 "src/.agents/skills/log-analyzer" ".agents/skills/log-analyzer"
 }
 
 # Each hook must be IDEMPOTENT and KILL THE PROGRAM on failure.
@@ -1855,7 +1890,7 @@ install_skill_ponytail__432_v0() {
 # wrap it once at the installer level:  install_x() { x_impl() failed { exit(1) } }
 # So every install_*() is infallible and main() stays a plain sequence of calls.
 # print_help()
-print_help__434_v0() {
+print_help__439_v0() {
     echo "Usage: ./install.sh [--ask] [--trace] [step ...]"
     printf '%s\n' ""
     echo "Install all steps by default. Pass one or more step names to run"
@@ -1878,20 +1913,22 @@ print_help__434_v0() {
     echo "  tmux_wm"
     echo "  cmd_bookmarks"
     echo "  nvim_bazel_launcher"
+    echo "  projnote"
     echo "  agent_global_config"
     echo "  agent_skills"
     echo "  skill_caveman"
     echo "  skill_bro"
     echo "  skill_humanizer"
     echo "  skill_ponytail"
+    echo "  skill_log_analyzer"
 }
 
 # run_step(step: Text)
-run_step__435_v0() {
+run_step__440_v0() {
     local step_895="${1}"
     local matched_896=0
     if [ "$([ "_${step_895}" != "_help" ]; echo $?)" != 0 ]; then
-        print_help__434_v0 
+        print_help__439_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_apt_essential_tools" ]; echo $?)" != 0 ]; then
@@ -1942,28 +1979,36 @@ run_step__435_v0() {
         install_nvim_bazel_launcher__371_v0 
         matched_896=1
     fi
+    if [ "$([ "_${step_895}" != "_projnote" ]; echo $?)" != 0 ]; then
+        install_projnote__373_v0 
+        matched_896=1
+    fi
     if [ "$([ "_${step_895}" != "_agent_global_config" ]; echo $?)" != 0 ]; then
-        install_agent_global_config__384_v0 
+        install_agent_global_config__386_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_agent_skills" ]; echo $?)" != 0 ]; then
-        install_agent_skills__420_v0 
+        install_agent_skills__422_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_skill_caveman" ]; echo $?)" != 0 ]; then
-        install_skill_caveman__423_v0 
+        install_skill_caveman__425_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_skill_bro" ]; echo $?)" != 0 ]; then
-        install_skill_bro__426_v0 
+        install_skill_bro__428_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_skill_humanizer" ]; echo $?)" != 0 ]; then
-        install_skill_humanizer__429_v0 
+        install_skill_humanizer__431_v0 
         matched_896=1
     fi
     if [ "$([ "_${step_895}" != "_skill_ponytail" ]; echo $?)" != 0 ]; then
-        install_skill_ponytail__432_v0 
+        install_skill_ponytail__434_v0 
+        matched_896=1
+    fi
+    if [ "$([ "_${step_895}" != "_skill_log_analyzer" ]; echo $?)" != 0 ]; then
+        install_skill_log_analyzer__437_v0 
         matched_896=1
     fi
     if [ "$(( ! matched_896 ))" != 0 ]; then
@@ -1979,12 +2024,12 @@ run_step__435_v0() {
 # the last-installed state, lists changes, asks Y/n, and re-runs installer
 # steps only for the changed repos.
 # cmd_update()
-cmd_update__436_v0() {
+cmd_update__441_v0() {
     local command_50
     command_50="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return "${__status}"
     fi
     local script_dir_866="${command_50}"
@@ -1994,19 +2039,19 @@ cmd_update__436_v0() {
     command_51="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${meta_path_867}")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return "${__status}"
     fi
     local new_lines_869="${command_51}"
     local old_lines_870=""
     file_exists__39_v0 "${state_path_868}"
-    local ret_file_exists39_v0__397_8="${ret_file_exists39_v0}"
-    if [ "${ret_file_exists39_v0__397_8}" != 0 ]; then
+    local ret_file_exists39_v0__435_8="${ret_file_exists39_v0}"
+    if [ "${ret_file_exists39_v0__435_8}" != 0 ]; then
         local command_52
         command_52="$(jq -r '.repo_hashes | to_entries[] | "\(.key)	\(.value)"' "${state_path_868}")"
         __status=$?
         if [ "${__status}" != 0 ]; then
-            ret_cmd_update436_v0=''
+            ret_cmd_update441_v0=''
             return "${__status}"
         fi
         old_lines_870="${command_52}"
@@ -2024,8 +2069,8 @@ cmd_update__436_v0() {
             local parts_879=("${ret_split4_v0[@]}")
             local __length_57=("${parts_879[@]}")
             if [ "$(( ${#__length_57[@]} >= 2 ))" != 0 ]; then
-                old_keys_871+=("${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:409:36)"}")
-                old_vals_872+=("${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:410:36)"}")
+                old_keys_871+=("${parts_879[0]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:447:36)"}")
+                old_vals_872+=("${parts_879[1]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:448:36)"}")
             fi
         done
     fi
@@ -2042,16 +2087,16 @@ cmd_update__436_v0() {
         if [ "$(( ${#__length_63[@]} < 2 ))" != 0 ]; then
             continue
         fi
-        local key_884="${parts_883[0]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:421:27)"}"
-        local val_885="${parts_883[1]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:422:27)"}"
+        local key_884="${parts_883[0]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:459:27)"}"
+        local val_885="${parts_883[1]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:460:27)"}"
         local matched_886=0
         local __range_start_887=0
         local __length_64=("${old_keys_871[@]}")
         local __range_end_887="${#__length_64[@]}"
         local __dir_887=$(( ${__range_start_887} <= ${__range_end_887} ? 1 : -1 ))
         for (( i_887=${__range_start_887}; i_887 * ${__dir_887} < ${__range_end_887} * ${__dir_887}; i_887+=${__dir_887} )); do
-            if [ "$([ "_${old_keys_871[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:425:25)"}" != "_${key_884}" ]; echo $?)" != 0 ]; then
-                if [ "$([ "_${old_vals_872[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:426:29)"}" == "_${val_885}" ]; echo $?)" != 0 ]; then
+            if [ "$([ "_${old_keys_871[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:463:25)"}" != "_${key_884}" ]; echo $?)" != 0 ]; then
+                if [ "$([ "_${old_vals_872[${i_887}]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:464:29)"}" == "_${val_885}" ]; echo $?)" != 0 ]; then
                     local array_65=("${key_884}")
                     changed_880+=("${array_65[@]}")
                 fi
@@ -2072,7 +2117,7 @@ done
             split__4_v0 "	" "${row_890}"
             local parts_891=("${ret_split4_v0[@]}")
             local __length_71=("${parts_891[@]}")
-            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_891[0]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:443:42)"}" != "_${ok_888}" ]; echo $?) ))" != 0 ]; then
+            if [ "$(( $(( ${#__length_71[@]} >= 2 )) && $([ "_${parts_891[0]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:481:42)"}" != "_${ok_888}" ]; echo $?) ))" != 0 ]; then
                 found_889=1
                 break
             fi
@@ -2084,7 +2129,7 @@ done
     local __length_73=("${changed_880[@]}")
     if [ "$(( ${#__length_73[@]} == 0 ))" != 0 ]; then
         echo "update: all repos up to date"
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return 0
     fi
     local __length_74=("${changed_880[@]}")
@@ -2097,22 +2142,22 @@ done
     command_77="$(read -r line < /dev/tty 2>/dev/null; printf "%s" "$line")"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return "${__status}"
     fi
     local ans_893="${command_77}"
     if [ "$(( $(( $(( $([ "_${ans_893}" != "_n" ]; echo $?) || $([ "_${ans_893}" != "_N" ]; echo $?) )) || $([ "_${ans_893}" != "_no" ]; echo $?) )) || $([ "_${ans_893}" != "_NO" ]; echo $?) ))" != 0 ]; then
         echo "update: aborted"
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return 0
     fi
     for c_894 in "${changed_880[@]}"; do
-        run_step__435_v0 "${c_894}"
+        run_step__440_v0 "${c_894}"
     done
     cp "${meta_path_867}" "${state_path_868}"
     __status=$?
     if [ "${__status}" != 0 ]; then
-        ret_cmd_update436_v0=''
+        ret_cmd_update441_v0=''
         return "${__status}"
     fi
     echo "update: done"
@@ -2156,19 +2201,21 @@ if [ "$(( ${#__length_89[@]} == 0 ))" != 0 ]; then
     install_tmux_wm__366_v0 
     install_cmd_bookmarks__369_v0 
     install_nvim_bazel_launcher__371_v0 
-    install_agent_global_config__384_v0 
-    install_agent_skills__420_v0 
-    install_skill_caveman__423_v0 
-    install_skill_bro__426_v0 
-    install_skill_humanizer__429_v0 
-    install_skill_ponytail__432_v0 
+    install_projnote__373_v0 
+    install_agent_global_config__386_v0 
+    install_agent_skills__422_v0 
+    install_skill_caveman__425_v0 
+    install_skill_bro__428_v0 
+    install_skill_humanizer__431_v0 
+    install_skill_ponytail__434_v0 
+    install_skill_log_analyzer__437_v0 
 fi
 __length_90=("${step_args_120[@]}")
 if [ "$(( ${#__length_90[@]} >= 1 ))" != 0 ]; then
-    if [ "$([ "_${step_args_120[0]?"Index out of bounds (at /tmp/jbtd-install-build-S9dGVL/install.ab:570:22)"}" != "_update" ]; echo $?)" != 0 ]; then
+    if [ "$([ "_${step_args_120[0]?"Index out of bounds (at /tmp/jbtd-install-build-2GvdPj/install.ab:616:22)"}" != "_update" ]; echo $?)" != 0 ]; then
         __length_91=("${step_args_120[@]}")
         if [ "$(( ${#__length_91[@]} == 1 ))" != 0 ]; then
-            cmd_update__436_v0 
+            cmd_update__441_v0 
             __status=$?
             if [ "${__status}" != 0 ]; then
                 exit "${__status}"
@@ -2176,7 +2223,7 @@ if [ "$(( ${#__length_90[@]} >= 1 ))" != 0 ]; then
         fi
     else
         for step_897 in "${step_args_120[@]}"; do
-            run_step__435_v0 "${step_897}"
+            run_step__440_v0 "${step_897}"
         done
     fi
 fi

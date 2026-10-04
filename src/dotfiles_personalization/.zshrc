@@ -307,6 +307,10 @@ source "$HOME/.local/share/cmd_bookmarks/savecmd.zsh"
 
 
 
+
+
+
+
 # AI tools, etc.
 export PATH="$HOME/.local/bin":$PATH
 

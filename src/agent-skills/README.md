@@ -65,3 +65,13 @@ This installs all skills globally without prompting.
 - `just-dpatch`: justify why the current patch is needed, summarized.
 - `just-dstack`: justify why the whole stack is needed, per patch + through-line.
 - `divergence-planfix`: investigate jj divergent versions (/0 /1), propose plan, fix only after yes.
+- `facts`: verify the last assistant message — URLs contain claimed info, logs show claimed success, code claims match real code.
+- `readonly`: read-only mode, no edits or mutable operations (read-only shell allowed, unlike `ask`).
+- `suggest-actions`: step-by-step UI actions (click/type/select), exact command first when one replaces the clicks.
+- `ask-if-safe-to-approve-for-client`: stamp triage — blast radius (my alerts/infra vs client-only), reversibility, one verdict.
+- `ontop`: do the task stacked on top of the current jj `@` change, `@` stays untouched.
+- `lessons-learned-edit-generic`: draft a learning from review comments/text into a skill file, write only after yes.
+- `search-convos`: search past convo snapshots, show the resume command for the match.
+- `cleanup-old-workspaces`: dry-run-first workspace cleanup (unused + merged/pushed + clean), delete only after confirm.
+- `investigate`: deep investigation of one question, findings stored in a file. No code changes.
+- `use-fitting-skill`: like `recommend-skill` but applies the picked skill immediately instead of just suggesting.

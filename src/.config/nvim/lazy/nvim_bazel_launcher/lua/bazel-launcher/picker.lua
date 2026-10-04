@@ -1,5 +1,6 @@
 local config = require("bazel-launcher.config")
 local targets = require("bazel-launcher.targets")
+local gtest = require("bazel-launcher.gtest")
 
 local M = {}
 
@@ -67,6 +68,19 @@ function M.open(opts)
     local pkg = opts.package or targets.package_for()
     local use_pkg = pkg and not opts.query
 
+    -- GoogleTest cases of the buffer under the cursor at open time, for the
+    -- C-s subtest binding below (only meaningful with a test file open).
+    local buf_cases = {}
+    do
+        local okb, bbuf = pcall(vim.api.nvim_get_current_buf)
+        if okb and bbuf then
+            local okc, found = pcall(gtest.cases_in_buffer, bbuf)
+            if okc and type(found) == "table" then
+                buf_cases = found
+            end
+        end
+    end
+
     -- Pre-fill the prompt with the target under the cursor, derived BEFORE
     -- the async query starts. refresh() re-opens through here and simply
     -- re-derives from wherever the cursor sits by then.
@@ -80,7 +94,36 @@ function M.open(opts)
         end
     end
 
-    local function show(labels)
+    -- Subtest rows for the open test file's owning targets, prepended ahead
+    -- of the plain target list. Resolved before fetch() so the picker shows
+    -- the full picture at once (owner query is cached, usually instant).
+    local function with_subtests(open_picker)
+        if #buf_cases == 0 then
+            open_picker(nil)
+            return
+        end
+        gtest.owner_targets(function(labels, err)
+            if err then
+                vim.notify("bazel-launcher: owner query failed: " .. tostring(err), vim.log.levels.WARN)
+            end
+            local rows = {}
+            for _, target in ipairs(labels or {}) do
+                if target:match("_test") ~= nil then
+                    for _, c in ipairs(buf_cases) do
+                        local display = target .. " :: " .. c.suite .. "." .. c.name
+                        rows[#rows + 1] = {
+                            target = target,
+                            filter = c.suite .. "." .. c.name,
+                            display = display,
+                        }
+                    end
+                end
+            end
+            open_picker(rows)
+        end)
+    end
+
+    local function show(labels, subtest_rows)
         -- default_text prefills the prompt box, but telescope's prefill path
         -- (Picker:find -> set_prompt -> reset_prompt) only writes the buffer
         -- text — the sorter never runs, so the list below stays UNFILTERED
@@ -91,44 +134,91 @@ function M.open(opts)
         if default_text and default_text ~= "" then
             local suffix = ":" .. default_text
             for i, label in ipairs(labels) do
-                if label == default_text or label:sub(-#suffix) == suffix then
+                if type(label) == "string"
+                    and (label == default_text or label:sub(-#suffix) == suffix) then
                     table.remove(labels, i)
                     table.insert(labels, 1, label)
                     break
                 end
             end
         end
+        local results = {}
+        for _, row in ipairs(subtest_rows or {}) do
+            results[#results + 1] = row
+        end
+        for _, label in ipairs(labels) do
+            results[#results + 1] = label
+        end
         local picker_opts = vim.tbl_deep_extend("force", theme, {
-            prompt_title = pkg and ("Bazel Targets (" .. pkg .. ")") or "Bazel Targets",
+            prompt_title = (pkg and ("Bazel Targets (" .. pkg .. ")") or "Bazel Targets") .. " [C-s subtests]",
             default_text = default_text,
             finder = require("telescope.finders").new_table({
-                results = labels,
-                entry_maker = function(label)
-                    return { value = label, display = label, ordinal = label }
+                results = results,
+                entry_maker = function(item)
+                    if type(item) == "table" then
+                        return { value = item, display = item.display, ordinal = item.display }
+                    end
+                    return { value = item, display = item, ordinal = item }
                 end,
             }),
             sorter = require("telescope.sorters").get_generic_fuzzy_sorter(),
             attach_mappings = function(prompt_bufnr, map)
                 local function is_test_target(label)
-                    return label:match("_test") ~= nil
+                    return type(label) == "string" and label:match("_test") ~= nil
                 end
-                local function dispatch(launch_type)
+                -- Split a selection into target + optional test filter.
+                -- Subtest rows carry { target, filter }; plain rows are bare
+                -- label strings.
+                local function selected_target_filter()
+                    local selection = action_state.get_selected_entry()
+                    if not (selection and selection.value) then
+                        return nil, nil
+                    end
+                    if type(selection.value) == "table" then
+                        return selection.value.target, selection.value.filter
+                    end
+                    return selection.value, nil
+                end
+                local function filter_args(filter)
+                    return filter and { "--test_filter=" .. filter } or nil
+                end
+                local function dispatch(launch_type, keep_filter)
                     -- Read the selection BEFORE closing: close tears down the
                     -- picker state on some telescope versions, and Enter must
-                    -- launch exactly the highlighted row.
-                    local selection = action_state.get_selected_entry()
+                    -- launch exactly the highlighted row. Forced run drops
+                    -- the filter (runs the binary as-is).
+                    local target, filter = selected_target_filter()
                     actions.close(prompt_bufnr)
-                    if selection and selection.value then
-                        require("bazel-launcher.launch").launch(launch_type, selection.value)
+                    if target then
+                        if keep_filter == false then
+                            filter = nil
+                        end
+                        require("bazel-launcher.launch").launch(launch_type, target, filter_args(filter))
                     end
                 end
                 local function dispatch_heuristic()
-                    local selection = action_state.get_selected_entry()
+                    local target, filter = selected_target_filter()
                     actions.close(prompt_bufnr)
-                    if selection and selection.value then
-                        local lt = is_test_target(selection.value) and "test" or "run"
-                        require("bazel-launcher.launch").launch(lt, selection.value)
+                    if target then
+                        local lt = (filter or is_test_target(target)) and "test" or "run"
+                        require("bazel-launcher.launch").launch(lt, target, filter_args(filter))
                     end
+                end
+                local function dispatch_subtests()
+                    local selection = action_state.get_selected_entry()
+                    if not (selection and selection.value) then
+                        return
+                    end
+                    local target = selection.value
+                    if type(target) == "table" then
+                        target = target.target
+                    end
+                    if not is_test_target(target) then
+                        vim.notify("bazel-launcher: C-s needs a test target", vim.log.levels.WARN)
+                        return
+                    end
+                    actions.close(prompt_bufnr)
+                    gtest.run_target_subtests(target, buf_cases)
                 end
                 local function refresh()
                     actions.close(prompt_bufnr)
@@ -154,13 +244,15 @@ function M.open(opts)
                     dispatch("test")
                 end)
                 map("i", "<C-g>", function()
-                    dispatch("run")
+                    dispatch("run", false)
                 end)
                 map("n", "<C-g>", function()
-                    dispatch("run")
+                    dispatch("run", false)
                 end)
                 map("i", "<C-r>", refresh)
                 map("n", "<C-r>", refresh)
+                map("i", "<C-s>", dispatch_subtests)
+                map("n", "<C-s>", dispatch_subtests)
                 actions.select_default:replace(function()
                     dispatch_heuristic()
                 end)
@@ -170,7 +262,7 @@ function M.open(opts)
         require("telescope.pickers").new({}, picker_opts):find()
     end
 
-    local function fetch(list_opts, scoped_pkg)
+    local function fetch(list_opts, scoped_pkg, subtest_rows)
         targets.list(list_opts, function(labels, err)
             -- A package-scoped listing that errors or comes back empty
             -- retries exactly once with the workspace-wide query; pkg is
@@ -182,7 +274,7 @@ function M.open(opts)
                     "bazel-launcher: no targets in " .. scoped_pkg .. ", showing workspace targets",
                     vim.log.levels.WARN
                 )
-                fetch(opts, nil)
+                fetch(opts, nil, subtest_rows)
                 return
             end
             if not labels then
@@ -192,17 +284,20 @@ function M.open(opts)
             if #labels == 0 then
                 vim.notify("bazel-launcher: no targets found in workspace", vim.log.levels.WARN)
             end
-            show(labels)
+            show(labels, subtest_rows)
         end)
     end
 
+    local fetch_opts, fetch_pkg = opts, nil
     if use_pkg then
-        fetch(vim.tbl_extend("force", opts, {
+        fetch_opts = vim.tbl_extend("force", opts, {
             query = { "query", pkg == "//" and "//*" or (pkg .. ":*") },
-        }), pkg)
-    else
-        fetch(opts, nil)
+        })
+        fetch_pkg = pkg
     end
+    with_subtests(function(subtest_rows)
+        fetch(fetch_opts, fetch_pkg, subtest_rows)
+    end)
 end
 
 return M
